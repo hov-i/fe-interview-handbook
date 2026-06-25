@@ -1,4 +1,4 @@
-# 1주차 - partner
+# 1주차 - kzlsk
 
 ## 클로저란 무엇인가요?
 - **카테고리**: JavaScript

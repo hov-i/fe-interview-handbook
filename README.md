@@ -21,9 +21,9 @@
       </a>
     </td>
     <td align="center">
-      <a href="https://github.com/">
-        <img src="https://via.placeholder.com/120" width="120px" /><br />
-        <sub><b>partner</b></sub>
+      <a href="https://github.com/kzlsk">
+        <img src="https://github.com/kzlsk.png" width="120px" /><br />
+        <sub><b>kzlsk</b></sub>
       </a>
     </td>
   </tr>
