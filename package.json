@@ -1,0 +1,10 @@
+{
+  "name": "fe-interview-handbook",
+  "version": "1.0.0",
+  "description": "프론트엔드 기술면접 스터디",
+  "type": "module",
+  "scripts": {
+    "toc": "node scripts/generate-toc.mjs",
+    "validate": "node scripts/validate.mjs"
+  }
+}
