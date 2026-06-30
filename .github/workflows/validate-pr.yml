@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -17,4 +19,14 @@ jobs:
 
       - run: npm ci
 
-      - run: npm run validate
+      # 이 PR에서 추가/수정된 weeks 하위 md 파일만 추출
+      - name: 변경된 파일 추출
+        id: changed
+        run: |
+          FILES=$(git diff --name-only --diff-filter=ACM \
+            "origin/${{ github.base_ref }}...HEAD" -- 'weeks/**/*.md' | tr '\n' ' ')
+          echo "변경된 파일: $FILES"
+          echo "files=$FILES" >> "$GITHUB_OUTPUT"
+
+      # 변경된 파일만 검증 (없으면 스크립트가 통과 처리)
+      - run: npm run validate -- ${{ steps.changed.outputs.files }}
