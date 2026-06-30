@@ -1,5 +1,5 @@
-import { readFileSync, readdirSync, statSync } from 'fs';
-import { join, basename, dirname, relative } from 'path';
+import { readFileSync, readdirSync, statSync, existsSync } from 'fs';
+import { join, basename, dirname, relative, resolve, isAbsolute } from 'path';
 
 // 허용 카테고리
 const CATEGORIES = [
@@ -43,9 +43,27 @@ function parseMeta(lines) {
   return meta;
 }
 
+// ── 검사 대상 파일 결정 ────────────────────────────────────
+// 인자로 파일 목록이 넘어오면(=PR에서 변경된 파일) 그것만 검사하고,
+// 없으면 weeks/ 전체를 스캔합니다(로컬 실행용 폴백).
+function resolveTargets() {
+  const args = process.argv.slice(2).filter(Boolean);
+  if (args.length === 0) return collectFiles(WEEKS_DIR);
+
+  return args
+    .map((f) => (isAbsolute(f) ? f : resolve(ROOT, f)))
+    .filter(
+      (f) =>
+        f.endsWith('.md') &&
+        basename(f) !== 'notes.md' &&
+        basename(f) !== 'README.md' &&
+        existsSync(f)
+    );
+}
+
 // ── 검증 ───────────────────────────────────────────────────
 function main() {
-  const files = collectFiles(WEEKS_DIR);
+  const files = resolveTargets();
 
   if (files.length === 0) {
     console.log('검증할 파일이 없습니다.');
