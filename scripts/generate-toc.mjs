@@ -60,11 +60,15 @@ function parseQuestions(filePath) {
     const endIdx = qi + 1 < h2Indices.length ? h2Indices[qi + 1] : lines.length;
     const section = lines.slice(idx + 1, endIdx);
 
-    // 카테고리 파싱 (첫 줄에서)
+    // 카테고리 파싱 (### 답변 등 다음 헤더 전까지 탐색, 빈 줄 견딤)
     let category = '기타';
-    if (section.length > 0) {
-      const m = section[0].match(/^-\s+\*\*카테고리\*\*:\s*(.+)$/);
-      if (m) category = m[1].trim();
+    for (const l of section) {
+      if (/^#{3} /.test(l)) break;
+      const m = l.match(/^-\s+\*\*카테고리\*\*:\s*(.+)$/);
+      if (m) {
+        category = m[1].trim();
+        break;
+      }
     }
 
     // 답변 + 꼬리질문 본문 추출 (카테고리 라인 이후 전체)

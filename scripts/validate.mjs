@@ -92,8 +92,13 @@ function main() {
 
     for (const idx of h2Indices) {
       const title = lines[idx].replace(/^## /, '').trim();
-      // 바로 아래 줄에서 카테고리 파싱
-      const metaLines = lines.slice(idx + 1, idx + 2);
+      // ## 다음부터 다음 헤더(## 또는 ###) 전까지의 메타 영역에서 카테고리 탐색
+      // (prettier가 삽입하는 빈 줄을 견디기 위함)
+      const metaLines = [];
+      for (let j = idx + 1; j < lines.length; j++) {
+        if (/^#{2,3} /.test(lines[j])) break;
+        metaLines.push(lines[j]);
+      }
       const meta = parseMeta(metaLines);
 
       // 카테고리 존재 여부
