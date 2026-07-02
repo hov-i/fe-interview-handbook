@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  models: read
 
 jobs:
   update-toc:
@@ -22,6 +23,8 @@ jobs:
       - run: npm ci
 
       - run: npm run toc
+        env:
+          GITHUB_MODELS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Commit & push if changed
         run: |
