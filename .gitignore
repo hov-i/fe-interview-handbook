@@ -1,2 +1,6 @@
 node_modules/
 .claude/
+
+# macOS
+.DS_Store
+**/.DS_Store
