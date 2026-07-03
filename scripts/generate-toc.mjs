@@ -71,9 +71,18 @@ function parseQuestions(filePath) {
       }
     }
 
-    // 답변 + 꼬리질문 본문 추출 (카테고리 라인 이후 전체)
+    // 답변 + 꼬리질문 본문 추출
+    // 첫 ### 헤더(답변 등)부터를 본문으로 취급 → 카테고리 메타 라인·빈 줄 확실히 제외
     // --- 구분자와 빈 줄 트림
-    let bodyLines = section.slice(1); // 카테고리 라인 제외
+    let bodyStart = section.findIndex((l) => /^### /.test(l));
+    if (bodyStart === -1) {
+      // ### 헤더가 없으면 카테고리 라인 다음부터 (폴백)
+      const catIdx = section.findIndex((l) =>
+        /^-\s+\*\*카테고리\*\*:/.test(l)
+      );
+      bodyStart = catIdx === -1 ? 1 : catIdx + 1;
+    }
+    let bodyLines = section.slice(bodyStart);
 
     // 끝에서 --- 구분자와 빈 줄 제거
     while (bodyLines.length > 0) {
