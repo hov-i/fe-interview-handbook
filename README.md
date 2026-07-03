@@ -26,6 +26,12 @@
         <sub><b>kzlsk</b></sub>
       </a>
     </td>
+     <td align="center">
+      <a href="https://github.com/restareaByWeezy">
+        <img src="https://github.com/restareaByWeezy.png" width="120px" /><br />
+        <sub><b>kzlsk</b></sub>
+      </a>
+    </td>
   </tr>
 </table>
 
