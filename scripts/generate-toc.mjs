@@ -230,6 +230,112 @@ async function resolveBody(title, group) {
   return mergeGroup(group);
 }
 
+// 불릿("- 텍스트")에서 순수 텍스트 추출
+function stripBullet(line) {
+  return line.replace(/^-\s+/, '').trim();
+}
+
+// ── 꼬리질문 ↔ 답변 의미 매칭 (AI 또는 정확 매칭) ──────────
+// followups: [{ text }], candidates: [{ title, body, key }]
+// 반환: Map<followupText, candidate>
+async function matchFollowups(followups, candidates) {
+  const map = new Map();
+  if (followups.length === 0 || candidates.length === 0) return map;
+
+  // 폴백: 정규화(정확) 매칭
+  const byKey = new Map();
+  for (const c of candidates) if (!byKey.has(c.key)) byKey.set(c.key, c);
+  const exactMatch = () => {
+    for (const f of followups) {
+      const c = byKey.get(normalize(f.text));
+      if (c) map.set(f.text, c);
+    }
+    return map;
+  };
+
+  if (!AI_TOKEN) return exactMatch();
+
+  // AI 의미 매칭 (텍스트가 완전히 같지 않아도 의미로 연결)
+  try {
+    const candList = candidates.map((c, i) => `${i}: ${c.title}`).join('\n');
+    const foList = followups.map((f, i) => `${i}: ${f.text}`).join('\n');
+
+    const res = await fetch(GH_MODELS_URL, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${AI_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: GH_MODEL,
+        temperature: 0,
+        response_format: { type: 'json_object' },
+        messages: [
+          {
+            role: 'system',
+            content:
+              '너는 질문 매칭 도우미야. "꼬리질문"이 "후보 답변 질문" 중 실질적으로 같은 것을 묻는 항목과 매칭되는지 판단해. 의미가 실질적으로 동일할 때만 매칭하고, 애매하면 매칭하지 마(candidate=null). 반드시 {"matches":[{"followup":번호,"candidate":번호|null}]} 형식의 JSON만 출력.',
+          },
+          {
+            role: 'user',
+            content: `[꼬리질문]\n${foList}\n\n[후보 답변 질문]\n${candList}`,
+          },
+        ],
+      }),
+    });
+    if (!res.ok) throw new Error(`${res.status}: ${await res.text()}`);
+
+    const data = await res.json();
+    const parsed = JSON.parse(data.choices[0].message.content);
+    for (const m of parsed.matches || []) {
+      if (m.candidate == null) continue;
+      const f = followups[m.followup];
+      const c = candidates[m.candidate];
+      if (f && c) {
+        map.set(f.text, c);
+        console.log(`  ✓ 꼬리질문 매칭: "${f.text}" → "${c.title}"`);
+      }
+    }
+    return map;
+  } catch (e) {
+    console.warn(`  ⚠ 꼬리질문 AI 매칭 실패, 정확 매칭으로 대체 — ${e.message}`);
+    map.clear();
+    return exactMatch();
+  }
+}
+
+// 본문의 꼬리질문 불릿 중 매칭된 항목을 "펼치면 답변 나오는 중첩 토글"로 변환
+function nestFollowups(body, followupMap) {
+  if (followupMap.size === 0) return body;
+  const lines = body.split('\n');
+  const out = [];
+  let inTail = false;
+
+  for (const line of lines) {
+    if (/^###\s+꼬리질문/.test(line)) {
+      inTail = true;
+      out.push(line);
+      continue;
+    }
+    if (inTail && /^-\s+/.test(line)) {
+      const text = stripBullet(line);
+      const c = followupMap.get(text);
+      if (c) {
+        out.push('');
+        out.push('<details>');
+        out.push(`<summary>${text}</summary>`);
+        out.push('');
+        out.push(c.body);
+        out.push('');
+        out.push('</details>');
+        continue;
+      }
+    }
+    out.push(line);
+  }
+  return out.join('\n');
+}
+
 // ── 메인 로직 ──────────────────────────────────────────────
 async function main() {
   const files = collectFiles(WEEKS_DIR);
@@ -240,11 +346,36 @@ async function main() {
     allQuestions.push(...parsed);
   }
 
-  // ── 카테고리별 그룹핑 ────────────────────────────────────
+  // ── 꼬리질문/후보 분석 ───────────────────────────────────
+  for (const q of allQuestions) {
+    const { tails } = splitBody(q.body);
+    q.tails = tails.map(stripBullet);
+    q.key = normalize(q.title);
+  }
+
+  // 후보 = 꼬리질문 섹션이 없는 '답변 전용' 질문 (예: 2주차 답변 파일)
+  const candidates = allQuestions.filter((q) => q.tails.length === 0);
+
+  // 매칭 대상 꼬리질문 (중복 텍스트 제거)
+  const followupSet = new Map();
+  for (const q of allQuestions) {
+    for (const t of q.tails) {
+      if (!followupSet.has(t)) followupSet.set(t, { text: t });
+    }
+  }
+  const followups = [...followupSet.values()];
+
+  // 꼬리질문 ↔ 답변 매칭 → 중첩 대상 결정
+  const followupMap = await matchFollowups(followups, candidates);
+  const nestedKeys = new Set();
+  for (const c of followupMap.values()) nestedKeys.add(c.key);
+
+  // ── 카테고리별 그룹핑 (중첩된 후보는 독립 목록에서 제외) ──
   const byCategory = new Map();
   for (const cat of CATEGORIES) byCategory.set(cat, []);
 
   for (const q of allQuestions) {
+    if (nestedKeys.has(q.key)) continue; // 꼬리질문에 붙은 답변은 독립 렌더 제외
     const cat = CATEGORIES.includes(q.category) ? q.category : '기타';
     byCategory.get(cat).push(q);
   }
@@ -260,17 +391,17 @@ async function main() {
     // 정규화 키로 그룹핑 (같은 질문의 답변들을 모두 모음)
     const groups = new Map();
     for (const q of items) {
-      const key = normalize(q.title);
-      if (!groups.has(key)) groups.set(key, []);
-      groups.get(key).push(q);
+      if (!groups.has(q.key)) groups.set(q.key, []);
+      groups.get(q.key).push(q);
     }
 
-    // 그룹별로 답변 병합 (여럿이면 AI 또는 기본 병합)
+    // 그룹별로 답변 병합 후, 꼬리질문에 답변 중첩
     const merged = [];
     for (const group of groups.values()) {
+      const body = await resolveBody(group[0].title, group);
       merged.push({
         title: group[0].title,
-        body: await resolveBody(group[0].title, group),
+        body: nestFollowups(body, followupMap),
       });
     }
 
