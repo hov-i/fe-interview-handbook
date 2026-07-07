@@ -1,4 +1,4 @@
-# N주차 - kzlsk
+# 2주차 - kzlsk
 
 ## var, let, const의 호이스팅 동작 차이는 무엇인가요?
 - **카테고리**: JavaScript
