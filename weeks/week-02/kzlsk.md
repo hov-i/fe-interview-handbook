@@ -159,7 +159,7 @@
 
 ---
 
-## reflow와 repaint의 차이와 최소화하는 방법은?
+## reflow와 repaint의 차이는?
 - **카테고리**: CS
 
 ### 답변
