@@ -14,6 +14,8 @@ HTTPS는 HTTP 메시지를 `TLS`로 보호해서 전송하는 방식입니다. H
 
 ### 꼬리질문
 
+3
+
 - HTTPS는 어떻게 동작하나요? TLS Handshake 과정을 설명해주세요.
 - 대킹 키와 비대칭 키의 차이가 무엇인가요?
 
@@ -189,3 +191,267 @@ HTTP는 요청이 있어야 응답을 받을 수 있는 요청-응답(Request-Re
 
 - WebSocket은 어떻게 연결을 수립하나요?
 - WebSocket 대신 SSE(Server-Sent Events)를 사용하는 경우는 언제인가요?
+
+## HTTPS는 어떻게 동작하나요? TLS Handshake 과정을 설명해주세요.
+
+- **카테고리**: Network
+
+### 답변
+
+Hello -> 인증서 -> 인증 -> 세션키 -> 대칭키 통신
+
+---
+
+## 대칭 키와 비대칭 키의 차이는 무엇인가요?
+
+- **카테고리**: Network
+
+### 답변
+
+대칭 키는 암호화와 복호화에 하나의 동일한 키를 사용하는 방식입니다.
+처리 속도가 빨라서 암호화에 주로 사용되지만 보안문제가 있습니다.
+반면 비대칭키는 공개키와 개인키 두 개의 키를 사용하는 방식입니다.
+공개키로 암호화한 데이터는 개인키로만 복호화할 수 있어 키를 안전하게 공유할 수 있지만, 대칭키보다 속도가 느립니다.
+
+---
+
+## useEffect는 내부적으로 어떻게 동작하나요?
+
+- **카테고리**: React
+
+### 답변
+
+useEffect는 Fiber에 Effect 정보를 저장하고, 렌더링 후 커밋 단계에서 실행됩니다. deps가 변경되면 실행 대상으로 표시하고, 실행 전에는 이전 effect의 cleanup(destroy)을 먼저 호출한 뒤 새로운 effect(create)를 실행합니다.
+
+렌더링
+↓
+Fiber에 Effect 저장
+↓
+DOM 업데이트(commit)
+↓
+cleanup 실행
+↓
+effect 실행
+
+ex
+
+```
+function useEffect(create, deps) {
+  const hook = mountWorkInProgressHook();
+
+  hook.memoizedState = {
+    create,   // effect callback
+    deps,     // dependency array
+    destroy: undefined, // cleanup
+  };
+
+  // Fiber의 effect queue에 등록
+  pushEffect(hook.memoizedState);
+}
+```
+
+---
+
+## useEffect 내부에서 비동기 작업을 할 때 cleanup 함수는 왜 필요한가요?
+
+- **카테고리**: React
+
+### 답변
+
+cleanup을 하지않으면 내부에서 타이머, 이벤트 리스너, webSocket 연결같은 작업이 계속 실행되어 메모리 누수나 잘못된 상태 업데이트가 될 수 있기때문입니다.
+
+---
+
+## 어떤 상황에서 Object보다 Map을 사용하는 것이 더 적합한가요?
+
+- **카테고리**: JavaScript
+
+### 답변
+
+object는 정적인 데이터를 만들때 적합하고
+map은 삽입 순서를 보장해야 하는 경우나 데이터의 추가/삭제가 빈번한 경우에 map을 사용하는게 좋습니다.
+
+예를 들어 캐시 구현, 사용자 세션 관리, 중복 데이터 관리처럼 키를 기준으로 빠르게 조회하고 관리해야 하는 상황에서는 Map이 더 적합합니다.
+
+---
+
+## Map의 key로 객체를 사용할 수 있는 이유는 무엇인가요?
+
+- **카테고리**: JavaScript
+
+### 답변
+
+Map은 Object와 달리 key를 문자열로 변환하지 않고 참조값 자체로 관리하기 때문에 객체를 key로 사용할 수 있습니다.
+
+예를들어 같은 형태의 객체라도 참조가 다르면 다른 key로 판단합니다.
+
+---
+
+## setTimeout이나 setInterval과의 차이점은 무엇인가요?
+
+- **카테고리**: JavaScript
+
+### 답변
+
+setTimeout은 두번째 인자의 타이머가 됐을때 한번 실행되고
+setInterval은 그 주기로 계속 실행됩니다.
+
+---
+
+## requestAnimationFrame이 애니메이션 성능에 유리한 이유는 무엇인가요?
+
+- **카테고리**: JavaScript
+
+### 답변
+
+requestAnimationFrame도 메인 스레드에서 실행되기 때문에 무거운 JavaScript 작업과 함께 사용하면 프레임 드랍이 발생할 수 있습니다.
+setInterval과 달리 브라우저의 렌더링 사이클에 맞춰 실행되고, 탭 비활성화 시 자동으로 최적화되기 때문에 UI 애니메이션 구현에는 더 적합합니다.
+무거운 계산은 Web Worker로 분리하고 메인 스레드는 렌더링에 집중시키는 방식으로 보완할 수 있습니다.
+
+사용자가 다른 탭을 보고 있음
+모바일에서 배터리가 부족함
+화면이 보이지 않는 상태
+
+이런 경우 브라우저가 호출 빈도를 낮추거나 멈출 수 있습니다.
+
+---
+
+## Cache-Control과 ETag는 각각 어떤 역할을 하나요?
+
+- **카테고리**: Network
+
+### 답변
+
+Cache-control -> 캐시를 사용해도 되는가?
+ETag -> 서버의 리소스가 이전과 같은지 확인
+
+---
+
+## CDN을 사용하면 어떤 성능상의 이점이 있나요?
+
+- **카테고리**: Network
+
+### 답변
+
+캐싱, 저 빠른 요청 응답으로 응답 시간 감소, 보안 강화
+
+---
+
+## staleTime과 gcTime(cacheTime)의 차이점은 무엇인가요?
+
+- **카테고리**: React
+
+### 답변
+
+사용자가 리액트 쿼리를 통해 요청을 보냈을 때
+staleTime이 fresh하면 gcTime안에 데이터가 있는지 확인 후 데이터가 있다면 그 값을 캐싱하고 없다면 api요청을 합니다.
+
+그리고 staleTime이 stale 상태면 바로 api 요청을 보냅니다.
+
+---
+
+## React Query와 Redux/Zustand는 어떤 역할의 차이가 있나요?
+
+- **카테고리**: React
+
+### 답변
+
+react-query는 서버상태를 관리하고
+redux나 zustand는 보통 클라이언트 상태를 관리합니다.
+ex ) modal 등
+
+---
+
+## useLayoutEffect는 언제 사용하는 것이 적절한가요?
+
+- **카테고리**: React
+
+### 답변
+
+브라우저 렌더링 후 레이아웃이 변경되어 사용자 경험이 떨어질때 사용됩니다.
+
+---
+
+## useLayoutEffect를 남용하면 어떤 문제가 발생할 수 있나요?
+
+- **카테고리**: React
+
+### 답변
+
+useLayoutEffect는 브라우저 렌더링 전에 실행되므로 남용하게 된다면 사용자가 흰 화면을 오래 봐
+사용자 경험이 떨어질 수 있습니다.
+
+---
+
+## SSR과 CSR의 차이점은 무엇인가요?
+
+- **카테고리**: React
+
+### 답변
+
+SSR은 서버에서 html을 렌더링하는 것이고 CSR는 클라이언트에서
+렌더링하는 것입니다.
+
+SSR는 서버에서 html을 렌더링하기때문에 seo에 좋지만
+요청마다 새로 화면을 그려야한다는 단점이 있습니다.
+CSR는 seo가 안좋지만 한번 그려두면 그 이후는 부분적으로 바뀌는 부분만 렌더링되기때문에 화면 깜빡임이 없습니다.
+
+---
+
+## Hydration Mismatch는 왜 발생하나요?
+
+- **카테고리**: React
+
+### 답변
+
+SSR 결과 HTML ≠ Client React 렌더링 결과 → Hydration 불일치
+
+서버와 클라이언트의 결과가 다르기 때문에 발생합니다.
+
+---
+
+## Nginx는 왜 리버스 프록시로 많이 사용되나요?
+
+- **카테고리**: Network
+
+### 답변
+
+높은 동시 처리 성능 → 적은 리소스 사용 → 안정성 → 다양한 기능 지원
+
+---
+
+## 리버스 프록시를 사용하면 어떤 장점이 있나요?
+
+- **카테고리**: Network
+
+### 답변
+
+DB 보안 및 로드밸런싱, 캐싱
+
+---
+
+## WebSocket은 어떻게 연결을 수립하나요?
+
+- **카테고리**: Network
+
+### 답변
+
+HTTP 기반 Handshake로 연결 수립 후, Upgrade 헤더와 101 응답으로 WebSocket으로 전환하고 TCP 연결을 유지하며 양방향 통신합니다.
+
+---
+
+## WebSocket 대신 SSE(Server-Sent Events)를 사용하는 경우는 언제인가요?
+
+- **카테고리**: Network
+
+### 답변
+
+webSocket -> 양방향 실시간 통신
+SSE -> 서버 -> 클라이언트 단방향 실시간 통신
+
+서버와 클라이언트의 통신이 빈번할 때 양방향 통신인 websocket을 사용하고
+서버에서 클라이언트로 통신이 많을때는 단방향 SSE를 고려합니다.
+
+구현 자체의 난이도가 webSocket이 SSE가 더 간단하기때문에
+클라이언트의 요청이 있어도 그 부분은 api요청으로 해결하고 sse를 선택할 수도 있습니다.
+ex ) ai 챗봇 스트리밍, 주문 알림 서비스 등
