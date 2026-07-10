@@ -277,3 +277,325 @@ ETag는 서버가 리소스의 **특정 버전을 식별하는 고유 문자열*
 - **b / i**: 순수하게 **시각적 표현**만을 위한 태그. 굵게(`b`), 기울임(`i`)일 뿐 특별한 의미는 없습니다.
 - **strong / em**: **의미적 강조**를 나타냅니다. `strong`은 중요도가 높음, `em`은 강세(emphasis)를 표현합니다.
 - **접근성**: 스크린 리더는 `strong`·`em`을 강조해 읽어주지만 `b`·`i`는 그렇지 않으므로, 의미가 있으면 `strong`·`em`을 사용해야 합니다.
+
+---
+
+## 멀티프로세스와 멀티스레드의 장단점은?
+- **카테고리**: CS
+
+### 답변
+자원 독립성과 통신 효율 사이의 트레이드오프입니다.
+
+- **멀티프로세스**: 각 프로세스가 독립된 메모리를 가져 하나가 죽어도 다른 프로세스에 영향이 없습니다. 대신 프로세스 간 통신(IPC)이 느리고 메모리 사용량이 큽니다.
+- **멀티스레드**: 메모리를 공유해 통신이 빠르고 자원 효율적입니다. 대신 하나의 스레드 오류가 전체 프로세스를 죽일 수 있고, 동기화 문제(경쟁 조건, 데드락)가 발생할 수 있습니다.
+- **예시**: Chrome은 탭마다 프로세스를 분리(멀티프로세스)해 한 탭이 죽어도 다른 탭에 영향이 없습니다.
+
+---
+
+## 자바스크립트는 싱글 스레드인데 어떻게 비동기를 처리하나요?
+- **카테고리**: CS
+
+### 답변
+자바스크립트 엔진 자체는 싱글 스레드지만, **브라우저(또는 Node.js)의 런타임 환경**이 비동기 작업을 대신 처리합니다.
+
+- **Web API**: `setTimeout`, `fetch`, DOM 이벤트 등은 브라우저의 별도 스레드에서 처리됩니다.
+- **콜백 큐**: 작업이 완료되면 콜백을 태스크 큐에 넣습니다.
+- **이벤트 루프**: 콜 스택이 비면 큐에서 콜백을 꺼내 실행합니다.
+- **핵심**: 자바스크립트 코드 실행은 싱글 스레드지만, I/O 작업은 런타임 환경이 멀티 스레드로 처리하고, 이벤트 루프가 이를 연결합니다.
+
+---
+
+## 이벤트 위임(Event Delegation)은 어떤 원리를 이용하나요?
+- **카테고리**: JavaScript
+
+### 답변
+**이벤트 버블링**을 이용해, 개별 자식 요소 대신 공통 부모에 하나의 이벤트 리스너만 등록하는 패턴입니다.
+
+- **원리**: 자식에서 발생한 이벤트가 버블링으로 부모까지 올라오므로, 부모에서 `event.target`을 확인해 처리합니다.
+- **장점**: 리스너 수가 줄어 메모리를 절약하고, 동적으로 추가되는 요소도 별도 등록 없이 처리됩니다.
+
+```javascript
+document.querySelector('ul').addEventListener('click', (e) => {
+  if (e.target.tagName === 'LI') {
+    console.log(e.target.textContent);
+  }
+});
+```
+
+---
+
+## stopPropagation과 preventDefault의 차이는?
+- **카테고리**: JavaScript
+
+### 답변
+둘 다 이벤트 동작을 제어하지만, **전파를 막는지, 기본 동작을 막는지**가 다릅니다.
+
+- **stopPropagation**: 이벤트가 부모로 전파(버블링/캡처링)되는 것을 **중단**합니다. 현재 요소의 핸들러는 실행되고, 상위 요소의 핸들러는 실행되지 않습니다.
+- **preventDefault**: 브라우저의 **기본 동작을 취소**합니다. (예: `<a>`의 페이지 이동, `<form>`의 제출)
+- **독립적**: 둘은 별개이므로 함께 사용할 수도 있습니다.
+
+```javascript
+link.addEventListener('click', (e) => {
+  e.preventDefault();    // 페이지 이동 막기
+  e.stopPropagation();   // 버블링 막기
+});
+```
+
+---
+
+## 여러 비동기 작업을 병렬로 처리하려면 어떻게 하나요? (Promise.all)
+- **카테고리**: JavaScript
+
+### 답변
+`Promise.all`을 사용하면 여러 Promise를 **동시에 실행**하고, 모두 완료될 때까지 기다립니다.
+
+- **동작**: 배열로 전달한 모든 Promise가 이행되면, 결과를 배열로 반환합니다.
+- **실패 시**: 하나라도 거부되면 즉시 전체가 거부됩니다.
+- **효과**: 순차 실행 대비 전체 소요 시간이 가장 오래 걸리는 작업 하나의 시간으로 줄어듭니다.
+
+```javascript
+const [user, posts] = await Promise.all([
+  fetch('/api/user').then(r => r.json()),
+  fetch('/api/posts').then(r => r.json()),
+]);
+```
+
+---
+
+## Promise.all과 Promise.allSettled의 차이는?
+- **카테고리**: JavaScript
+
+### 답변
+**실패 처리 방식**이 다릅니다.
+
+- **Promise.all**: 하나라도 거부되면 **즉시 전체가 거부**됩니다. 모든 작업이 성공해야 할 때 사용합니다.
+- **Promise.allSettled**: 모든 Promise가 **이행이든 거부든 끝날 때까지 기다리고**, 각각의 결과(`{status, value/reason}`)를 배열로 반환합니다.
+- **선택 기준**: 부분 실패를 허용하고 각 결과를 개별 처리하고 싶으면 `allSettled`, 전부 성공해야 의미 있는 작업이면 `all`을 사용합니다.
+
+```javascript
+const results = await Promise.allSettled([fetchA(), fetchB()]);
+results.forEach(r => {
+  if (r.status === 'fulfilled') console.log(r.value);
+  else console.log(r.reason);
+});
+```
+
+---
+
+## justify-content와 align-items의 차이는?
+- **카테고리**: CSS
+
+### 답변
+Flexbox에서 **주축(main axis)**과 **교차축(cross axis)** 중 어느 방향으로 정렬하는지가 다릅니다.
+
+- **justify-content**: **주축** 방향 정렬. `flex-direction: row`면 가로, `column`이면 세로.
+- **align-items**: **교차축** 방향 정렬. `flex-direction: row`면 세로, `column`이면 가로.
+- **핵심**: `flex-direction`에 따라 축이 바뀌므로, "가로/세로"가 아니라 "주축/교차축"으로 이해해야 합니다.
+
+---
+
+## Grid의 fr 단위는 무엇인가요?
+- **카테고리**: CSS
+
+### 답변
+`fr`(fraction)은 Grid 컨테이너의 **남은 공간을 비율로 나누는** 단위입니다.
+
+- **동작**: 고정 크기(`px`, `rem`)나 콘텐츠 크기를 먼저 할당한 뒤, 남은 공간을 `fr` 비율로 분배합니다.
+- **예시**: `grid-template-columns: 200px 1fr 2fr`이면 첫 열은 200px 고정, 나머지 공간을 1:2로 나눕니다.
+- **장점**: 반응형 레이아웃을 `%` 계산 없이 직관적으로 만들 수 있습니다.
+
+```css
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr; /* 3등분 */
+}
+```
+
+---
+
+## absolute 요소의 기준이 되는 조상은 어떻게 정해지나요?
+- **카테고리**: CSS
+
+### 답변
+DOM 트리를 올라가며 `position`이 `static`이 **아닌** 가장 가까운 조상을 기준으로 삼습니다.
+
+- **탐색 순서**: 부모 → 조부모 → … 순으로 올라가며 `relative`, `absolute`, `fixed`, `sticky` 중 하나가 설정된 요소를 찾습니다.
+- **없는 경우**: 해당 조상이 없으면 **초기 컨테이닝 블록(보통 `<html>`)**을 기준으로 합니다.
+- **실무 패턴**: `absolute`를 쓸 때 기준이 될 부모에 `position: relative`를 지정하는 것이 일반적입니다.
+
+---
+
+## z-index가 적용되려면 어떤 조건이 필요한가요?
+- **카테고리**: CSS
+
+### 답변
+`z-index`는 `position`이 `static`이 아닌 요소에서만 작동합니다.
+
+- **조건**: `position: relative | absolute | fixed | sticky` 또는 `flex`·`grid` 자식 요소여야 합니다.
+- **쌓임 맥락(Stacking Context)**: `z-index`를 지정하면 새로운 쌓임 맥락이 생기고, 그 안의 자식은 부모 맥락 안에서만 겹침 순서가 결정됩니다.
+- **주의**: 서로 다른 쌓임 맥락에 속한 요소는 `z-index` 값과 무관하게 부모의 순서를 따릅니다.
+
+---
+
+## 의존성 배열에 넣어야 할 값을 빠뜨리면 어떤 문제가 생기나요?
+- **카테고리**: React
+
+### 답변
+이펙트 내부에서 참조하는 값이 바뀌어도 이펙트가 재실행되지 않아, **오래된 값(stale closure)**을 사용하게 됩니다.
+
+- **증상**: 상태가 업데이트됐는데 이펙트는 이전 값을 보고 동작합니다.
+- **예시**: 타이머에서 `count`를 의존성에 넣지 않으면 항상 초기값만 참조합니다.
+- **해결**: ESLint의 `exhaustive-deps` 규칙을 활성화해 빠뜨린 의존성을 자동 감지합니다.
+
+---
+
+## useEffect와 useLayoutEffect의 실행 시점 차이는?
+- **카테고리**: React
+
+### 답변
+둘 다 사이드 이펙트를 처리하지만, **브라우저 페인트 전후** 실행 시점이 다릅니다.
+
+- **useEffect**: 렌더링 결과가 **화면에 그려진 후(paint 이후)** 비동기로 실행됩니다.
+- **useLayoutEffect**: DOM 변경 후 **화면에 그려지기 전(paint 이전)** 동기로 실행됩니다.
+- **사용 구분**: DOM 측정(크기·위치)이나 시각적 깜빡임을 방지해야 할 때만 `useLayoutEffect`를 쓰고, 나머지는 `useEffect`를 사용합니다.
+
+---
+
+## Prop Drilling이란 무엇이고 왜 문제가 되나요?
+- **카테고리**: React
+
+### 답변
+부모에서 깊은 자식까지 데이터를 전달하기 위해 **중간 컴포넌트들이 사용하지도 않는 props를 계속 넘겨받는** 현상입니다.
+
+- **문제**: 중간 컴포넌트가 불필요한 props에 의존하게 되어 유지보수가 어렵고, props 이름 변경 시 경로 전체를 수정해야 합니다.
+- **해결 방법**: Context API, 상태 관리 라이브러리(Zustand, Redux), 또는 컴포넌트 합성(children 패턴)으로 우회합니다.
+
+---
+
+## Context를 남용하면 어떤 성능 문제가 생길 수 있나요?
+- **카테고리**: React
+
+### 답변
+Context의 값이 바뀌면 해당 Context를 구독하는 **모든 컴포넌트가 재렌더링**됩니다.
+
+- **원인**: Context는 값 변경 시 부분 구독이 불가능해, 값의 일부만 사용하는 컴포넌트도 전부 다시 렌더링됩니다.
+- **완화 방법**: Context를 용도별로 잘게 분리하거나, 자주 바뀌는 값은 별도 상태 관리 도구를 사용합니다. `useMemo`로 Provider의 value를 메모이제이션하는 것도 도움됩니다.
+
+---
+
+## 언제 interface를 쓰고 언제 type을 쓰는 게 좋을까요?
+- **카테고리**: TypeScript
+
+### 답변
+명확한 정답보다는 **팀 컨벤션**이 중요하지만, 일반적인 가이드라인이 있습니다.
+
+- **interface**: 객체 형태를 정의하고 확장(상속)이 필요할 때. 선언 병합이 필요한 라이브러리 타입 정의에 유리합니다.
+- **type**: 유니온 타입, 튜플, 매핑 타입 등 복잡한 타입 표현이 필요할 때. `type Status = 'active' | 'inactive'`처럼 객체가 아닌 타입에도 사용합니다.
+- **실무**: 대부분의 경우 둘 다 사용 가능하므로, 팀에서 하나를 기본으로 정하고 일관되게 씁니다.
+
+---
+
+## 인터섹션 타입(&)과 인터페이스 상속(extends)의 차이는?
+- **카테고리**: TypeScript
+
+### 답변
+둘 다 타입을 합치지만, **충돌 처리 방식과 표현 범위**가 다릅니다.
+
+- **extends**: 상속 관계를 명시하며, 같은 프로퍼티의 타입이 호환되지 않으면 **컴파일 에러**가 발생합니다.
+- **&(인터섹션)**: 두 타입을 합집합하며, 같은 프로퍼티가 충돌하면 `never`로 좁혀집니다(에러 대신 조용히 실패).
+- **사용 구분**: 객체 확장은 `extends`가 에러를 명확히 잡아주고, 유니온과 조합이 필요하면 `&`를 사용합니다.
+
+```typescript
+interface A { x: number }
+interface B extends A { y: string } // 명시적 상속
+
+type C = A & { y: string } // 인터섹션
+```
+
+---
+
+## JSON.parse(JSON.stringify()) 방식의 한계는?
+- **카테고리**: JavaScript
+
+### 답변
+JSON 직렬화가 지원하지 않는 값들은 **손실되거나 에러**가 발생합니다.
+
+- **손실되는 값**: `undefined`, `function`, `Symbol`은 프로퍼티째 사라집니다.
+- **변환되는 값**: `Date`는 문자열로, `NaN`·`Infinity`는 `null`로 바뀝니다.
+- **에러**: **순환 참조**가 있으면 `TypeError`가 발생합니다.
+- **대안**: `structuredClone()`은 `Date`, `Map`, `Set`, 순환 참조를 지원합니다.
+
+---
+
+## structuredClone이 복사하지 못하는 값은?
+- **카테고리**: JavaScript
+
+### 답변
+DOM 노드, 함수, 그리고 일부 특수 객체는 복사할 수 없습니다.
+
+- **불가능**: `Function`, `DOM 요소`, `Error` 객체(일부 환경), `Symbol`
+- **가능**: `Date`, `Map`, `Set`, `ArrayBuffer`, `RegExp`, 순환 참조 — `JSON.parse(JSON.stringify())`보다 훨씬 넓은 범위를 지원합니다.
+- **원리**: HTML 명세의 [structured clone algorithm](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm)을 따르며, 전송 가능한 객체(transferable)만 복사합니다.
+
+---
+
+## CORS 에러는 프론트엔드와 백엔드 중 어디서 해결해야 하나요?
+- **카테고리**: Network
+
+### 답변
+**백엔드(서버)에서 해결**해야 합니다.
+
+- **이유**: CORS는 서버 응답의 `Access-Control-Allow-Origin` 헤더로 허용 여부를 결정합니다. 브라우저는 이 헤더를 확인해 차단할 뿐, 프론트에서 우회할 수 없습니다.
+- **서버 설정**: 허용할 출처, 메서드, 헤더를 명시합니다.
+- **개발 환경**: 프론트 개발 서버의 프록시 설정(`proxy` 또는 `vite.config`의 `server.proxy`)으로 CORS를 우회할 수 있지만, 이는 개발용일 뿐입니다.
+
+---
+
+## Preflight 요청이 발생하는 조건은?
+- **카테고리**: Network
+
+### 답변
+**단순 요청(Simple Request)**이 아닌 경우 브라우저가 자동으로 `OPTIONS` 메서드의 Preflight 요청을 보냅니다.
+
+- **단순 요청 조건**: `GET`·`POST`·`HEAD` 메서드이고, `Content-Type`이 `application/x-www-form-urlencoded`, `multipart/form-data`, `text/plain` 중 하나이며, 커스텀 헤더가 없어야 합니다.
+- **Preflight 발생**: `PUT`·`DELETE` 메서드, `Content-Type: application/json`, `Authorization` 등 커스텀 헤더 사용 시.
+- **캐싱**: 서버가 `Access-Control-Max-Age`를 설정하면 Preflight 결과를 캐싱해 반복 요청을 줄입니다.
+
+---
+
+## `<div onClick>` 대신 `<button>`을 써야 하는 이유는?
+- **카테고리**: HTML
+
+### 답변
+`<button>`은 **기본적으로 접근성과 상호작용 기능을 내장**하고 있기 때문입니다.
+
+- **키보드 접근**: `<button>`은 Tab으로 포커스되고 Enter·Space로 클릭됩니다. `<div>`는 `tabindex`, `role="button"`, 키보드 이벤트를 직접 구현해야 합니다.
+- **스크린 리더**: `<button>`은 자동으로 "버튼"으로 인식됩니다.
+- **원칙**: 클릭 가능한 요소는 `<button>`이나 `<a>`를 우선 사용하고, 시맨틱 태그로 불가능한 경우에만 ARIA로 보완합니다.
+
+---
+
+## 스크린 리더에서만 읽히게 하려면 어떻게 처리하나요? (sr-only)
+- **카테고리**: HTML
+
+### 답변
+시각적으로는 숨기되, **스크린 리더는 읽을 수 있는** CSS 클래스를 사용합니다.
+
+- **sr-only 패턴**: `display: none`이나 `visibility: hidden`은 스크린 리더도 무시하므로 사용할 수 없습니다.
+- **구현**: 요소를 1px 크기로 줄이고 화면 밖으로 보내되, DOM에는 존재하게 합니다.
+
+```css
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+```
+
+- **사용 예**: 아이콘 버튼에 `<span class="sr-only">닫기</span>`를 추가해 의미를 전달합니다.
