@@ -263,53 +263,78 @@ async function matchFollowups(followups, candidates) {
 
   if (!AI_TOKEN) return exactMatch();
 
-  // AI 의미 매칭 (텍스트가 완전히 같지 않아도 의미로 연결)
-  try {
-    const candList = candidates.map((c, i) => `${i}: ${c.title}`).join('\n');
-    const foList = followups.map((f, i) => `${i}: ${f.text}`).join('\n');
+  // 1단계: 정확 매칭으로 먼저 잡을 수 있는 것 처리
+  exactMatch();
 
-    const res = await fetch(GH_MODELS_URL, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${AI_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: GH_MODEL,
-        temperature: 0,
-        response_format: { type: 'json_object' },
-        messages: [
-          {
-            role: 'system',
-            content:
-              '너는 질문 매칭 도우미야. "꼬리질문"이 "후보 답변 질문" 중 실질적으로 같은 것을 묻는 항목과 매칭되는지 판단해. 의미가 실질적으로 동일할 때만 매칭하고, 애매하면 매칭하지 마(candidate=null). 반드시 {"matches":[{"followup":번호,"candidate":번호|null}]} 형식의 JSON만 출력.',
-          },
-          {
-            role: 'user',
-            content: `[꼬리질문]\n${foList}\n\n[후보 답변 질문]\n${candList}`,
-          },
-        ],
-      }),
-    });
-    if (!res.ok) throw new Error(`${res.status}: ${await res.text()}`);
+  // 2단계: 정확 매칭에서 빠진 것만 AI 의미 매칭
+  const unmatched = followups.filter((f) => !map.has(f.text));
+  if (unmatched.length === 0) return map;
 
-    const data = await res.json();
-    const parsed = JSON.parse(data.choices[0].message.content);
-    for (const m of parsed.matches || []) {
-      if (m.candidate == null) continue;
-      const f = followups[m.followup];
-      const c = candidates[m.candidate];
-      if (f && c) {
-        map.set(f.text, c);
-        console.log(`  ✓ 꼬리질문 매칭: "${f.text}" → "${c.title}"`);
+  // 꼬리질문을 10개씩 배치로 나눠서 AI 호출 (후보 수가 많을 때 번호 혼동 방지)
+  const BATCH_SIZE = 10;
+  for (let i = 0; i < unmatched.length; i += BATCH_SIZE) {
+    const batch = unmatched.slice(i, i + BATCH_SIZE);
+    try {
+      const candList = candidates.map((c, ci) => `${ci}: ${c.title}`).join('\n');
+      const foList = batch.map((f, fi) => `${fi}: ${f.text}`).join('\n');
+
+      const res = await fetch(GH_MODELS_URL, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${AI_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: GH_MODEL,
+          temperature: 0,
+          response_format: { type: 'json_object' },
+          messages: [
+            {
+              role: 'system',
+              content:
+                '너는 프론트엔드 기술면접 질문 매칭 도우미야.\n' +
+                '"꼬리질문"과 "후보 답변 질문"이 **같은 주제에 대해 실질적으로 같은 것을 묻는 경우**에만 매칭해.\n' +
+                '매칭 기준:\n' +
+                '- 표현이 달라도 묻는 핵심이 같으면 매칭 (예: "TDZ는 무엇인가요?" ↔ "TDZ(Temporal Dead Zone)란 무엇인가요?")\n' +
+                '- 주제나 카테고리가 다르면 절대 매칭하지 마 (예: CSS 질문 ↔ JavaScript 질문)\n' +
+                '- 애매하면 매칭하지 마 (candidate=null)\n' +
+                '반드시 {"matches":[{"followup":번호,"candidate":번호|null}]} 형식의 JSON만 출력.',
+            },
+            {
+              role: 'user',
+              content: `[꼬리질문]\n${foList}\n\n[후보 답변 질문]\n${candList}`,
+            },
+          ],
+        }),
+      });
+      if (!res.ok) throw new Error(`${res.status}: ${await res.text()}`);
+
+      const data = await res.json();
+      const parsed = JSON.parse(data.choices[0].message.content);
+      for (const m of parsed.matches || []) {
+        if (m.candidate == null) continue;
+        const f = batch[m.followup];
+        const c = candidates[m.candidate];
+        if (!f || !c) continue;
+
+        // 검증: 정규화된 키가 최소 2개 이상의 단어를 공유하는지 확인
+        const fWords = new Set(normalize(f.text).replace(/[^가-힣a-z0-9]/g, ' ').split(/\s+/).filter(w => w.length > 1));
+        const cWords = new Set(normalize(c.title).replace(/[^가-힣a-z0-9]/g, ' ').split(/\s+/).filter(w => w.length > 1));
+        let shared = 0;
+        for (const w of fWords) if (cWords.has(w)) shared++;
+
+        if (shared >= 2) {
+          map.set(f.text, c);
+          console.log(`  ✓ 꼬리질문 매칭: "${f.text}" → "${c.title}"`);
+        } else {
+          console.log(`  ✗ 매칭 거부 (공유 단어 부족): "${f.text}" → "${c.title}"`);
+        }
       }
+    } catch (e) {
+      console.warn(`  ⚠ 꼬리질문 AI 매칭 실패 (배치 ${i / BATCH_SIZE + 1}) — ${e.message}`);
     }
-    return map;
-  } catch (e) {
-    console.warn(`  ⚠ 꼬리질문 AI 매칭 실패, 정확 매칭으로 대체 — ${e.message}`);
-    map.clear();
-    return exactMatch();
   }
+  return map;
 }
 
 // 본문의 꼬리질문 불릿 중 매칭된 항목을 "펼치면 답변 나오는 중첩 토글"로 변환
