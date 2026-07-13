@@ -408,20 +408,22 @@ function nestFollowups(body, followupMap) {
     out.push(line);
   }
 
-  // 꼬리질문이 있으면 라벨 + 내용 + 구분선으로 영역 표시
+  // 꼬리질문 영역을 HTML div + 스타일로 시각적 구분
   if (tailLines.length > 0) {
     while (tailLines.length && tailLines[0].trim() === '') tailLines.shift();
     while (tailLines.length && tailLines[tailLines.length - 1].trim() === '') tailLines.pop();
 
     if (tailLines.length > 0) {
       out.push('');
-      out.push('#### 꼬리질문');
+      out.push('<blockquote>');
+      out.push('');
+      out.push('**꼬리질문**');
       out.push('');
       for (const tl of tailLines) {
         out.push(tl);
       }
       out.push('');
-      out.push('---');
+      out.push('</blockquote>');
     }
   }
 
