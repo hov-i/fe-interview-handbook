@@ -235,6 +235,14 @@ function stripBullet(line) {
   return line.replace(/^-\s+/, '').trim();
 }
 
+// <summary> 안에서 HTML 태그가 렌더링되지 않도록 이스케이프
+function escapeHtml(text) {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
 // ── 꼬리질문 ↔ 답변 의미 매칭 (AI 또는 정확 매칭) ──────────
 // followups: [{ text }], candidates: [{ title, body, key }]
 // 반환: Map<followupText, candidate>
@@ -306,7 +314,6 @@ async function matchFollowups(followups, candidates) {
 
 // 본문의 꼬리질문 불릿 중 매칭된 항목을 "펼치면 답변 나오는 중첩 토글"로 변환
 function nestFollowups(body, followupMap) {
-  if (followupMap.size === 0) return body;
   const lines = body.split('\n');
   const out = [];
   let inTail = false;
@@ -323,13 +330,16 @@ function nestFollowups(body, followupMap) {
       if (c) {
         out.push('');
         out.push('<details>');
-        out.push(`<summary>${text}</summary>`);
+        out.push(`<summary>${escapeHtml(text)}</summary>`);
         out.push('');
         out.push(c.body);
         out.push('');
         out.push('</details>');
         continue;
       }
+      // 매칭 안 된 꼬리질문도 HTML 태그 이스케이프
+      out.push(`- ${escapeHtml(text)}`);
+      continue;
     }
     out.push(line);
   }
@@ -416,7 +426,7 @@ async function main() {
     for (const q of sorted) {
       uniqueCount++;
       tocLines.push(`<details>`);
-      tocLines.push(`<summary>${q.title}</summary>`);
+      tocLines.push(`<summary>${escapeHtml(q.title)}</summary>`);
       tocLines.push('');
       tocLines.push(q.body);
       tocLines.push('');
