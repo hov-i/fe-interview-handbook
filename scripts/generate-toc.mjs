@@ -408,21 +408,20 @@ function nestFollowups(body, followupMap) {
     out.push(line);
   }
 
-  // 꼬리질문이 있으면 별도 토글로 감싸서 독립 질문과 구분
+  // 꼬리질문이 있으면 라벨 + 내용 + 구분선으로 영역 표시
   if (tailLines.length > 0) {
     while (tailLines.length && tailLines[0].trim() === '') tailLines.shift();
     while (tailLines.length && tailLines[tailLines.length - 1].trim() === '') tailLines.pop();
 
     if (tailLines.length > 0) {
       out.push('');
-      out.push('<details>');
-      out.push('<summary><b>꼬리질문</b></summary>');
+      out.push('#### 꼬리질문');
       out.push('');
       for (const tl of tailLines) {
         out.push(tl);
       }
       out.push('');
-      out.push('</details>');
+      out.push('---');
     }
   }
 
