@@ -430,6 +430,79 @@ function nestFollowups(body, followupMap) {
   return out.join('\n');
 }
 
+// ── 중요도 분류 (AI) ──────────────────────────────────────
+// 카테고리별 질문 목록을 받아 중요도(⭐~⭐⭐⭐)를 반환
+const IMPORTANCE_SYSTEM = `너는 프론트엔드 신입/주니어 기술면접 중요도 분류기야.
+질문 목록을 받으면 각 질문의 면접 빈출도를 3단계로 분류해.
+
+기준:
+- 3: 신입 면접에서 거의 반드시 나오는 단골 질문
+- 2: 자주 나오고 알면 플러스인 질문
+- 1: 심화 질문이거나 가끔 나오는 질문
+
+"기타" 카테고리 질문은 분류하지 마 (0으로 표시).
+
+반드시 {"ratings":[{"index":번호,"score":1|2|3}]} 형식의 JSON만 출력.`;
+
+async function rateImportance(questions) {
+  const ratings = new Map(); // title → score (1~3)
+  if (!AI_TOKEN || questions.length === 0) return ratings;
+
+  // 기타 카테고리 제외
+  const targets = questions.filter((q) => q.category !== '기타');
+  if (targets.length === 0) return ratings;
+
+  // 카테고리별로 배치
+  const byCat = new Map();
+  for (const q of targets) {
+    if (!byCat.has(q.category)) byCat.set(q.category, []);
+    byCat.get(q.category).push(q);
+  }
+
+  for (const [cat, items] of byCat) {
+    const list = items.map((q, i) => `${i}: [${cat}] ${q.title}`).join('\n');
+    try {
+      const res = await fetch(GH_MODELS_URL, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${AI_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'openai/gpt-4o',
+          temperature: 0,
+          response_format: { type: 'json_object' },
+          messages: [
+            { role: 'system', content: IMPORTANCE_SYSTEM },
+            { role: 'user', content: `[${cat} 질문]\n${list}` },
+          ],
+        }),
+      });
+      if (!res.ok) throw new Error(`${res.status}: ${await res.text()}`);
+
+      const data = await res.json();
+      const parsed = JSON.parse(data.choices[0].message.content);
+      for (const r of parsed.ratings || []) {
+        const q = items[r.index];
+        if (q && r.score >= 1 && r.score <= 3) {
+          ratings.set(q.title, r.score);
+        }
+      }
+      console.log(`  ✓ 중요도 분류: ${cat} (${items.length}개)`);
+    } catch (e) {
+      console.warn(`  ⚠ 중요도 분류 실패 (${cat}) — ${e.message}`);
+    }
+  }
+  return ratings;
+}
+
+function importanceStars(score) {
+  if (score === 3) return '⭐⭐⭐ ';
+  if (score === 2) return '⭐⭐ ';
+  if (score === 1) return '⭐ ';
+  return '';
+}
+
 // ── 메인 로직 ──────────────────────────────────────────────
 async function main() {
   const files = collectFiles(WEEKS_DIR);
@@ -479,6 +552,10 @@ async function main() {
     byCategory.get(cat).push(q);
   }
 
+  // ── 중요도 분류 ──────────────────────────────────────────
+  // 독립 질문들의 중요도를 AI로 분류
+  const importanceMap = await rateImportance(allQuestions);
+
   // ── 중복 묶기 + 정렬 + 토글 생성 ────────────────────────
   const tocLines = [];
   let uniqueCount = 0;
@@ -521,8 +598,9 @@ async function main() {
 
     for (const q of sorted) {
       uniqueCount++;
+      const stars = importanceStars(importanceMap.get(q.title) || 0);
       tocLines.push(`<details>`);
-      tocLines.push(`<summary>${escapeHtml(q.title)}</summary>`);
+      tocLines.push(`<summary>${stars}${escapeHtml(q.title)}</summary>`);
       tocLines.push('');
       tocLines.push(q.body);
       tocLines.push('');
