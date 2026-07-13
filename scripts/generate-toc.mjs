@@ -310,12 +310,16 @@ async function matchFollowups(followups, candidates) {
               role: 'system',
               content:
                 '너는 프론트엔드 기술면접 질문 매칭 도우미야.\n' +
-                '"꼬리질문"과 "후보 답변 질문"이 **같은 주제에 대해 실질적으로 같은 것을 묻는 경우**에만 매칭해.\n' +
-                '매칭 기준:\n' +
-                '- 표현이 달라도 묻는 핵심이 같으면 매칭 (예: "TDZ는 무엇인가요?" ↔ "TDZ(Temporal Dead Zone)란 무엇인가요?")\n' +
-                '- 주제나 카테고리가 다르면 절대 매칭하지 마 (예: CSS 질문 ↔ JavaScript 질문)\n' +
+                '"꼬리질문"과 "후보 답변 질문"이 **실질적으로 같은 것을 묻는 경우**에만 매칭해.\n' +
+                '\n매칭해야 하는 경우:\n' +
+                '- 표현만 다르고 묻는 핵심이 같음 (예: "TDZ는 무엇인가요?" ↔ "TDZ(Temporal Dead Zone)란 무엇인가요?")\n' +
+                '- 축약형과 전체형 (예: "props drilling 문제를 어떻게 해결할 수 있나요?" ↔ "props drilling 문제를 해결하는 방법")\n' +
+                '\n매칭하면 안 되는 경우:\n' +
+                '- 주제가 다름 (예: CSS 질문 ↔ JavaScript 질문)\n' +
+                '- 같은 키워드를 포함하지만 묻는 것이 다름 (예: "클로저란?" ↔ "클로저가 메모리 누수를 일으킬 수 있나요?")\n' +
+                '- 꼬리질문이 후보보다 더 구체적인 세부 질문임 (예: "var와 let에서 클로저 동작이 다른 이유는?" ↔ "클로저란?")\n' +
                 '- 애매하면 매칭하지 마 (candidate=null)\n' +
-                '반드시 {"matches":[{"followup":번호,"candidate":번호|null}]} 형식의 JSON만 출력.',
+                '\n반드시 {"matches":[{"followup":번호,"candidate":번호|null}]} 형식의 JSON만 출력.',
             },
             {
               role: 'user',
@@ -334,18 +338,8 @@ async function matchFollowups(followups, candidates) {
         const c = candidates[m.candidate];
         if (!f || !c) continue;
 
-        // 검증: 정규화된 키가 최소 2개 이상의 단어를 공유하는지 확인
-        const fWords = new Set(normalize(f.text).replace(/[^가-힣a-z0-9]/g, ' ').split(/\s+/).filter(w => w.length > 1));
-        const cWords = new Set(normalize(c.title).replace(/[^가-힣a-z0-9]/g, ' ').split(/\s+/).filter(w => w.length > 1));
-        let shared = 0;
-        for (const w of fWords) if (cWords.has(w)) shared++;
-
-        if (shared >= 2) {
-          map.set(f.text, c);
-          console.log(`  ✓ 꼬리질문 매칭: "${f.text}" → "${c.title}"`);
-        } else {
-          console.log(`  ✗ 매칭 거부 (공유 단어 부족): "${f.text}" → "${c.title}"`);
-        }
+        map.set(f.text, c);
+        console.log(`  ✓ 꼬리질문 매칭: "${f.text}" → "${c.title}"`);
       }
     } catch (e) {
       console.warn(`  ⚠ 꼬리질문 AI 매칭 실패 (배치 ${i / BATCH_SIZE + 1}) — ${e.message}`);
