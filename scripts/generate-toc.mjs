@@ -39,6 +39,21 @@ function normalize(title) {
     .replace(/[\s?!.,()'"`\-]/g, '');
 }
 
+// 가장 긴 공통 부분문자열 길이 / 짧은 쪽 길이 (0~1)
+function textSimilarity(a, b) {
+  const short = a.length <= b.length ? a : b;
+  const long = a.length > b.length ? a : b;
+  if (short.length === 0) return 0;
+  let maxLen = 0;
+  for (let i = 0; i < short.length; i++) {
+    for (let j = i + maxLen + 1; j <= short.length; j++) {
+      if (long.includes(short.slice(i, j))) maxLen = j - i;
+      else break;
+    }
+  }
+  return maxLen / short.length;
+}
+
 // 두 정규화된 키가 "같은 질문"인지 판별 (한쪽이 다른 쪽을 포함하면 매칭)
 function isSameQuestion(keyA, keyB) {
   if (keyA === keyB) return true;
@@ -338,8 +353,17 @@ async function matchFollowups(followups, candidates) {
         const c = candidates[m.candidate];
         if (!f || !c) continue;
 
+        // 유사도 검증: 가장 긴 공통 부분문자열 기반
+        const fKey = normalize(f.text);
+        const cKey = normalize(c.title);
+        const sim = textSimilarity(fKey, cKey);
+        if (sim < 0.5) {
+          console.log(`  ✗ 매칭 거부 (유사도 ${sim.toFixed(2)}): "${f.text}" → "${c.title}"`);
+          continue;
+        }
+
         map.set(f.text, c);
-        console.log(`  ✓ 꼬리질문 매칭: "${f.text}" → "${c.title}"`);
+        console.log(`  ✓ 꼬리질문 매칭 (유사도 ${sim.toFixed(2)}): "${f.text}" → "${c.title}"`);
       }
     } catch (e) {
       console.warn(`  ⚠ 꼬리질문 AI 매칭 실패 (배치 ${i / BATCH_SIZE + 1}) — ${e.message}`);
