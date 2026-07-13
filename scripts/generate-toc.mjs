@@ -598,7 +598,9 @@ async function main() {
       group.sort((a, b) => a.title.localeCompare(b.title, 'ko'));
     }
 
-    tocLines.push(`### ${cat}`);
+    tocLines.push('---');
+    tocLines.push('');
+    tocLines.push(`## ${cat}`);
     tocLines.push('');
 
     const importanceLabels = {
