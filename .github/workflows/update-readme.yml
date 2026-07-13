@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'weeks/**/*.md'
+  workflow_dispatch:
 
 permissions:
   contents: write
