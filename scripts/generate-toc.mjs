@@ -588,24 +588,74 @@ async function main() {
       });
     }
 
-    // 한글 가나다순 정렬
-    const sorted = merged.sort((a, b) =>
-      a.title.localeCompare(b.title, 'ko')
-    );
+    // 중요도별 그룹핑 + 가나다순 정렬
+    const importanceGroups = { 3: [], 2: [], 1: [], 0: [] };
+    for (const q of merged) {
+      const score = importanceMap.get(q.title) || 0;
+      importanceGroups[score].push(q);
+    }
+    for (const group of Object.values(importanceGroups)) {
+      group.sort((a, b) => a.title.localeCompare(b.title, 'ko'));
+    }
 
     tocLines.push(`### ${cat}`);
     tocLines.push('');
 
-    for (const q of sorted) {
-      uniqueCount++;
-      const stars = importanceStars(importanceMap.get(q.title) || 0);
-      tocLines.push(`<details>`);
-      tocLines.push(`<summary>${stars}${escapeHtml(q.title)}</summary>`);
-      tocLines.push('');
-      tocLines.push(q.body);
-      tocLines.push('');
-      tocLines.push(`</details>`);
-      tocLines.push('');
+    const importanceLabels = {
+      3: '⭐⭐⭐ 필수',
+      2: '⭐⭐ 중요',
+      1: '⭐ 심화',
+    };
+
+    // 기타 카테고리이거나 AI 토큰 없어서 분류 안 된 경우 → 그냥 가나다순
+    const hasRatings = cat !== '기타' && (importanceGroups[3].length + importanceGroups[2].length + importanceGroups[1].length) > 0;
+
+    if (hasRatings) {
+      for (const score of [3, 2, 1]) {
+        const group = importanceGroups[score];
+        if (group.length === 0) continue;
+
+        tocLines.push(`#### ${importanceLabels[score]}`);
+        tocLines.push('');
+
+        for (const q of group) {
+          uniqueCount++;
+          tocLines.push(`<details>`);
+          tocLines.push(`<summary>${escapeHtml(q.title)}</summary>`);
+          tocLines.push('');
+          tocLines.push(q.body);
+          tocLines.push('');
+          tocLines.push(`</details>`);
+          tocLines.push('');
+        }
+      }
+      // 분류 안 된 질문(score 0)도 출력
+      if (importanceGroups[0].length > 0) {
+        for (const q of importanceGroups[0]) {
+          uniqueCount++;
+          tocLines.push(`<details>`);
+          tocLines.push(`<summary>${escapeHtml(q.title)}</summary>`);
+          tocLines.push('');
+          tocLines.push(q.body);
+          tocLines.push('');
+          tocLines.push(`</details>`);
+          tocLines.push('');
+        }
+      }
+    } else {
+      // 분류 없이 가나다순
+      const all = [...importanceGroups[3], ...importanceGroups[2], ...importanceGroups[1], ...importanceGroups[0]];
+      all.sort((a, b) => a.title.localeCompare(b.title, 'ko'));
+      for (const q of all) {
+        uniqueCount++;
+        tocLines.push(`<details>`);
+        tocLines.push(`<summary>${escapeHtml(q.title)}</summary>`);
+        tocLines.push('');
+        tocLines.push(q.body);
+        tocLines.push('');
+        tocLines.push(`</details>`);
+        tocLines.push('');
+      }
     }
   }
 
