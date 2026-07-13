@@ -607,6 +607,12 @@ async function main() {
       1: '⭐ 심화',
     };
 
+    const importanceDescs = {
+      3: '신입 면접에서 거의 반드시 나오는 단골 질문입니다. 정확하게 답변할 수 있어야 합니다.',
+      2: '자주 출제되며, 알고 있으면 플러스가 되는 질문입니다.',
+      1: '심화 질문이거나 특정 회사에서 깊게 물어보는 질문입니다. 알면 차별화 포인트가 됩니다.',
+    };
+
     // 기타 카테고리이거나 AI 토큰 없어서 분류 안 된 경우 → 그냥 가나다순
     const hasRatings = cat !== '기타' && (importanceGroups[3].length + importanceGroups[2].length + importanceGroups[1].length) > 0;
 
@@ -616,6 +622,8 @@ async function main() {
         if (group.length === 0) continue;
 
         tocLines.push(`#### ${importanceLabels[score]}`);
+        tocLines.push('');
+        tocLines.push(`> ${importanceDescs[score]}`);
         tocLines.push('');
 
         for (const q of group) {
