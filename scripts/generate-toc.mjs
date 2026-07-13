@@ -373,36 +373,58 @@ async function matchFollowups(followups, candidates) {
 }
 
 // 본문의 꼬리질문 불릿 중 매칭된 항목을 "펼치면 답변 나오는 중첩 토글"로 변환
+// 꼬리질문 섹션은 blockquote로 감싸서 시각적으로 구분
 function nestFollowups(body, followupMap) {
   const lines = body.split('\n');
   const out = [];
   let inTail = false;
+  const tailLines = [];
 
   for (const line of lines) {
     if (/^###\s+꼬리질문/.test(line)) {
       inTail = true;
-      out.push(line);
       continue;
     }
     if (inTail && /^-\s+/.test(line)) {
       const text = stripBullet(line);
       const c = followupMap.get(text);
       if (c) {
-        out.push('');
-        out.push('<details>');
-        out.push(`<summary>${escapeHtml(text)}</summary>`);
-        out.push('');
-        out.push(c.body);
-        out.push('');
-        out.push('</details>');
+        tailLines.push('');
+        tailLines.push('<details>');
+        tailLines.push(`<summary>${escapeHtml(text)}</summary>`);
+        tailLines.push('');
+        tailLines.push(c.body);
+        tailLines.push('');
+        tailLines.push('</details>');
         continue;
       }
-      // 매칭 안 된 꼬리질문도 HTML 태그 이스케이프
-      out.push(`- ${escapeHtml(text)}`);
+      tailLines.push(`- ${escapeHtml(text)}`);
+      continue;
+    }
+    if (inTail) {
+      tailLines.push(line);
       continue;
     }
     out.push(line);
   }
+
+  // 꼬리질문이 있으면 구분선 + 라벨로 시각적 구분
+  if (tailLines.length > 0) {
+    while (tailLines.length && tailLines[0].trim() === '') tailLines.shift();
+    while (tailLines.length && tailLines[tailLines.length - 1].trim() === '') tailLines.pop();
+
+    if (tailLines.length > 0) {
+      out.push('');
+      out.push('---');
+      out.push('');
+      out.push('**꼬리질문**');
+      out.push('');
+      for (const tl of tailLines) {
+        out.push(tl);
+      }
+    }
+  }
+
   return out.join('\n');
 }
 
