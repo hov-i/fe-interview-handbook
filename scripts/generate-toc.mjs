@@ -31,11 +31,20 @@ function collectFiles(dir) {
 }
 
 // ── 질문 제목 정규화 (중복 판별용) ─────────────────────────
-// 소문자화 + 공백/문장부호 전부 제거해서 동일 질문 그룹핑
+// 소문자화 + 공백/문장부호 + 괄호 부연설명 제거
 function normalize(title) {
   return title
     .toLowerCase()
+    .replace(/\([^)]*\)/g, '')
     .replace(/[\s?!.,()'"`\-]/g, '');
+}
+
+// 두 정규화된 키가 "같은 질문"인지 판별 (한쪽이 다른 쪽을 포함하면 매칭)
+function isSameQuestion(keyA, keyB) {
+  if (keyA === keyB) return true;
+  const shorter = keyA.length <= keyB.length ? keyA : keyB;
+  const longer = keyA.length > keyB.length ? keyA : keyB;
+  return longer.startsWith(shorter) && (longer.length - shorter.length) <= 10;
 }
 
 // ── 질문 파싱 ──────────────────────────────────────────────
@@ -148,7 +157,11 @@ function mergeGroup(group) {
     if (answer.trim()) answerBlocks.push(answer.trim());
     for (const t of tails) {
       const key = normalize(t);
-      if (!seenTails.has(key)) {
+      let isDup = false;
+      for (const sk of seenTails) {
+        if (isSameQuestion(key, sk)) { isDup = true; break; }
+      }
+      if (!isDup) {
         seenTails.add(key);
         mergedTails.push(t);
       }
@@ -250,13 +263,17 @@ async function matchFollowups(followups, candidates) {
   const map = new Map();
   if (followups.length === 0 || candidates.length === 0) return map;
 
-  // 폴백: 정규화(정확) 매칭
-  const byKey = new Map();
-  for (const c of candidates) if (!byKey.has(c.key)) byKey.set(c.key, c);
+  // 폴백: 정규화 매칭 (한쪽이 다른 쪽을 포함하면 매칭)
   const exactMatch = () => {
     for (const f of followups) {
-      const c = byKey.get(normalize(f.text));
-      if (c) map.set(f.text, c);
+      if (map.has(f.text)) continue;
+      const fKey = normalize(f.text);
+      for (const c of candidates) {
+        if (isSameQuestion(fKey, c.key)) {
+          map.set(f.text, c);
+          break;
+        }
+      }
     }
     return map;
   };
@@ -410,7 +427,12 @@ async function main() {
   for (const cat of CATEGORIES) byCategory.set(cat, []);
 
   for (const q of allQuestions) {
-    if (nestedKeys.has(q.key)) continue; // 꼬리질문에 붙은 답변은 독립 렌더 제외
+    // 꼬리질문에 붙은 답변은 독립 렌더 제외
+    let isNested = false;
+    for (const nk of nestedKeys) {
+      if (isSameQuestion(q.key, nk)) { isNested = true; break; }
+    }
+    if (isNested) continue;
     const cat = CATEGORIES.includes(q.category) ? q.category : '기타';
     byCategory.get(cat).push(q);
   }
@@ -423,11 +445,18 @@ async function main() {
     const items = byCategory.get(cat);
     if (items.length === 0) continue;
 
-    // 정규화 키로 그룹핑 (같은 질문의 답변들을 모두 모음)
+    // 정규화 키로 그룹핑 (같은 질문의 답변들을 모두 모음, 유사 키도 묶음)
     const groups = new Map();
     for (const q of items) {
-      if (!groups.has(q.key)) groups.set(q.key, []);
-      groups.get(q.key).push(q);
+      let matched = null;
+      for (const gk of groups.keys()) {
+        if (isSameQuestion(q.key, gk)) { matched = gk; break; }
+      }
+      if (matched) {
+        groups.get(matched).push(q);
+      } else {
+        groups.set(q.key, [q]);
+      }
     }
 
     // 그룹별로 답변 병합 후, 꼬리질문에 답변 중첩
