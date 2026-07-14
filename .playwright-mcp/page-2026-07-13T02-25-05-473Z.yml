@@ -1,0 +1,313 @@
+- generic [ref=f1e2]:
+  - generic [ref=f1e3]:
+    - link "Skip to content" [ref=f1e4] [cursor=pointer]:
+      - /url: "#start-of-content"
+    - banner [ref=f1e6]:
+      - heading "Navigation Menu" [level=2] [ref=f1e7]
+      - generic [ref=f1e8]:
+        - link "Homepage" [ref=f1e10] [cursor=pointer]:
+          - /url: /
+        - generic [ref=f1e13]:
+          - navigation "Global" [ref=f1e16]:
+            - list [ref=f1e17]:
+              - listitem [ref=f1e18]:
+                - button "Platform" [ref=f1e20] [cursor=pointer]
+              - listitem [ref=f1e23]:
+                - button "Solutions" [ref=f1e25] [cursor=pointer]
+              - listitem [ref=f1e28]:
+                - button "Resources" [ref=f1e30] [cursor=pointer]
+              - listitem [ref=f1e33]:
+                - button "Open Source" [ref=f1e35] [cursor=pointer]
+              - listitem [ref=f1e38]:
+                - button "Enterprise" [ref=f1e40] [cursor=pointer]
+              - listitem [ref=f1e43]:
+                - link "Pricing" [ref=f1e44] [cursor=pointer]:
+                  - /url: https://github.com/pricing
+          - generic [ref=f1e46]:
+            - button "Search or jump to…" [ref=f1e49] [cursor=pointer]
+            - link "Sign in" [ref=f1e54] [cursor=pointer]:
+              - /url: /login?return_to=https%3A%2F%2Fgithub.com%2Fsudheerj%2Freactjs-interview-questions
+            - link "Sign up" [ref=f1e55] [cursor=pointer]:
+              - /url: /signup?ref_cta=Sign+up&ref_loc=header+logged+out&ref_page=%2F%3Cuser-name%3E%2F%3Crepo-name%3E&source=header-repo&source_repo=sudheerj%2Freactjs-interview-questions
+            - button "Appearance settings" [ref=f1e58] [cursor=pointer]
+  - main [ref=f1e62]:
+    - generic [ref=f1e63]:
+      - generic [ref=f1e64]:
+        - generic [ref=f1e66]:
+          - link "sudheerj" [ref=f1e70] [cursor=pointer]:
+            - /url: /sudheerj
+          - generic [ref=f1e71]: /
+          - strong [ref=f1e72]:
+            - link "reactjs-interview-questions" [ref=f1e73] [cursor=pointer]:
+              - /url: /sudheerj/reactjs-interview-questions
+          - generic [ref=f1e74]: Public
+        - generic [ref=f1e75]:
+          - list:
+            - listitem
+            - listitem [ref=f1e76]:
+              - link "You must be signed in to change notification settings" [ref=f1e77] [cursor=pointer]:
+                - /url: /login?return_to=%2Fsudheerj%2Freactjs-interview-questions
+                - text: Notifications
+            - listitem [ref=f1e80]:
+              - link "Fork 10.4k" [ref=f1e81] [cursor=pointer]:
+                - /url: /login?return_to=%2Fsudheerj%2Freactjs-interview-questions
+                - text: Fork
+                - generic "10,377" [ref=f1e84]: 10.4k
+            - listitem [ref=f1e85]:
+              - link "You must be signed in to star a repository" [ref=f1e87] [cursor=pointer]:
+                - /url: /login?return_to=%2Fsudheerj%2Freactjs-interview-questions
+                - text: Star
+                - generic "44684 users starred this repository" [ref=f1e90]: 44.7k
+      - navigation "Repository" [ref=f1e91]:
+        - list [ref=f1e92]:
+          - listitem [ref=f1e93]:
+            - link "Code" [ref=f1e94] [cursor=pointer]:
+              - /url: /sudheerj/reactjs-interview-questions
+          - listitem [ref=f1e98]:
+            - link "Issues 3" [ref=f1e99] [cursor=pointer]:
+              - /url: /sudheerj/reactjs-interview-questions/issues
+              - generic [ref=f1e103]: Issues
+              - generic "3" [ref=f1e104]
+          - listitem [ref=f1e105]:
+            - link "Pull requests 3" [ref=f1e106] [cursor=pointer]:
+              - /url: /sudheerj/reactjs-interview-questions/pulls
+              - generic [ref=f1e109]: Pull requests
+              - generic "3" [ref=f1e110]
+          - listitem [ref=f1e111]:
+            - link "Actions" [ref=f1e112] [cursor=pointer]:
+              - /url: /sudheerj/reactjs-interview-questions/actions
+          - listitem [ref=f1e116]:
+            - link "Projects" [ref=f1e117] [cursor=pointer]:
+              - /url: /sudheerj/reactjs-interview-questions/projects
+          - listitem [ref=f1e121]:
+            - link "Security and quality" [ref=f1e122] [cursor=pointer]:
+              - /url: /sudheerj/reactjs-interview-questions/security
+          - listitem [ref=f1e126]:
+            - link "Insights" [ref=f1e127] [cursor=pointer]:
+              - /url: /sudheerj/reactjs-interview-questions/pulse
+    - generic [ref=f1e143]:
+      - heading "sudheerj/reactjs-interview-questions" [level=1] [ref=f1e145]
+      - generic [ref=f1e146]:
+        - generic [ref=f1e149]:
+          - generic [ref=f1e150]:
+            - generic [ref=f1e151]:
+              - button "master branch" [ref=f1e153] [cursor=pointer]:
+                - generic [ref=f1e154]: master
+              - generic [ref=f1e162]:
+                - link "Branches" [ref=f1e163] [cursor=pointer]:
+                  - /url: /sudheerj/reactjs-interview-questions/branches
+                - link "Tags" [ref=f1e166] [cursor=pointer]:
+                  - /url: /sudheerj/reactjs-interview-questions/tags
+            - generic [ref=f1e169]:
+              - combobox "Go to file" [ref=f1e177]
+              - button "Code" [ref=f1e178] [cursor=pointer]
+          - generic [ref=f1e181]:
+            - generic [ref=f1e182]:
+              - heading "Folders and files" [level=2] [ref=f1e183]
+              - table "Folders and files" [ref=f1e184]:
+                - rowgroup:
+                  - row "Name Last commit message Last commit date":
+                    - columnheader "Name"
+                    - columnheader "Last commit message"
+                    - columnheader "Last commit date"
+                - rowgroup [ref=f1e185]:
+                  - row [ref=f1e186]:
+                    - cell "Latest commit History 625 Commits" [ref=f1e187]:
+                      - generic [ref=f1e188]:
+                        - heading "Latest commit" [level=2] [ref=f1e189]
+                        - generic [ref=f1e192]:
+                          - heading "History" [level=2] [ref=f1e193]
+                          - link "625 Commits" [ref=f1e194] [cursor=pointer]:
+                            - /url: /sudheerj/reactjs-interview-questions/commits/master/
+                  - row ".github, (Directory)" [ref=f1e197]:
+                    - cell [ref=f1e198]:
+                      - link ".github, (Directory)" [ref=f1e205] [cursor=pointer]:
+                        - /url: /sudheerj/reactjs-interview-questions/tree/master/.github
+                        - text: .github
+                    - cell [ref=f1e206]
+                    - cell [ref=f1e208]
+                  - row "coding-exercise, (Directory)" [ref=f1e211]:
+                    - cell [ref=f1e212]:
+                      - link "coding-exercise, (Directory)" [ref=f1e219] [cursor=pointer]:
+                        - /url: /sudheerj/reactjs-interview-questions/tree/master/coding-exercise
+                        - text: coding-exercise
+                    - cell [ref=f1e220]
+                    - cell [ref=f1e222]
+                  - row "images, (Directory)" [ref=f1e225]:
+                    - cell [ref=f1e226]:
+                      - link "images, (Directory)" [ref=f1e233] [cursor=pointer]:
+                        - /url: /sudheerj/reactjs-interview-questions/tree/master/images
+                        - text: images
+                    - cell [ref=f1e234]
+                    - cell [ref=f1e236]
+                  - row ".gitignore, (File)" [ref=f1e239]:
+                    - cell [ref=f1e240]:
+                      - link ".gitignore, (File)" [ref=f1e247] [cursor=pointer]:
+                        - /url: /sudheerj/reactjs-interview-questions/blob/master/.gitignore
+                        - text: .gitignore
+                    - cell [ref=f1e248]
+                    - cell [ref=f1e250]
+                  - row "LICENSE, (File)" [ref=f1e253]:
+                    - cell [ref=f1e254]:
+                      - link "LICENSE, (File)" [ref=f1e261] [cursor=pointer]:
+                        - /url: /sudheerj/reactjs-interview-questions/blob/master/LICENSE
+                        - text: LICENSE
+                    - cell [ref=f1e262]
+                    - cell [ref=f1e264]
+                  - row "README.md, (File)" [ref=f1e267]:
+                    - cell [ref=f1e268]:
+                      - link "README.md, (File)" [ref=f1e275] [cursor=pointer]:
+                        - /url: /sudheerj/reactjs-interview-questions/blob/master/README.md
+                        - text: README.md
+                    - cell [ref=f1e276]
+                    - cell [ref=f1e278]
+            - generic [ref=f1e282]:
+              - generic [ref=f1e283]:
+                - heading "Repository files navigation" [level=2] [ref=f1e284]
+                - navigation "Repository files" [ref=f1e285]:
+                  - list [ref=f1e286]:
+                    - listitem [ref=f1e287]:
+                      - link "README" [ref=f1e288] [cursor=pointer]:
+                        - /url: "#"
+                    - listitem [ref=f1e293]:
+                      - link "MIT license" [ref=f1e294] [cursor=pointer]:
+                        - /url: "#"
+                - button "Outline" [ref=f1e299] [cursor=pointer]
+              - generic [ref=f1e302]: Loading
+        - generic [ref=f1e311]:
+          - generic [ref=f1e314]:
+            - heading "About" [level=2] [ref=f1e315]
+            - paragraph [ref=f1e316]: List of top 500 ReactJS Interview Questions & Answers....Coding exercise questions are coming soon!!
+            - heading "Topics" [level=3] [ref=f1e317]
+            - generic [ref=f1e319]:
+              - link "react" [ref=f1e320] [cursor=pointer]:
+                - /url: /topics/react
+              - link "redux" [ref=f1e321] [cursor=pointer]:
+                - /url: /topics/redux
+              - link "javascript" [ref=f1e322] [cursor=pointer]:
+                - /url: /topics/javascript
+              - link "react-native" [ref=f1e323] [cursor=pointer]:
+                - /url: /topics/react-native
+              - link "react-router" [ref=f1e324] [cursor=pointer]:
+                - /url: /topics/react-router
+              - link "reactjs" [ref=f1e325] [cursor=pointer]:
+                - /url: /topics/reactjs
+              - link "javascript-framework" [ref=f1e326] [cursor=pointer]:
+                - /url: /topics/javascript-framework
+              - link "interview-questions" [ref=f1e327] [cursor=pointer]:
+                - /url: /topics/interview-questions
+              - link "javascript-applications" [ref=f1e328] [cursor=pointer]:
+                - /url: /topics/javascript-applications
+              - link "interview-preparation" [ref=f1e329] [cursor=pointer]:
+                - /url: /topics/interview-preparation
+              - link "javascript-interview-questions" [ref=f1e330] [cursor=pointer]:
+                - /url: /topics/javascript-interview-questions
+              - link "react16" [ref=f1e331] [cursor=pointer]:
+                - /url: /topics/react16
+              - link "react-interview-questions" [ref=f1e332] [cursor=pointer]:
+                - /url: /topics/react-interview-questions
+            - heading "Resources" [level=3] [ref=f1e333]
+            - link "Readme" [ref=f1e335] [cursor=pointer]:
+              - /url: "#readme-ov-file"
+            - heading "License" [level=3] [ref=f1e338]
+            - link "MIT license" [ref=f1e340] [cursor=pointer]:
+              - /url: "#MIT-1-ov-file"
+            - link "Activity" [ref=f1e344] [cursor=pointer]:
+              - /url: /sudheerj/reactjs-interview-questions/activity
+            - heading "Stars" [level=3] [ref=f1e347]
+            - generic [ref=f1e349]:
+              - strong [ref=f1e352]: 44.7k
+              - text: stars
+            - heading "Watchers" [level=3] [ref=f1e353]
+            - generic [ref=f1e355]:
+              - strong [ref=f1e358]: "628"
+              - text: watching
+            - heading "Forks" [level=3] [ref=f1e359]
+            - link [ref=f1e361] [cursor=pointer]:
+              - /url: /sudheerj/reactjs-interview-questions/forks
+              - strong [ref=f1e364]: 10.4k
+              - text: forks
+            - link "Report repository" [ref=f1e366] [cursor=pointer]:
+              - /url: /contact/report-content?content_url=https%3A%2F%2Fgithub.com%2Fsudheerj%2Freactjs-interview-questions&report=sudheerj+%28user%29
+          - generic [ref=f1e368]:
+            - heading [level=2] [ref=f1e369]:
+              - link "Releases" [ref=f1e370] [cursor=pointer]:
+                - /url: /sudheerj/reactjs-interview-questions/releases
+            - generic [ref=f1e371]: No releases published
+          - generic [ref=f1e373]:
+            - heading "Sponsor this project" [level=2] [ref=f1e374]
+            - generic "Loading sponsorable links" [ref=f1e375]:
+              - list [ref=f1e376]:
+                - listitem [ref=f1e377]
+            - list [ref=f1e380]:
+              - listitem [ref=f1e381]:
+                - link "https://buymeacoffee.com/sudheerj" [ref=f1e386] [cursor=pointer]:
+                  - /url: https://buymeacoffee.com/sudheerj
+            - link "Learn more about GitHub Sponsors" [ref=f1e388] [cursor=pointer]:
+              - /url: /sponsors
+          - generic "Loading latest packages" [ref=f1e391]:
+            - heading [level=2] [ref=f1e392]:
+              - link "Packages" [ref=f1e393] [cursor=pointer]:
+                - /url: /users/sudheerj/packages?repo_name=reactjs-interview-questions
+          - generic "Loading contributors" [ref=f1e405]:
+            - generic:
+              - heading [level=2] [ref=f1e406]:
+                - link "Contributors" [ref=f1e407] [cursor=pointer]:
+                  - /url: /sudheerj/reactjs-interview-questions/graphs/contributors
+              - list [ref=f1e408]:
+                - listitem [ref=f1e409]
+                - listitem [ref=f1e411]
+                - listitem [ref=f1e413]
+          - generic [ref=f1e416]:
+            - heading "Languages" [level=2] [ref=f1e417]
+            - list [ref=f1e423]:
+              - listitem [ref=f1e424]:
+                - link "JavaScript 95.9%" [ref=f1e425] [cursor=pointer]:
+                  - /url: /sudheerj/reactjs-interview-questions/search?l=javascript
+                  - generic [ref=f1e428]: JavaScript
+                  - generic [ref=f1e429]: 95.9%
+              - listitem [ref=f1e430]:
+                - link "HTML 2.7%" [ref=f1e431] [cursor=pointer]:
+                  - /url: /sudheerj/reactjs-interview-questions/search?l=html
+                  - generic [ref=f1e434]: HTML
+                  - generic [ref=f1e435]: 2.7%
+              - listitem [ref=f1e436]:
+                - link "CSS 1.4%" [ref=f1e437] [cursor=pointer]:
+                  - /url: /sudheerj/reactjs-interview-questions/search?l=css
+                  - generic [ref=f1e440]: CSS
+                  - generic [ref=f1e441]: 1.4%
+  - contentinfo [ref=f1e443]:
+    - heading "Footer" [level=2] [ref=f1e444]
+    - generic [ref=f1e445]:
+      - generic [ref=f1e446]:
+        - link "GitHub Homepage" [ref=f1e447] [cursor=pointer]:
+          - /url: https://github.com
+        - generic [ref=f1e450]: © 2026 GitHub, Inc.
+      - navigation "Footer" [ref=f1e451]:
+        - heading "Footer navigation" [level=3] [ref=f1e452]
+        - list "Footer navigation" [ref=f1e453]:
+          - listitem [ref=f1e454]:
+            - link "Terms" [ref=f1e455] [cursor=pointer]:
+              - /url: https://docs.github.com/site-policy/github-terms/github-terms-of-service
+          - listitem [ref=f1e456]:
+            - link "Privacy" [ref=f1e457] [cursor=pointer]:
+              - /url: https://docs.github.com/site-policy/privacy-policies/github-privacy-statement
+          - listitem [ref=f1e458]:
+            - link "Security" [ref=f1e459] [cursor=pointer]:
+              - /url: https://github.com/security
+          - listitem [ref=f1e460]:
+            - link "Status" [ref=f1e461] [cursor=pointer]:
+              - /url: https://www.githubstatus.com/
+          - listitem [ref=f1e462]:
+            - link "Community" [ref=f1e463] [cursor=pointer]:
+              - /url: https://github.community/
+          - listitem [ref=f1e464]:
+            - link "Docs" [ref=f1e465] [cursor=pointer]:
+              - /url: https://docs.github.com/
+          - listitem [ref=f1e466]:
+            - link "Contact" [ref=f1e467] [cursor=pointer]:
+              - /url: https://support.github.com?tags=dotcom-footer
+          - listitem [ref=f1e468]:
+            - button "Manage cookies" [ref=f1e470] [cursor=pointer]
+          - listitem [ref=f1e471]:
+            - button "Do not share my personal information" [ref=f1e473] [cursor=pointer]

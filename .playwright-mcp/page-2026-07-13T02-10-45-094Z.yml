@@ -1,0 +1,633 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - link "Skip to content" [ref=e4] [cursor=pointer]:
+      - /url: "#start-of-content"
+    - banner [ref=e6]:
+      - heading "Navigation Menu" [level=2] [ref=e7]
+      - generic [ref=e8]:
+        - link "Homepage" [ref=e10] [cursor=pointer]:
+          - /url: /
+        - generic [ref=e13]:
+          - navigation "Global" [ref=e16]:
+            - list [ref=e17]:
+              - listitem [ref=e18]:
+                - button "Platform" [ref=e20] [cursor=pointer]
+              - listitem [ref=e23]:
+                - button "Solutions" [ref=e25] [cursor=pointer]
+              - listitem [ref=e28]:
+                - button "Resources" [ref=e30] [cursor=pointer]
+              - listitem [ref=e33]:
+                - button "Open Source" [ref=e35] [cursor=pointer]
+              - listitem [ref=e38]:
+                - button "Enterprise" [ref=e40] [cursor=pointer]
+              - listitem [ref=e43]:
+                - link "Pricing" [ref=e44] [cursor=pointer]:
+                  - /url: https://github.com/pricing
+          - generic [ref=e46]:
+            - button "Search or jump to…" [ref=e49] [cursor=pointer]
+            - link "Sign in" [ref=e54] [cursor=pointer]:
+              - /url: /login?return_to=https%3A%2F%2Fgithub.com%2Fhov-i%2Ffe-interview-handbook
+            - link "Sign up" [ref=e55] [cursor=pointer]:
+              - /url: /signup?ref_cta=Sign+up&ref_loc=header+logged+out&ref_page=%2F%3Cuser-name%3E%2F%3Crepo-name%3E&source=header-repo&source_repo=hov-i%2Ffe-interview-handbook
+            - button "Appearance settings" [ref=e58] [cursor=pointer]
+  - main [ref=e62]:
+    - generic [ref=e63]:
+      - generic [ref=e64]:
+        - generic [ref=e66]:
+          - link "hov-i" [ref=e70] [cursor=pointer]:
+            - /url: /hov-i
+          - generic [ref=e71]: /
+          - strong [ref=e72]:
+            - link "fe-interview-handbook" [ref=e73] [cursor=pointer]:
+              - /url: /hov-i/fe-interview-handbook
+          - generic [ref=e74]: Public
+        - generic [ref=e75]:
+          - list:
+            - listitem [ref=e76]:
+              - link "You must be signed in to change notification settings" [ref=e77] [cursor=pointer]:
+                - /url: /login?return_to=%2Fhov-i%2Ffe-interview-handbook
+                - text: Notifications
+            - listitem [ref=e80]:
+              - link "Fork 1" [ref=e81] [cursor=pointer]:
+                - /url: /login?return_to=%2Fhov-i%2Ffe-interview-handbook
+                - text: Fork
+                - generic "1" [ref=e84]
+            - listitem [ref=e85]:
+              - link "You must be signed in to star a repository" [ref=e87] [cursor=pointer]:
+                - /url: /login?return_to=%2Fhov-i%2Ffe-interview-handbook
+                - text: Star
+                - generic "2 users starred this repository" [ref=e90]: "2"
+      - navigation "Repository" [ref=e91]:
+        - list [ref=e92]:
+          - listitem [ref=e93]:
+            - link "Code" [ref=e94] [cursor=pointer]:
+              - /url: /hov-i/fe-interview-handbook
+          - listitem [ref=e98]:
+            - link "Issues" [ref=e99] [cursor=pointer]:
+              - /url: /hov-i/fe-interview-handbook/issues
+          - listitem [ref=e104]:
+            - link "Pull requests" [ref=e105] [cursor=pointer]:
+              - /url: /hov-i/fe-interview-handbook/pulls
+          - listitem [ref=e109]:
+            - link "Actions" [ref=e110] [cursor=pointer]:
+              - /url: /hov-i/fe-interview-handbook/actions
+          - listitem [ref=e114]:
+            - link "Projects" [ref=e115] [cursor=pointer]:
+              - /url: /hov-i/fe-interview-handbook/projects
+          - listitem [ref=e119]:
+            - link "Security and quality" [ref=e120] [cursor=pointer]:
+              - /url: /hov-i/fe-interview-handbook/security
+          - listitem [ref=e124]:
+            - link "Insights" [ref=e125] [cursor=pointer]:
+              - /url: /hov-i/fe-interview-handbook/pulse
+    - generic [ref=e141]:
+      - heading "hov-i/fe-interview-handbook" [level=1] [ref=e143]
+      - generic [ref=e144]:
+        - generic [ref=e147]:
+          - generic [ref=e148]:
+            - generic [ref=e149]:
+              - button "main branch" [ref=e151] [cursor=pointer]:
+                - generic [ref=e152]: main
+              - generic [ref=e160]:
+                - link [ref=e161] [cursor=pointer]:
+                  - /url: /hov-i/fe-interview-handbook/branches
+                  - generic [ref=e164]:
+                    - strong [ref=e165]: "1"
+                    - text: Branch
+                - link [ref=e166] [cursor=pointer]:
+                  - /url: /hov-i/fe-interview-handbook/tags
+                  - generic [ref=e169]:
+                    - strong [ref=e170]: "0"
+                    - text: Tags
+            - generic [ref=e171]:
+              - combobox "Go to file" [ref=e179]
+              - button "Code" [ref=e180] [cursor=pointer]
+          - generic [ref=e183]:
+            - generic [ref=e184]:
+              - heading "Folders and files" [level=2] [ref=e185]
+              - table "Folders and files" [ref=e186]:
+                - rowgroup:
+                  - row "Name Last commit message Last commit date":
+                    - columnheader "Name"
+                    - columnheader "Last commit message"
+                    - columnheader "Last commit date"
+                - rowgroup [ref=e187]:
+                  - row [ref=e816]:
+                    - 'cell "Latest commit github-actions[bot] commits by github-actions[bot] docs: auto-update README TOC [skip ci] Commit 40c616f · Jul 13, 20268 minutes ago History 76 Commits" [ref=e817]':
+                      - generic [ref=e190]:
+                        - heading "Latest commit" [level=2] [ref=e191]
+                        - generic [ref=e192]:
+                          - generic [ref=e194]:
+                            - link [ref=e195] [cursor=pointer]:
+                              - /url: /apps/github-actions
+                              - img "github-actions[bot]" [ref=e196]
+                            - link "commits by github-actions[bot]" [ref=e197] [cursor=pointer]:
+                              - /url: /hov-i/fe-interview-handbook/commits?author=github-actions%5Bbot%5D
+                              - text: github-actions[bot]
+                          - 'link "docs: auto-update README TOC [skip ci]" [ref=e201] [cursor=pointer]':
+                            - /url: /hov-i/fe-interview-handbook/commit/40c616f0f966fa9f8d803f6ec7be9f4aaa4802b5
+                        - generic [ref=e202]:
+                          - generic [ref=e204]:
+                            - link "Commit 40c616f" [ref=e205] [cursor=pointer]:
+                              - /url: /hov-i/fe-interview-handbook/commit/40c616f0f966fa9f8d803f6ec7be9f4aaa4802b5
+                              - text: 40c616f
+                            - text: ·
+                            - generic "Jul 13, 2026, 11:02 AM GMT+9" [ref=e206]: Jul 13, 20268 minutes ago
+                          - generic [ref=e207]:
+                            - heading "History" [level=2] [ref=e208]
+                            - link "76 Commits" [ref=e209] [cursor=pointer]:
+                              - /url: /hov-i/fe-interview-handbook/commits/main/
+                  - row [ref=e818]:
+                    - cell [ref=e213]:
+                      - link ".github/workflows, (Directory)" [ref=e220] [cursor=pointer]:
+                        - /url: /hov-i/fe-interview-handbook/tree/main/.github/workflows
+                        - text: .github/workflows
+                    - cell [ref=e745]:
+                      - 'link "feat: update-readme 워크플로에 수동 트리거 추가" [ref=e748] [cursor=pointer]':
+                        - /url: /hov-i/fe-interview-handbook/commit/7b4e8d04a3a23210d2b6df7f0f993963ff5d8248
+                    - cell "Jul 13, 202632 minutes ago" [ref=e819]
+                  - row [ref=e820]:
+                    - cell [ref=e227]:
+                      - link "scripts, (Directory)" [ref=e234] [cursor=pointer]:
+                        - /url: /hov-i/fe-interview-handbook/tree/main/scripts
+                        - text: scripts
+                    - cell [ref=e751]:
+                      - 'link "fix: AI 매칭에 유사도 검증 추가 (LCS 기반, 임계값 0.5)" [ref=e754] [cursor=pointer]':
+                        - /url: /hov-i/fe-interview-handbook/commit/7013921caedff53e2701334f5e532903f3a3a314
+                    - cell "Jul 13, 20269 minutes ago" [ref=e821]
+                  - row [ref=e822]:
+                    - cell [ref=e241]:
+                      - link "weeks, (Directory)" [ref=e248] [cursor=pointer]:
+                        - /url: /hov-i/fe-interview-handbook/tree/main/weeks
+                        - text: weeks
+                    - cell [ref=e757]:
+                      - generic [ref=e759]:
+                        - link "Merge pull request" [ref=e760] [cursor=pointer]:
+                          - /url: /hov-i/fe-interview-handbook/commit/fc728750b081b48009a6f59347dcccb7db95ad68
+                        - link "#10" [ref=e761] [cursor=pointer]:
+                          - /url: https://github.com/hov-i/fe-interview-handbook/pull/10
+                        - link "from hov-i/week-02/kzlsk" [ref=e762] [cursor=pointer]:
+                          - /url: /hov-i/fe-interview-handbook/commit/fc728750b081b48009a6f59347dcccb7db95ad68
+                    - cell "Jul 13, 202648 minutes ago" [ref=e823]
+                  - row [ref=e764]:
+                    - cell [ref=e255]:
+                      - link ".DS_Store, (File)" [ref=e262] [cursor=pointer]:
+                        - /url: /hov-i/fe-interview-handbook/blob/main/.DS_Store
+                        - text: .DS_Store
+                    - cell [ref=e765]:
+                      - 'link "fix: TOC 생성 시 summary/불릿 내 HTML 태그 이스케이프 처리" [ref=e768] [cursor=pointer]':
+                        - /url: /hov-i/fe-interview-handbook/commit/e5d46012ee7ac4a67d45364a1398d6b9340c053a
+                    - cell "Jul 13, 20262 hours ago" [ref=e769]
+                  - row [ref=e770]:
+                    - cell [ref=e269]:
+                      - link ".gitignore, (File)" [ref=e276] [cursor=pointer]:
+                        - /url: /hov-i/fe-interview-handbook/blob/main/.gitignore
+                        - text: .gitignore
+                    - cell [ref=e771]:
+                      - 'link "chore: .gitignore에 .DS_Store 무시 규칙 추가" [ref=e774] [cursor=pointer]':
+                        - /url: /hov-i/fe-interview-handbook/commit/6077811c6f340033346841a4011588b56143af76
+                    - cell "Jul 2, 20262 weeks ago" [ref=e775]
+                  - row [ref=e776]:
+                    - cell [ref=e283]:
+                      - link "CONTRIBUTING.md, (File)" [ref=e290] [cursor=pointer]:
+                        - /url: /hov-i/fe-interview-handbook/blob/main/CONTRIBUTING.md
+                        - text: CONTRIBUTING.md
+                    - cell [ref=e777]:
+                      - 'link "docs: readmd, contributiong 수정" [ref=e780] [cursor=pointer]':
+                        - /url: /hov-i/fe-interview-handbook/commit/554be3db4e2ef5bbb5d3df7595497bd6001d2e41
+                    - cell "Jun 25, 20263 weeks ago" [ref=e781]
+                  - row [ref=e824]:
+                    - cell [ref=e297]:
+                      - link "README.md, (File)" [ref=e304] [cursor=pointer]:
+                        - /url: /hov-i/fe-interview-handbook/blob/main/README.md
+                        - text: README.md
+                    - cell [ref=e783]:
+                      - 'link "docs: auto-update README TOC [skip ci]" [ref=e786] [cursor=pointer]':
+                        - /url: /hov-i/fe-interview-handbook/commit/40c616f0f966fa9f8d803f6ec7be9f4aaa4802b5
+                    - cell "Jul 13, 20268 minutes ago" [ref=e825]
+                  - row [ref=e788]:
+                    - cell [ref=e311]:
+                      - link "TEMPLATE.md, (File)" [ref=e318] [cursor=pointer]:
+                        - /url: /hov-i/fe-interview-handbook/blob/main/TEMPLATE.md
+                        - text: TEMPLATE.md
+                    - cell [ref=e789]:
+                      - link "first commit" [ref=e792] [cursor=pointer]:
+                        - /url: /hov-i/fe-interview-handbook/commit/91c46e2fbb4aa000bdd2790aa4a6e5f82a904ee1
+                    - cell "Jun 25, 20263 weeks ago" [ref=e793]
+                  - row [ref=e794]:
+                    - cell [ref=e325]:
+                      - link "package-lock.json, (File)" [ref=e332] [cursor=pointer]:
+                        - /url: /hov-i/fe-interview-handbook/blob/main/package-lock.json
+                        - text: package-lock.json
+                    - cell [ref=e795]:
+                      - 'link "chore: add package-lock.json" [ref=e798] [cursor=pointer]':
+                        - /url: /hov-i/fe-interview-handbook/commit/64446fe4f79d90832900aebb9ef05de28a6d0e31
+                    - cell "Jun 25, 20263 weeks ago" [ref=e799]
+                  - row [ref=e800]:
+                    - cell [ref=e339]:
+                      - link "package.json, (File)" [ref=e346] [cursor=pointer]:
+                        - /url: /hov-i/fe-interview-handbook/blob/main/package.json
+                        - text: package.json
+                    - cell [ref=e801]:
+                      - link "first commit" [ref=e804] [cursor=pointer]:
+                        - /url: /hov-i/fe-interview-handbook/commit/91c46e2fbb4aa000bdd2790aa4a6e5f82a904ee1
+                    - cell "Jun 25, 20263 weeks ago" [ref=e805]
+            - generic [ref=e353]:
+              - generic [ref=e354]:
+                - heading "Repository files navigation" [level=2] [ref=e355]
+                - navigation "Repository files" [ref=e356]:
+                  - list [ref=e357]:
+                    - listitem [ref=e358]:
+                      - link "README" [ref=e359] [cursor=pointer]:
+                        - /url: "#"
+                    - listitem [ref=e364]:
+                      - link "Contributing" [ref=e365] [cursor=pointer]:
+                        - /url: "#"
+                - button "Outline" [ref=e370] [cursor=pointer]
+              - article [ref=e374]:
+                - generic [ref=e375]:
+                  - generic [ref=e376]:
+                    - heading "📝 Frontend Interview Handbook" [level=1] [ref=e377]
+                    - 'link "Permalink: 📝 Frontend Interview Handbook" [ref=e378] [cursor=pointer]':
+                      - /url: "#-frontend-interview-handbook"
+                  - paragraph [ref=e381]:
+                    - strong [ref=e382]: 신입/주니어 프론트엔드 개발자를 위한 기술면접 대비 스터디
+                  - paragraph [ref=e383]: 매주 질문을 작성하고, 서로 꼬리질문하며 성장하는 스터디입니다.
+                - separator [ref=e384]
+                - generic [ref=e385]:
+                  - heading "👨‍👩‍👦‍👦 Contributer" [level=2] [ref=e386]
+                  - 'link "Permalink: 👨‍👩‍👦‍👦 Contributer" [ref=e387] [cursor=pointer]':
+                    - /url: "#‍‍‍-contributer"
+                - table [ref=e391]:
+                  - rowgroup [ref=e392]:
+                    - row [ref=e393]:
+                      - cell [ref=e394]:
+                        - link [ref=e395] [cursor=pointer]:
+                          - /url: https://github.com/hov-i
+                          - subscript [ref=e397]: hovi
+                      - cell [ref=e398]:
+                        - link [ref=e399] [cursor=pointer]:
+                          - /url: https://github.com/kzlsk
+                          - subscript [ref=e401]: kzlsk
+                      - cell [ref=e402]:
+                        - link [ref=e403] [cursor=pointer]:
+                          - /url: https://github.com/restareaByWeezy
+                          - subscript [ref=e405]: restareaByWeezy
+                      - cell [ref=e406]:
+                        - link [ref=e407] [cursor=pointer]:
+                          - /url: https://github.com/Leeseunghwan7305
+                          - subscript [ref=e409]: Leeseunghwan7305
+                - separator [ref=e410]
+                - generic [ref=e411]:
+                  - heading "📌 진행 방식" [level=2] [ref=e412]
+                  - 'link "Permalink: 📌 진행 방식" [ref=e413] [cursor=pointer]':
+                    - /url: "#-진행-방식"
+                - list [ref=e416]:
+                  - listitem [ref=e417]:
+                    - text: 매주 화, 금
+                    - code [ref=e418]: "weeks/week-XX/{본인 핸들}.md"
+                    - text: 파일을 만들어 PR을 올립니다.
+                  - listitem [ref=e419]: 화요일은 메인 질문 10개를 준비하고, 금요일은 메인 질문 10개에 대한 꼬리질문을 준비합니다.
+                  - listitem [ref=e420]: 7시 40분 밍글 스터디룸에 모여서 스터디 시간에 서로 질문하고 리뷰 후 PR을 머지합니다.
+                  - listitem [ref=e421]: 머지되면 GitHub Actions가 자동으로 아래 질문 인덱스를 갱신합니다.
+                - blockquote [ref=e422]:
+                  - paragraph [ref=e423]:
+                    - text: 작성 규칙은
+                    - link "CONTRIBUTING.md" [ref=e424] [cursor=pointer]:
+                      - /url: /hov-i/fe-interview-handbook/blob/main/CONTRIBUTING.md
+                    - text: 를 참고하세요.
+                - generic [ref=e425]:
+                  - heading "📚 Interview" [level=2] [ref=e426]
+                  - 'link "Permalink: 📚 Interview" [ref=e427] [cursor=pointer]':
+                    - /url: "#-interview"
+                - blockquote [ref=e430]:
+                  - paragraph [ref=e431]:
+                    - strong [ref=e432]: "71"
+                    - text: "개 질문 · 마지막 업데이트: 2026-07-13"
+                - generic [ref=e433]:
+                  - heading "JavaScript" [level=3] [ref=e434]
+                  - 'link "Permalink: JavaScript" [ref=e435] [cursor=pointer]':
+                    - /url: "#javascript"
+                - group [ref=e438]:
+                  - generic "다른 언어는 캡슐화·은닉화를 접근 제어자 같은 전용 문법으로 지원하는데, 자바스크립트는 왜 클로저로 이 문제를 풀게 되었을까요?" [ref=e439] [cursor=pointer]
+                - group [ref=e440]:
+                  - generic "동기와 비동기의 차이는 무엇인가요?" [ref=e441] [cursor=pointer]
+                - group [ref=e442]:
+                  - generic "스코프란 무엇인가요?" [ref=e443] [cursor=pointer]
+                  - text: "- 블록 스코프와 함수 스코프의 차이는 무엇인가요?"
+                - group [ref=e444]:
+                  - generic "실행 컨텍스트란?" [ref=e445] [cursor=pointer]
+                  - text: "- 호이스팅이 실행 컨텍스트와 어떤 관계인가요?"
+                - group [ref=e446]:
+                  - generic "얕은 복사와 깊은 복사의 차이는 무엇인가요?" [ref=e447] [cursor=pointer]
+                - group [ref=e448]:
+                  - generic "이벤트 루프가 어떻게 동작하나요?" [ref=e449] [cursor=pointer]
+                - group [ref=e450]:
+                  - generic "이벤트 버블링과 캡처링은 무엇인가요?" [ref=e451] [cursor=pointer]
+                - group [ref=e452]:
+                  - generic "클로저란 무엇인가요?" [active] [ref=e453] [cursor=pointer]
+                  - generic [ref=e826]:
+                    - heading "답변" [level=3] [ref=e827]
+                    - 'link "Permalink: 답변" [ref=e828] [cursor=pointer]':
+                      - /url: "#답변-16"
+                  - paragraph [ref=e831]: 클로저는 함수와 그 함수가 선언될 당시의 렉시컬 환경의 조합으로, 함수가 선언된 스코프를 기억하여 해당 스코프 밖에서도 그 환경에 접근할 수 있는 기능입니다. 내부 함수가 외부 함수를 참조하면, 외부 함수의 실행이 끝난 후에도 그 변수는 사라지지 않고 계속 참조할 수 있습니다.
+                  - paragraph [ref=e832]: "예를 들어, 다음과 같은 코드에서 클로저를 확인할 수 있습니다:"
+                  - generic [ref=e833]:
+                    - generic [ref=e834]: "function outer() { let count = 0; return function inner() { return ++count; }; } const counter = outer(); console.log(counter()); // 1 console.log(counter()); // 2"
+                    - button "Copy code to clipboard" [ref=e836] [cursor=pointer]
+                  - paragraph [ref=e840]:
+                    - text: 여기서
+                    - code [ref=e841]: count
+                    - text: 변수는 외부 함수
+                    - code [ref=e842]: outer
+                    - text: 의 클로저에 의해 유지되며, 내부 함수
+                    - code [ref=e843]: inner
+                    - text: 가 호출될 때마다 그 값을 증가시킵니다.
+                  - generic [ref=e844]:
+                    - heading "꼬리질문" [level=3] [ref=e845]
+                    - 'link "Permalink: 꼬리질문" [ref=e846] [cursor=pointer]':
+                      - /url: "#꼬리질문-7"
+                  - group [ref=e849]:
+                    - generic "클로저가 메모리 누수를 일으킬 수 있나요?" [ref=e850] [cursor=pointer]
+                  - group [ref=e851]:
+                    - generic "클로저를 활용한 모듈 패턴은 어떻게 구현하나요?" [ref=e852] [cursor=pointer]
+                  - text: "- var와 let에서 클로저 동작이 다른 이유는?"
+                  - group [ref=e853]:
+                    - generic "React Hooks에서 클로저가 어떤 역할을 하나요?" [ref=e854] [cursor=pointer]
+                - group [ref=e454]:
+                  - generic "프로토타입 체인을 실행 컨텍스트와 엮어서 설명해 주세요." [ref=e455] [cursor=pointer]
+                  - text: "- `__proto__`와 `prototype`의 차이는 무엇인가요? - 스코프 체인 탐색과 프로토타입 체인 탐색은 각각 언제 일어나나요?"
+                - group [ref=e456]:
+                  - generic "호이스팅과 실행 컨텍스트는 어떤 관계인가요?" [ref=e457] [cursor=pointer]
+                - group [ref=e458]:
+                  - generic "호이스팅이란 무엇인가요?" [ref=e459] [cursor=pointer]
+                - group [ref=e460]:
+                  - generic "화살표 함수와 일반 함수의 차이는?" [ref=e461] [cursor=pointer]
+                  - text: "- 리액트에서 이벤트 핸들러를 화살표 함수로 쓰는 이유는?"
+                - group [ref=e462]:
+                  - generic "Map과 Object의 차이점은 무엇인가요?" [ref=e463] [cursor=pointer]
+                - group [ref=e464]:
+                  - generic "Promise란 무엇이고 왜 사용하나요?" [ref=e465] [cursor=pointer]
+                  - text: "- async/await은 Promise와 어떤 관계인가요?"
+                - group [ref=e466]:
+                  - generic "Promise와 async/await의 관계는 무엇인가요?" [ref=e467] [cursor=pointer]
+                - group [ref=e468]:
+                  - generic "Promise의 후속 처리(.then, .catch)는 언제 실행되나요?" [ref=e469] [cursor=pointer]
+                - group [ref=e470]:
+                  - generic "requestAnimationFrame은 언제 사용하나요?" [ref=e471] [cursor=pointer]
+                - group [ref=e472]:
+                  - generic "TanStack Query(React Query)를 사용하는 이유는 무엇인가요?" [ref=e473] [cursor=pointer]
+                - group [ref=e474]:
+                  - generic "this란?" [ref=e475] [cursor=pointer]
+                - group [ref=e476]:
+                  - generic "useLayoutEffect와 useEffect의 차이점은 무엇인가요?" [ref=e477] [cursor=pointer]
+                - group [ref=e478]:
+                  - generic "var, let, const의 차이는 무엇인가요?" [ref=e479] [cursor=pointer]
+                - generic [ref=e480]:
+                  - heading "TypeScript" [level=3] [ref=e481]
+                  - 'link "Permalink: TypeScript" [ref=e482] [cursor=pointer]':
+                    - /url: "#typescript"
+                - group [ref=e485]:
+                  - generic "선언 병합을 실제 사용하는 경우는 언제인가요?" [ref=e486] [cursor=pointer]
+                - group [ref=e487]:
+                  - generic "타입스크립트를 사용하는 이유는?" [ref=e488] [cursor=pointer]
+                - group [ref=e489]:
+                  - generic "TypeScript에서 interface와 type의 차이는 무엇인가요?" [ref=e490] [cursor=pointer]
+                - group [ref=e491]:
+                  - generic "TypeScript에서 type과 interface의 차이는?" [ref=e492] [cursor=pointer]
+                  - text: "- 선언 병합이 실제로 쓰이는 경우는?"
+                - group [ref=e493]:
+                  - generic "TypeScript의 제네릭(Generic)은 왜 사용하나요?" [ref=e494] [cursor=pointer]
+                - generic [ref=e495]:
+                  - heading "React" [level=3] [ref=e496]
+                  - 'link "Permalink: React" [ref=e497] [cursor=pointer]':
+                    - /url: "#react"
+                - group [ref=e500]:
+                  - generic "가상 DOM은 실제로 성능상 항상 빠르다고 생각하나요?" [ref=e501] [cursor=pointer]
+                - group [ref=e502]:
+                  - generic "리렌더링이 발생하는 조건은 무엇인가요?" [ref=e503] [cursor=pointer]
+                  - text: "- React.memo와 useMemo, useCallback의 차이는 무엇인가요?"
+                - group [ref=e504]:
+                  - generic "리액트를 사용하는 이유는?" [ref=e505] [cursor=pointer]
+                - group [ref=e506]:
+                  - generic "리액트에서 이벤트 핸들러 함수를 화살표 함수로 사용하는 이유는 무엇인가요?" [ref=e507] [cursor=pointer]
+                - group [ref=e508]:
+                  - generic "리액트에서 이벤트를 어떻게 핸들링하나요?" [ref=e509] [cursor=pointer]
+                  - text: "- e.preventDefault(), e.stopPropagination() 차이는?"
+                - group [ref=e510]:
+                  - generic "리액트의 컴포넌트 라이프 사이클은?" [ref=e511] [cursor=pointer]
+                - group [ref=e512]:
+                  - generic "컴포넌트 단위로 개발 시에 장점은 무엇인가요?" [ref=e513] [cursor=pointer]
+                - group [ref=e514]:
+                  - generic "e.preventDefault()와 e.stopPropagation()의 차이는 무엇인가요?" [ref=e515] [cursor=pointer]
+                - group [ref=e516]:
+                  - generic "hydration이란 무엇인가요?" [ref=e517] [cursor=pointer]
+                - group [ref=e518]:
+                  - generic "props와 state의 차이는 무엇인가요?" [ref=e519] [cursor=pointer]
+                  - text: "- state를 변경했는데 화면이 바로 안 바뀌는 경우가 있는 이유는 무엇인가요?"
+                - group [ref=e520]:
+                  - generic "React에서 가상 DOM(Virtual DOM)이란 무엇인가요?" [ref=e521] [cursor=pointer]
+                - group [ref=e522]:
+                  - generic "React에서 상태를 컴포넌트 간에 공유하는 방법은?" [ref=e523] [cursor=pointer]
+                - group [ref=e524]:
+                  - generic "React에서 useEffect는 언제 실행되며, 주의할 점은 무엇인가요?" [ref=e525] [cursor=pointer]
+                - group [ref=e526]:
+                  - generic "TanStack Query(React Query)의 retry 옵션은 어떤 기준으로 설정하시나요?" [ref=e527] [cursor=pointer]
+                - group [ref=e528]:
+                  - generic "useEffect의 실행 시점과 클린업 함수의 실행 시점에 대해 설명해주세요." [ref=e529] [cursor=pointer]
+                - group [ref=e530]:
+                  - generic "useEffect의 의존성 배열은 어떤 역할을 하나요?" [ref=e531] [cursor=pointer]
+                - group [ref=e532]:
+                  - generic "useMemo와 useCallback의 차이는 무엇인가요?" [ref=e533] [cursor=pointer]
+                - group [ref=e534]:
+                  - generic "Virtual DOM이란 무엇인가요?" [ref=e535] [cursor=pointer]
+                - generic [ref=e536]:
+                  - heading "CSS" [level=3] [ref=e537]
+                  - 'link "Permalink: CSS" [ref=e538] [cursor=pointer]':
+                    - /url: "#css"
+                - group [ref=e541]:
+                  - generic "CSS 쌓임 맥락(Stacking Context)에 대해 설명해 주세요." [ref=e542] [cursor=pointer]
+                - group [ref=e543]:
+                  - generic "CSS position 속성의 값들은 어떤 차이가 있나요?" [ref=e544] [cursor=pointer]
+                - group [ref=e545]:
+                  - generic "CSS에서 BEM 방법론이란 무엇인가요?" [ref=e546] [cursor=pointer]
+                - group [ref=e547]:
+                  - generic "Flex와 Grid를 사용하는 이유는 무엇인가요?" [ref=e548] [cursor=pointer]
+                - group [ref=e549]:
+                  - generic "Flexbox와 Grid는 언제 무엇을 쓰나요?" [ref=e550] [cursor=pointer]
+                - generic [ref=e551]:
+                  - heading "HTML" [level=3] [ref=e552]
+                  - 'link "Permalink: HTML" [ref=e553] [cursor=pointer]':
+                    - /url: "#html"
+                - group [ref=e556]:
+                  - generic "시맨틱 마크업(Semantic Markup)이란 무엇이고 왜 중요한가요?" [ref=e557] [cursor=pointer]
+                - group [ref=e558]:
+                  - generic "웹 접근성(a11y)을 높이려면 어떻게 해야 하나요?" [ref=e559] [cursor=pointer]
+                - group [ref=e560]:
+                  - generic "b와 strong, i와 em의 차이는 무엇인가요?" [ref=e561] [cursor=pointer]
+                - group [ref=e562]:
+                  - generic "section과 article의 차이는 무엇인가요?" [ref=e563] [cursor=pointer]
+                - generic [ref=e564]:
+                  - heading "Network" [level=3] [ref=e565]
+                  - 'link "Permalink: Network" [ref=e566] [cursor=pointer]':
+                    - /url: "#network"
+                - group [ref=e569]:
+                  - generic "브라우저 캐시와 CDN 캐시의 차이점은 무엇인가요?" [ref=e570] [cursor=pointer]
+                - group [ref=e571]:
+                  - generic "프록시(Proxy)와 리버스 프록시(Reverse Proxy)의 차이점은 무엇인가요?" [ref=e572] [cursor=pointer]
+                - group [ref=e573]:
+                  - generic "CORS는 무엇이고 왜 발생하나요?" [ref=e574] [cursor=pointer]
+                - group [ref=e575]:
+                  - generic "CORS란 무엇인가요?" [ref=e576] [cursor=pointer]
+                - group [ref=e577]:
+                  - generic "HTTP 캐싱은 어떻게 동작하나요?" [ref=e578] [cursor=pointer]
+                - group [ref=e579]:
+                  - generic "HTTP와 HTTPS의 차이는 무엇인가요?" [ref=e580] [cursor=pointer]
+                - group [ref=e581]:
+                  - generic "HTTPS란 무엇이고, HTTP와의 차이는?" [ref=e582] [cursor=pointer]
+                - group [ref=e583]:
+                  - generic "REST API 설계에서 프론트엔드는 화면 기준 API를, 백엔드는 오브젝트 중심 모델링을 원해 언더패칭/오버패칭 갈등이 생깁니다. 어떻게 풀어야 할까요?" [ref=e584] [cursor=pointer]
+                - group [ref=e585]:
+                  - generic "WebSocket과 HTTP의 차이점은 무엇인가요?" [ref=e586] [cursor=pointer]
+                - generic [ref=e587]:
+                  - heading "Browser" [level=3] [ref=e588]
+                  - 'link "Permalink: Browser" [ref=e589] [cursor=pointer]':
+                    - /url: "#browser"
+                - group [ref=e592]:
+                  - generic "멀티스텝 폼의 입력 상태를 새로고침에도 유지하기 위해 웹 스토리지에 저장한다면, 어떤 것들을 고려해야 하나요?" [ref=e593] [cursor=pointer]
+                - group [ref=e594]:
+                  - generic "브라우저에 URL을 입력하면 화면이 그려지기까지 어떤 과정을 거치나요?" [ref=e595] [cursor=pointer]
+                - generic [ref=e596]:
+                  - heading "CS" [level=3] [ref=e597]
+                  - 'link "Permalink: CS" [ref=e598] [cursor=pointer]':
+                    - /url: "#cs"
+                - group [ref=e601]:
+                  - generic "브라우저 성능을 향상시킬 수 있는 방법들에 대해 설명해주세요." [ref=e602] [cursor=pointer]
+                - group [ref=e603]:
+                  - generic "브라우저가 HTML을 받아서 화면에 그리기까지의 과정을 설명해주세요." [ref=e604] [cursor=pointer]
+                  - text: "- <script> 태그 위치가 렌더링에 영향을 주는 이유는?"
+                - group [ref=e605]:
+                  - generic "프로세스와 스레드의 차이는 무엇인가요?" [ref=e606] [cursor=pointer]
+                - generic [ref=e607]:
+                  - heading "기타" [level=3] [ref=e608]
+                  - 'link "Permalink: 기타" [ref=e609] [cursor=pointer]':
+                    - /url: "#기타"
+                - group [ref=e612]:
+                  - generic "기획이 확정되지 않았고 디자인 시안도 일부만 나온 상태인데 납기는 정해져 있다면, 어떻게 개발을 진행하시겠어요?" [ref=e613] [cursor=pointer]
+                - group [ref=e614]:
+                  - generic "지금까지 개발하면서 겪은 가장 큰 갈등(분쟁)은 무엇이었고, 어떻게 해결했나요?" [ref=e615] [cursor=pointer]
+                - group [ref=e616]:
+                  - generic "최근 1년 내에 새로운 기술이나 도구 도입을 검토한 경험을 말씀해 주세요. 도입 여부의 판단 기준과 얻은 교훈은 무엇인가요?" [ref=e617] [cursor=pointer]
+                - group [ref=e618]:
+                  - generic "최근 학습했거나 흥미롭게 본 기술 아티클(또는 기술)을 회사 동료에게 소개한다고 생각하고 설명해 주세요." [ref=e619] [cursor=pointer]
+        - generic [ref=e623]:
+          - generic [ref=e626]:
+            - heading "About" [level=2] [ref=e627]
+            - paragraph [ref=e628]: 프론트엔드 신입 및 주니어를 위한 기술 면접 핸드북 입니다.
+            - heading "Resources" [level=3] [ref=e629]
+            - link "Readme" [ref=e631] [cursor=pointer]:
+              - /url: "#readme-ov-file"
+            - heading "Contributing" [level=3] [ref=e634]
+            - link "Contributing" [ref=e636] [cursor=pointer]:
+              - /url: "#contributing-ov-file"
+            - link "Activity" [ref=e640] [cursor=pointer]:
+              - /url: /hov-i/fe-interview-handbook/activity
+            - heading "Stars" [level=3] [ref=e643]
+            - generic [ref=e645]:
+              - strong [ref=e648]: "2"
+              - text: stars
+            - heading "Watchers" [level=3] [ref=e649]
+            - generic [ref=e651]:
+              - strong [ref=e654]: "0"
+              - text: watching
+            - heading "Forks" [level=3] [ref=e655]
+            - link [ref=e657] [cursor=pointer]:
+              - /url: /hov-i/fe-interview-handbook/forks
+              - strong [ref=e660]: "1"
+              - text: fork
+            - link "Report repository" [ref=e662] [cursor=pointer]:
+              - /url: /contact/report-content?content_url=https%3A%2F%2Fgithub.com%2Fhov-i%2Ffe-interview-handbook&report=hov-i+%28user%29
+          - generic [ref=e664]:
+            - heading [level=2] [ref=e665]:
+              - link "Releases" [ref=e666] [cursor=pointer]:
+                - /url: /hov-i/fe-interview-handbook/releases
+            - generic [ref=e667]: No releases published
+          - generic [ref=e669]:
+            - heading [level=2] [ref=e670]:
+              - link "Packages" [ref=e671] [cursor=pointer]:
+                - /url: /users/hov-i/packages?repo_name=fe-interview-handbook
+            - generic [ref=e672]: No packages published
+          - generic [ref=e674]:
+            - heading [level=2] [ref=e675]:
+              - link "Contributors 6" [ref=e676] [cursor=pointer]:
+                - /url: /hov-i/fe-interview-handbook/graphs/contributors
+                - text: Contributors
+                - generic "6" [ref=e677]
+            - list [ref=e678]:
+              - listitem [ref=e679]:
+                - link [ref=e680] [cursor=pointer]:
+                  - /url: https://github.com/hov-i
+                  - img "@hov-i" [ref=e681]
+              - listitem [ref=e682]:
+                - link [ref=e683] [cursor=pointer]:
+                  - /url: https://github.com/apps/github-actions
+                  - img "@github-actions[bot]" [ref=e684]
+              - listitem [ref=e685]:
+                - link [ref=e686] [cursor=pointer]:
+                  - /url: https://github.com/kzlsk
+                  - img "@kzlsk" [ref=e687]
+              - listitem [ref=e688]:
+                - link [ref=e689] [cursor=pointer]:
+                  - /url: https://github.com/claude
+                  - img "@claude" [ref=e690]
+              - listitem [ref=e691]:
+                - link [ref=e692] [cursor=pointer]:
+                  - /url: https://github.com/Leeseunghwan7305
+                  - img "@Leeseunghwan7305" [ref=e693]
+              - listitem [ref=e694]:
+                - link [ref=e695] [cursor=pointer]:
+                  - /url: https://github.com/restareaByWeezy
+                  - img "@restareaByWeezy" [ref=e696]
+          - generic [ref=e698]:
+            - heading "Languages" [level=2] [ref=e699]
+            - list [ref=e703]:
+              - listitem [ref=e704]:
+                - link "JavaScript 100.0%" [ref=e705] [cursor=pointer]:
+                  - /url: /hov-i/fe-interview-handbook/search?l=javascript
+                  - generic [ref=e708]: JavaScript
+                  - generic [ref=e709]: 100.0%
+  - contentinfo [ref=e711]:
+    - heading "Footer" [level=2] [ref=e712]
+    - generic [ref=e713]:
+      - generic [ref=e714]:
+        - link "GitHub Homepage" [ref=e715] [cursor=pointer]:
+          - /url: https://github.com
+        - generic [ref=e718]: © 2026 GitHub, Inc.
+      - navigation "Footer" [ref=e719]:
+        - heading "Footer navigation" [level=3] [ref=e720]
+        - list "Footer navigation" [ref=e721]:
+          - listitem [ref=e722]:
+            - link "Terms" [ref=e723] [cursor=pointer]:
+              - /url: https://docs.github.com/site-policy/github-terms/github-terms-of-service
+          - listitem [ref=e724]:
+            - link "Privacy" [ref=e725] [cursor=pointer]:
+              - /url: https://docs.github.com/site-policy/privacy-policies/github-privacy-statement
+          - listitem [ref=e726]:
+            - link "Security" [ref=e727] [cursor=pointer]:
+              - /url: https://github.com/security
+          - listitem [ref=e728]:
+            - link "Status" [ref=e729] [cursor=pointer]:
+              - /url: https://www.githubstatus.com/
+          - listitem [ref=e730]:
+            - link "Community" [ref=e731] [cursor=pointer]:
+              - /url: https://github.community/
+          - listitem [ref=e732]:
+            - link "Docs" [ref=e733] [cursor=pointer]:
+              - /url: https://docs.github.com/
+          - listitem [ref=e734]:
+            - link "Contact" [ref=e735] [cursor=pointer]:
+              - /url: https://support.github.com?tags=dotcom-footer
+          - listitem [ref=e736]:
+            - button "Manage cookies" [ref=e738] [cursor=pointer]
+          - listitem [ref=e739]:
+            - button "Do not share my personal information" [ref=e741] [cursor=pointer]
