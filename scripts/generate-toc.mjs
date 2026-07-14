@@ -4,7 +4,7 @@ import { join, basename, dirname, relative } from 'path';
 // 허용 카테고리 (정의 순서 = 출력 순서)
 const CATEGORIES = [
   'JavaScript', 'TypeScript', 'React', 'CSS', 'HTML',
-  'Network', 'Browser', 'CS', '기타',
+  'Network', 'Browser', 'CS', '자료구조', '빌드도구', '기타',
 ];
 
 const ROOT = new URL('..', import.meta.url).pathname;
