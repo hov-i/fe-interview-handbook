@@ -57,7 +57,9 @@ weeks/week-XX/{본인 GitHub 핸들}.md
 | `HTML` | 시맨틱, 접근성, SEO 등 |
 | `Network` | HTTP, 캐싱, 보안, REST 등 |
 | `Browser` | DOM, 렌더링 파이프라인, 이벤트 등 |
-| `CS` | 자료구조, 알고리즘, OS, DB 등 |
+| `CS` | OS, DB, 네트워크 기초 등 |
+| `자료구조` | 리스트, 트리, 해시 등 |
+| `빌드도구` | Webpack, Vite, CI/CD 등 |
 | `기타` | 위에 해당하지 않는 주제 |
 
 ---
