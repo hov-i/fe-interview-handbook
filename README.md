@@ -55,7 +55,7 @@
 ## 📚 Interview
 
 <!-- TOC:START -->
-> **111** 개 질문 · 마지막 업데이트: 2026-07-22
+> **106** 개 질문 · 마지막 업데이트: 2026-07-28
 
 ---
 
@@ -172,72 +172,6 @@ Promise.resolve().then(() => console.log('micro'));
 </details>
 
 <details>
-<summary>이벤트 버블링과 캡처링은 무엇인가요?</summary>
-
-### 답변
-
-DOM 이벤트가 전파되는 두 가지 방향으로, 하나의 이벤트가 여러 요소를 거치며 전달됩니다.
-
-- **캡처링**: 최상위(document)에서 시작해 타겟 요소까지 **아래로** 내려갑니다.
-- **타겟**: 실제 이벤트가 발생한 요소에 도달합니다.
-- **버블링**: 타겟에서 최상위까지 다시 **위로** 올라갑니다. (기본 동작)
-
-```javascript
-// 세 번째 인자 true면 캡처링 단계에서 실행
-parent.addEventListener("click", handler, true);
-
-// 전파 중단
-event.stopPropagation();
-```
-
-
-<blockquote>
-
-**꼬리질문**
-
-<details>
-<summary>이벤트 위임(Event Delegation)은 어떤 원리를 이용하나요?</summary>
-
-### 답변
-**이벤트 버블링**을 이용해, 개별 자식 요소 대신 공통 부모에 하나의 이벤트 리스너만 등록하는 패턴입니다.
-
-- **원리**: 자식에서 발생한 이벤트가 버블링으로 부모까지 올라오므로, 부모에서 `event.target`을 확인해 처리합니다.
-- **장점**: 리스너 수가 줄어 메모리를 절약하고, 동적으로 추가되는 요소도 별도 등록 없이 처리됩니다.
-
-```javascript
-document.querySelector('ul').addEventListener('click', (e) => {
-  if (e.target.tagName === 'LI') {
-    console.log(e.target.textContent);
-  }
-});
-```
-
-</details>
-
-<details>
-<summary>`stopPropagation`과 `preventDefault`의 차이는?</summary>
-
-### 답변
-둘 다 이벤트 동작을 제어하지만, **전파를 막는지, 기본 동작을 막는지**가 다릅니다.
-
-- **stopPropagation**: 이벤트가 부모로 전파(버블링/캡처링)되는 것을 **중단**합니다. 현재 요소의 핸들러는 실행되고, 상위 요소의 핸들러는 실행되지 않습니다.
-- **preventDefault**: 브라우저의 **기본 동작을 취소**합니다. (예: `<a>`의 페이지 이동, `<form>`의 제출)
-- **독립적**: 둘은 별개이므로 함께 사용할 수도 있습니다.
-
-```javascript
-link.addEventListener('click', (e) => {
-  e.preventDefault();    // 페이지 이동 막기
-  e.stopPropagation();   // 버블링 막기
-});
-```
-
-</details>
-
-</blockquote>
-
-</details>
-
-<details>
 <summary>클로저란 무엇인가요?</summary>
 
 ### 답변
@@ -342,44 +276,12 @@ counter.increment(); // 1
 <summary>TDZ는 무엇인가요?</summary>
 
 ### 답변
-`let`, `const`로 선언한 변수가 **선언 위치에 도달하기 전까지 접근할 수 없는 구간**입니다.
 
-- **동작**: 선언은 스코프 최상단으로 호이스팅되지만, 초기화 전까지 "미초기화" 상태로 남습니다.
-- **결과**: 이 구간에서 접근하면 `undefined`가 아니라 `ReferenceError`가 발생합니다.
-- **목적**: 변수를 선언 전에 사용하는 실수를 방지합니다.
+Map은 Object와 달리 key를 문자열로 변환하지 않고 참조값 자체로 관리하기 때문에 객체를 key로 사용할 수 있습니다.
 
-```javascript
-console.log(x); // ReferenceError (TDZ 구간)
-let x = 1;
-```
+예를들어 같은 형태의 객체라도 참조가 다르면 다른 key로 판단합니다.
 
 </details>
-
-</blockquote>
-
-</details>
-
-<details>
-<summary>화살표 함수와 일반 함수의 차이는?</summary>
-
-### 답변
-
-화살표 함수의 this는 언제나 상위 스코프의 this를 가리키며 arguments 객체가 없고, new 생성자로 호출합니다. </br>
-반면 일반 함수는 호출 방식에 따라 this가 동적으로 결정됩니다.
-
-
-<blockquote>
-
-**꼬리질문**
-
-<details>
-<summary>화살표 함수를 객체 메서드로 쓰면 안 되는 이유는?</summary>
-
-### 답변
-- this가 객체가 아닌 상위 스코프를 가리켜 obj.method()를 호출해도 this가 객체가 되지 않음
-
-</details>
-- 리액트에서 이벤트 핸들러를 화살표 함수로 쓰는 이유는?
 
 </blockquote>
 
@@ -608,23 +510,92 @@ DOM 노드, 함수, 그리고 일부 특수 객체는 복사할 수 없습니다
 </details>
 
 <details>
-<summary>자바스크립트에서 this는 어떻게 결정되나요?</summary>
+<summary>이벤트 버블링과 캡처링은 무엇인가요?</summary>
 
 ### 답변
 
-this는 함수가 선언된 위치가 아니라 **호출 방식**에 따라 동적으로 결정됩니다.
+DOM 이벤트가 전파되는 두 가지 방향으로, 하나의 이벤트가 여러 요소를 거치며 전달됩니다.
 
-일반 함수 호출에서는 전역 객체(브라우저에서 `window`, strict mode에서는 `undefined`)를 가리킵니다. 메서드 호출에서는 `.` 앞의 객체를 가리킵니다. `call`, `apply`, `bind`를 사용하면 this를 명시적으로 지정할 수 있습니다. `new` 키워드와 함께 호출하면 새로 생성된 인스턴스 객체가 this가 됩니다.
+- **캡처링**: 최상위(document)에서 시작해 타겟 요소까지 **아래로** 내려갑니다.
+- **타겟**: 실제 이벤트가 발생한 요소에 도달합니다.
+- **버블링**: 타겟에서 최상위까지 다시 **위로** 올라갑니다. (기본 동작)
 
-화살표 함수는 예외적으로 자신만의 this를 갖지 않고, 선언된 위치의 상위 스코프의 this를 그대로 사용합니다.
+```javascript
+// 세 번째 인자 true면 캡처링 단계에서 실행
+parent.addEventListener("click", handler, true);
+
+// 전파 중단
+event.stopPropagation();
+```
 
 
 <blockquote>
 
 **꼬리질문**
 
-- 화살표 함수에서 this가 다르게 동작하는 이유는?
-- call, apply, bind의 차이는?
+<details>
+<summary>이벤트 위임(Event Delegation)은 어떤 원리를 이용하나요?</summary>
+
+### 답변
+**이벤트 버블링**을 이용해, 개별 자식 요소 대신 공통 부모에 하나의 이벤트 리스너만 등록하는 패턴입니다.
+
+- **원리**: 자식에서 발생한 이벤트가 버블링으로 부모까지 올라오므로, 부모에서 `event.target`을 확인해 처리합니다.
+- **장점**: 리스너 수가 줄어 메모리를 절약하고, 동적으로 추가되는 요소도 별도 등록 없이 처리됩니다.
+
+```javascript
+document.querySelector('ul').addEventListener('click', (e) => {
+  if (e.target.tagName === 'LI') {
+    console.log(e.target.textContent);
+  }
+});
+```
+
+</details>
+
+<details>
+<summary>`stopPropagation`과 `preventDefault`의 차이는?</summary>
+
+### 답변
+둘 다 이벤트 동작을 제어하지만, **전파를 막는지, 기본 동작을 막는지**가 다릅니다.
+
+- **stopPropagation**: 이벤트가 부모로 전파(버블링/캡처링)되는 것을 **중단**합니다. 현재 요소의 핸들러는 실행되고, 상위 요소의 핸들러는 실행되지 않습니다.
+- **preventDefault**: 브라우저의 **기본 동작을 취소**합니다. (예: `<a>`의 페이지 이동, `<form>`의 제출)
+- **독립적**: 둘은 별개이므로 함께 사용할 수도 있습니다.
+
+```javascript
+link.addEventListener('click', (e) => {
+  e.preventDefault();    // 페이지 이동 막기
+  e.stopPropagation();   // 버블링 막기
+});
+```
+
+</details>
+
+</blockquote>
+
+</details>
+
+<details>
+<summary>화살표 함수와 일반 함수의 차이는?</summary>
+
+### 답변
+
+화살표 함수의 this는 언제나 상위 스코프의 this를 가리키며 arguments 객체가 없고, new 생성자로 호출합니다. </br>
+반면 일반 함수는 호출 방식에 따라 this가 동적으로 결정됩니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+<details>
+<summary>화살표 함수를 객체 메서드로 쓰면 안 되는 이유는?</summary>
+
+### 답변
+- this가 객체가 아닌 상위 스코프를 가리켜 obj.method()를 호출해도 this가 객체가 되지 않음
+
+</details>
+- 리액트에서 이벤트 핸들러를 화살표 함수로 쓰는 이유는?
 
 </blockquote>
 
@@ -821,6 +792,47 @@ useLayoutEffect는 브라우저 렌더링 전에 실행되므로 남용하게 �
 </details>
 
 <details>
+<summary>대량 데이터 일괄 처리 시 병렬 API 호출은 어떻게 설계하나요?</summary>
+
+### 답변
+
+`Promise.all` 또는 `Promise.allSettled`를 사용해 여러 API 호출을 동시에 실행하되, 동시 요청 수를 제한하는 청크 단위 처리가 핵심입니다.
+
+수백 건의 데이터를 한 번에 `Promise.all`로 보내면 서버에 과부하가 걸리므로, 배열을 일정 크기(예: 10~50건)로 나눈 뒤 청크 단위로 병렬 처리합니다. 각 청크가 완료되면 다음 청크를 실행하는 방식입니다. `Promise.allSettled`를 쓰면 일부 실패해도 나머지 결과를 확인할 수 있어 부분 실패 처리에 유리합니다.
+
+또한 API 호출 전에 클라이언트 측에서 유효성 검증을 수행하면 형식 오류가 있는 데이터를 사전에 걸러내 불필요한 서버 호출을 줄일 수 있습니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+<details>
+<summary>Promise.all과 Promise.allSettled의 차이는?</summary>
+
+### 답변
+**실패 처리 방식**이 다릅니다.
+
+- **Promise.all**: 하나라도 거부되면 **즉시 전체가 거부**됩니다. 모든 작업이 성공해야 할 때 사용합니다.
+- **Promise.allSettled**: 모든 Promise가 **이행이든 거부든 끝날 때까지 기다리고**, 각각의 결과(`{status, value/reason}`)를 배열로 반환합니다.
+- **선택 기준**: 부분 실패를 허용하고 각 결과를 개별 처리하고 싶으면 `allSettled`, 전부 성공해야 의미 있는 작업이면 `all`을 사용합니다.
+
+```javascript
+const results = await Promise.allSettled([fetchA(), fetchB()]);
+results.forEach(r => {
+  if (r.status === 'fulfilled') console.log(r.value);
+  else console.log(r.reason);
+});
+```
+
+</details>
+- 청크 크기는 어떤 기준으로 결정하나요?
+
+</blockquote>
+
+</details>
+
+<details>
 <summary>프로토타입 체인을 실행 컨텍스트와 엮어서 설명해 주세요.</summary>
 
 ### 답변
@@ -974,7 +986,14 @@ ex ) modal 등
 
 **꼬리질문**
 
-- any 타입을 쓰면 안 되는 이유는?
+<details>
+<summary>any 타입을 쓰면 안 되는 이유는?</summary>
+
+### 답변
+- any 타입 사용 시 타입 검사를 완전히 비활성화하기 때문에 타입스크립트 사용 의미가 없어짐
+- unknown을 사용해 타입 가드로 좁히는 게 안전
+
+</details>
 
 <details>
 <summary>타입 가드란?</summary>
@@ -1056,15 +1075,6 @@ type C = A & { y: string } // 인터섹션
 > 자주 출제되며, 알고 있으면 플러스가 되는 질문입니다.
 
 <details>
-<summary>타입스크립트에서 any 타입을 쓰면 안 되는 이유는 무엇인가요?</summary>
-
-### 답변
-- any 타입 사용 시 타입 검사를 완전히 비활성화하기 때문에 타입스크립트 사용 의미가 없어짐
-- unknown을 사용해 타입 가드로 좁히는 게 안전
-
-</details>
-
-<details>
 <summary>TypeScript의 제네릭(Generic)은 왜 사용하나요?</summary>
 
 ### 답변
@@ -1141,14 +1151,6 @@ getProp(user, 'name'); // string으로 추론
 </details>
 
 <details>
-<summary>type과 interface 중 type을 선택하는 상황은 언제인가요?</summary>
-
-### 답변
-- 유니온 타입, 튜플, 함수 타입 등 interface로 표현하기 어려운 복잡한 타입 조합 필요한 경우 사용
-
-</details>
-
-<details>
 <summary>TypeScript에서 type과 interface의 차이는?</summary>
 
 ### 답변
@@ -1161,7 +1163,13 @@ type은 유니온, 인터섹션, 조건부 타입 같은 복잡한 타입 조합
 
 **꼬리질문**
 
-- 어떤 상황에서 type을 선택하나요?
+<details>
+<summary>어떤 상황에서 type을 선택하나요?</summary>
+
+### 답변
+- 유니온 타입, 튜플, 함수 타입 등 interface로 표현하기 어려운 복잡한 타입 조합 필요한 경우 사용
+
+</details>
 - 선언 병합이 실제로 쓰이는 경우는?
 
 </blockquote>
@@ -1197,6 +1205,31 @@ type은 유니온, 인터섹션, 조건부 타입 같은 복잡한 타입 조합
 </details>
 
 <details>
+<summary>리액트에서 이벤트를 어떻게 핸들링하나요?</summary>
+
+### 답변
+
+JSX에서는 onClick, onChange 같은 camelCase 속성으로 핸들러를 연결하지만, 리액트에서는 내부적으로 이벤트 위임 방식으로 루트에 등록해 관리합니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+<details>
+<summary>리액트의 합성 이벤트란 무엇인가요?</summary>
+
+### 답변
+- 브라우저마다 다른 이벤트 동작을 통일하기 위해 제공하는 객체
+
+</details>
+- e.preventDefault(), e.stopPropagination() 차이는?
+
+</blockquote>
+
+</details>
+
+<details>
 <summary>리액트의 컴포넌트 라이프 사이클은?</summary>
 
 ### 답변
@@ -1210,7 +1243,15 @@ type은 유니온, 인터섹션, 조건부 타입 같은 복잡한 타입 조합
 **꼬리질문**
 
 - useEffect clenup 함수는 언제 실행되나요?
-- 마운트와 언마운트가 각각 어떤 시점인가요?
+
+<details>
+<summary>마운트와 언마운트가 각각 어떤 시점인가요?</summary>
+
+### 답변
+- 마운트는 컴포넌트가 처음 DOM에 삽입되는 시점
+- 언마운트는 컴포넌트가 DOM에서 제거되는 시점으로 페이지 이동이나 조건부 렌더링으로 컴포넌트가 사라지는 시점
+
+</details>
 
 </blockquote>
 
@@ -1302,26 +1343,16 @@ state는 자식 컴포넌트 내부에서 값을 변경할 수 있습니다.
 </details>
 
 <details>
-<summary>React에서 key prop이 reconciliation과정에서 왜 중요한가</summary>
-
-### 답변
-- key를 고유 값으로 주면 어떤 요소가 추가/삭제/이동됐는지 정확히 식별 가능하기 때문에 효율적으로 이전 트리와 비교 가능
-- key가 없으면 react는 배열 순서로 엘리먼트를 비교해 불필요한 리렌더링이나 잘못된 DOM 재사용 발생 가능
-
-</details>
-
-<details>
-<summary>SSR(서버 사이드 렌더링)과 CSR(클라이언트 사이드 렌더링)의 차이는?</summary>
+<summary>React에서 상태를 컴포넌트 간에 공유하는 방법은?</summary>
 
 ### 답변
 
-SSR은 서버에서 HTML을 완성하여 보내고, CSR은 브라우저에서 자바스크립트로 화면을 그리는 방식입니다.
+상태의 범위와 복잡도에 따라 여러 방법을 선택합니다.
 
-CSR은 초기에 빈 HTML과 JS 번들을 받아 클라이언트에서 렌더링하므로 초기 로딩이 느리지만, 이후 페이지 전환이 빠릅니다. SEO에 불리하고 First Contentful Paint가 늦습니다.
-
-SSR은 서버에서 완성된 HTML을 보내므로 초기 콘텐츠 표시가 빠르고 SEO에 유리합니다. 하지만 서버 부하가 늘고, 인터랙션을 위해 hydration 과정이 필요합니다.
-
-Next.js는 페이지별로 SSR, SSG, CSR을 혼합하여 각 장점을 활용할 수 있게 합니다.
+- **props 전달**: 부모 → 자식으로 직접 내려줍니다. (가장 기본)
+- **상태 끌어올리기(Lifting State Up)**: 공통 부모로 상태를 올려 형제 간 공유합니다.
+- **Context API**: 깊은 트리에 걸친 전역성 데이터(테마, 인증 등)를 prop drilling 없이 전달합니다.
+- **상태 관리 라이브러리**: Redux, Zustand, Jotai 등으로 복잡한 전역 상태를 관리합니다.
 
 
 <blockquote>
@@ -1329,16 +1360,26 @@ Next.js는 페이지별로 SSR, SSG, CSR을 혼합하여 각 장점을 활용할
 **꼬리질문**
 
 <details>
-<summary>Hydration이란 무엇인가요?</summary>
+<summary>Prop Drilling이란 무엇이고 왜 문제가 되나요?</summary>
 
 ### 답변
+부모에서 깊은 자식까지 데이터를 전달하기 위해 **중간 컴포넌트들이 사용하지도 않는 props를 계속 넘겨받는** 현상입니다.
 
-SSR 결과 HTML ≠ Client React 렌더링 결과 → Hydration 불일치
-
-서버와 클라이언트의 결과가 다르기 때문에 발생합니다.
+- **문제**: 중간 컴포넌트가 불필요한 props에 의존하게 되어 유지보수가 어렵고, props 이름 변경 시 경로 전체를 수정해야 합니다.
+- **해결 방법**: Context API, 상태 관리 라이브러리(Zustand, Redux), 또는 컴포넌트 합성(children 패턴)으로 우회합니다.
 
 </details>
-- SSG(Static Site Generation)와 SSR의 차이는?
+
+<details>
+<summary>Context를 남용하면 어떤 성능 문제가 생길 수 있나요?</summary>
+
+### 답변
+Context의 값이 바뀌면 해당 Context를 구독하는 **모든 컴포넌트가 재렌더링**됩니다.
+
+- **원인**: Context는 값 변경 시 부분 구독이 불가능해, 값의 일부만 사용하는 컴포넌트도 전부 다시 렌더링됩니다.
+- **완화 방법**: Context를 용도별로 잘게 분리하거나, 자주 바뀌는 값은 별도 상태 관리 도구를 사용합니다. `useMemo`로 Provider의 value를 메모이제이션하는 것도 도움됩니다.
+
+</details>
 
 </blockquote>
 
@@ -1411,7 +1452,15 @@ Virtual DOM은 실제 DOM의 가벼운 복사본을 메모리에 유지하는 �
 **꼬리질문**
 
 - React Fiber는 무엇인가요?
-- key prop이 reconciliation에서 왜 중요한가요?
+
+<details>
+<summary>key prop이 reconciliation에서 왜 중요한가요?</summary>
+
+### 답변
+- key를 고유 값으로 주면 어떤 요소가 추가/삭제/이동됐는지 정확히 식별 가능하기 때문에 효율적으로 이전 트리와 비교 가능
+- key가 없으면 react는 배열 순서로 엘리먼트를 비교해 불필요한 리렌더링이나 잘못된 DOM 재사용 발생 가능
+
+</details>
 
 </blockquote>
 
@@ -1465,61 +1514,12 @@ Virtual DOM은 실제 DOM의 가벼운 복사본을 메모리에 유지하는 �
 </details>
 
 <details>
-<summary>리액트에서 이벤트를 어떻게 핸들링하나요?</summary>
-
-### 답변
-
-JSX에서는 onClick, onChange 같은 camelCase 속성으로 핸들러를 연결하지만, 리액트에서는 내부적으로 이벤트 위임 방식으로 루트에 등록해 관리합니다.
-
-
-<blockquote>
-
-**꼬리질문**
-
-- 리액트의 합성 이벤트란 무엇인가요?
-- e.preventDefault(), e.stopPropagination() 차이는?
-
-</blockquote>
-
-</details>
-
-<details>
-<summary>리액트에서 합성 이벤트란 무엇인가요?</summary>
-
-### 답변
-- 브라우저마다 다른 이벤트 동작을 통일하기 위해 제공하는 객체
-
-</details>
-
-<details>
-<summary>마운트와 언마운트는 각각 어떤 시점인가요?</summary>
-
-### 답변
-- 마운트는 컴포넌트가 처음 DOM에 삽입되는 시점
-- 언마운트는 컴포넌트가 DOM에서 제거되는 시점으로 페이지 이동이나 조건부 렌더링으로 컴포넌트가 사라지는 시점
-
-</details>
-
-<details>
 <summary>컴포넌트 단위로 개발 시에 장점은 무엇인가요?</summary>
 
 ### 답변
 - UI를 독립적인 단위로 분리하여 재사용성 향상
 - 공통 컴포넌트로 구현 시 여러 곳에서 사용 가능하며 수정 시 한 곳에서만 수정하면 됨
 - 각 컴포넌트가 자체 상태와 로직을 가져 독립적으로 테스트 및 유지보수 가능
-
-</details>
-
-<details>
-<summary>Controlled 패턴과 Uncontrolled 패턴을 함께 사용하는 경우는 있나요?</summary>
-
-### 답변
-
-네, 하나의 폼 안에서 두 패턴을 혼합하여 사용하는 경우가 있습니다.
-
-대부분의 입력 필드는 Controlled로 관리하면서, 파일 입력(`input type="file"`)처럼 리액트로 값을 제어할 수 없는 요소는 Uncontrolled로 두는 것이 일반적입니다. react-hook-form 같은 라이브러리는 내부적으로 Uncontrolled 방식을 사용하면서 `register`와 `watch`로 필요한 시점에만 값을 읽어, Controlled의 편리함과 Uncontrolled의 성능 이점을 결합합니다.
-
-핵심은 각 필드의 요구사항에 맞게 적절한 패턴을 선택하는 것이며, 반드시 하나로 통일할 필요는 없습니다.
 
 </details>
 
@@ -1533,43 +1533,23 @@ JSX에서는 onClick, onChange 같은 camelCase 속성으로 핸들러를 연결
 </details>
 
 <details>
-<summary>React에서 상태를 컴포넌트 간에 공유하는 방법은?</summary>
+<summary>React에서 SSR과 CSR의 차이점과 Next.js 마이그레이션 시 고려할 점은?</summary>
 
 ### 답변
 
-상태의 범위와 복잡도에 따라 여러 방법을 선택합니다.
+CSR은 브라우저에서 JavaScript로 화면을 그리고, SSR은 서버에서 HTML을 완성해 보내는 방식입니다.
 
-- **props 전달**: 부모 → 자식으로 직접 내려줍니다. (가장 기본)
-- **상태 끌어올리기(Lifting State Up)**: 공통 부모로 상태를 올려 형제 간 공유합니다.
-- **Context API**: 깊은 트리에 걸친 전역성 데이터(테마, 인증 등)를 prop drilling 없이 전달합니다.
-- **상태 관리 라이브러리**: Redux, Zustand, Jotai 등으로 복잡한 전역 상태를 관리합니다.
+CSR(React SPA)은 초기에 빈 HTML과 JS 번들을 받아 렌더링하므로 첫 화면이 느리고, 모든 페이지가 동일한 메타 정보를 가져 SEO와 SNS 공유 미리보기가 불리합니다. SSR은 서버에서 완성된 HTML을 보내므로 초기 콘텐츠 표시가 빠르고 검색 엔진이 콘텐츠를 읽을 수 있습니다.
+
+Next.js로 마이그레이션할 때는 `generateMetadata`를 사용해 페이지별로 동적 OpenGraph 메타데이터를 서버 단계에서 생성할 수 있어, 경기별/챔피언별로 다른 미리보기를 제공하는 것이 가능해집니다. 또한 서버 컴포넌트와 클라이언트 컴포넌트의 경계를 명확히 나누고, hydration 불일치를 방지하는 것이 중요합니다.
 
 
 <blockquote>
 
 **꼬리질문**
 
-<details>
-<summary>Prop Drilling이란 무엇이고 왜 문제가 되나요?</summary>
-
-### 답변
-부모에서 깊은 자식까지 데이터를 전달하기 위해 **중간 컴포넌트들이 사용하지도 않는 props를 계속 넘겨받는** 현상입니다.
-
-- **문제**: 중간 컴포넌트가 불필요한 props에 의존하게 되어 유지보수가 어렵고, props 이름 변경 시 경로 전체를 수정해야 합니다.
-- **해결 방법**: Context API, 상태 관리 라이브러리(Zustand, Redux), 또는 컴포넌트 합성(children 패턴)으로 우회합니다.
-
-</details>
-
-<details>
-<summary>Context를 남용하면 어떤 성능 문제가 생길 수 있나요?</summary>
-
-### 답변
-Context의 값이 바뀌면 해당 Context를 구독하는 **모든 컴포넌트가 재렌더링**됩니다.
-
-- **원인**: Context는 값 변경 시 부분 구독이 불가능해, 값의 일부만 사용하는 컴포넌트도 전부 다시 렌더링됩니다.
-- **완화 방법**: Context를 용도별로 잘게 분리하거나, 자주 바뀌는 값은 별도 상태 관리 도구를 사용합니다. `useMemo`로 Provider의 value를 메모이제이션하는 것도 도움됩니다.
-
-</details>
+- generateMetadata와 기존 react-helmet의 차이는?
+- hydration 불일치가 발생하는 원인과 해결 방법은?
 
 </blockquote>
 
@@ -1635,29 +1615,6 @@ function useEffect(create, deps) {
 cleanup을 하지않으면 내부에서 타이머, 이벤트 리스너, webSocket 연결같은 작업이 계속 실행되어 메모리 누수나 잘못된 상태 업데이트가 될 수 있기때문입니다.
 
 </details>
-
-</blockquote>
-
-</details>
-
-<details>
-<summary>React에서 useRef는 어떤 용도로 사용하나요?</summary>
-
-### 답변
-
-useRef는 렌더링과 무관하게 값을 유지하는 훅으로, 크게 두 가지 용도로 사용됩니다.
-
-첫째, DOM 요소에 직접 접근할 때 사용합니다. ref 객체를 JSX의 ref 속성에 연결하면 해당 DOM 노드를 `.current`로 참조할 수 있어, 포커스 제어나 스크롤 이동 같은 명령형 조작이 가능합니다.
-
-둘째, 리렌더링 없이 값을 저장하고 싶을 때 사용합니다. useState와 달리 `.current` 값이 바뀌어도 컴포넌트가 다시 렌더링되지 않으므로, 타이머 ID나 이전 상태 값 등을 저장하는 데 적합합니다.
-
-
-<blockquote>
-
-**꼬리질문**
-
-- useRef와 useState의 차이는 무엇인가요?
-- useRef로 이전 상태 값을 저장하는 패턴은 어떻게 구현하나요?
 
 </blockquote>
 
@@ -1763,15 +1720,81 @@ const memoFn = useCallback(() => doSomething(a), [a]);
 </details>
 
 <details>
-<summary>FSD 아키텍처란 무엇인가요?</summary>
+<summary>쿼리 키 팩토리 패턴은 무엇이고 왜 사용하나요?</summary>
 
 ### 답변
 
-FSD(Feature-Sliced Design)는 프론트엔드 프로젝트를 계층(Layer)과 슬라이스(Slice)로 나누어 구조화하는 아키텍처 방법론입니다.
+쿼리 키 팩토리는 TanStack Query의 쿼리 키를 중앙에서 계층적으로 관리하는 패턴입니다.
 
-`app`, `processes`, `pages`, `widgets`, `features`, `entities`, `shared`의 7개 계층으로 구성되며, 상위 계층은 하위 계층만 참조할 수 있다는 단방향 의존성 규칙을 따릅니다. 각 계층 안에서는 도메인별로 슬라이스를 나누고, 슬라이스 내부는 `ui`, `model`, `api`, `lib` 등의 세그먼트로 구성됩니다.
+```typescript
+const tripsQueries = {
+  all: () => ['trips'] as const,
+  lists: () => [...tripsQueries.all(), 'list'] as const,
+  infinite: (filters: Filters) => [...tripsQueries.lists(), 'infinite', filters] as const,
+  detail: (id: number) => [...tripsQueries.all(), 'detail', id] as const,
+};
+```
 
-기능 단위로 코드가 응집되어 있어 특정 기능을 수정할 때 관련 코드를 한곳에서 찾을 수 있고, 의존성 방향이 명확해 대규모 프로젝트에서 유지보수성이 높아집니다. 다만 소규모 프로젝트에서는 구조가 과할 수 있습니다.
+이 구조에서 `queryClient.invalidateQueries({ queryKey: tripsQueries.all() })`을 호출하면 trips 관련 모든 쿼리가 한 번에 무효화됩니다. 쿼리 키가 문자열로 흩어져 있으면 키 불일치로 캐시가 제대로 무효화되지 않는 버그가 발생하기 쉬운데, 팩토리 패턴이 이를 방지합니다.
+
+또한 TypeScript의 `as const`와 결합하면 쿼리 키의 타입 추론이 가능해져, 잘못된 키 사용을 컴파일 타임에 잡을 수 있습니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- invalidateQueries의 키 매칭 규칙은 어떻게 동작하나요?
+
+<details>
+<summary>staleTime과 gcTime(cacheTime)의 차이는?</summary>
+
+### 답변
+
+사용자가 리액트 쿼리를 통해 요청을 보냈을 때
+staleTime이 fresh하면 gcTime안에 데이터가 있는지 확인 후 데이터가 있다면 그 값을 캐싱하고 없다면 api요청을 합니다.
+
+그리고 staleTime이 stale 상태면 바로 api 요청을 보냅니다.
+
+</details>
+
+</blockquote>
+
+</details>
+
+<details>
+<summary>DevTools Profiler로 렌더링 병목을 진단하는 방법은?</summary>
+
+### 답변
+
+React DevTools의 Profiler 탭에서 컴포넌트별 렌더링 횟수와 소요 시간을 기록하고 분석합니다.
+
+Profiler에서 녹화를 시작한 뒤 특정 인터랙션을 수행하면, 각 커밋(commit)에서 어떤 컴포넌트가 렌더링됐고 얼마나 걸렸는지 플레임 차트로 확인할 수 있습니다. "Why did this render?" 옵션을 활성화하면 리렌더링 원인(props 변경, state 변경, 부모 리렌더)도 함께 표시됩니다.
+
+모달의 콜백 함수가 매 렌더마다 새로 생성되어 하위 컴포넌트가 불필요하게 리렌더되는 경우, 콜백을 `useCallback`으로 감싸고 리스트 컴포넌트에 `React.memo`를 적용하면 리렌더를 최소화할 수 있습니다. 단, 무분별한 memo 적용은 오히려 메모리 비용만 늘리므로 Profiler로 실제 병목이 확인된 지점에만 적용하는 것이 좋습니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- React.memo와 useMemo의 차이는?
+- useCallback은 언제 사용하는 것이 적절한가요?
+
+</blockquote>
+
+</details>
+
+<details>
+<summary>FSD(Feature-Sliced Design) 아키텍처에서 웹과 모바일 공통 로직 중복을 어떻게 해소하나요?</summary>
+
+### 답변
+
+FSD 아키텍처의 계층 구조를 활용해 공통 도메인 로직을 상위 레이어에 응집시키고, 플랫폼별 UI는 하위 레이어에서 분기합니다.
+
+`entities` 레이어에 도메인 모델과 타입을, `features` 레이어에 공통 API 호출과 비즈니스 로직을 정의합니다. 웹과 모바일은 각자의 `pages`와 `widgets` 레이어에서 상위 레이어의 로직을 주입받아 화면만 다르게 구성합니다.
+
+이렇게 하면 API 호출이나 도메인 로직 수정이 한 지점에서 끝나고, 신규 기능 추가 시 양쪽에 중복 작업을 하지 않아도 됩니다. 핵심은 FSD의 단방향 의존성 규칙(상위 레이어는 하위 레이어만 참조)을 지켜 계층 간 결합도를 낮추는 것입니다.
 
 
 <blockquote>
@@ -1779,7 +1802,7 @@ FSD(Feature-Sliced Design)는 프론트엔드 프로젝트를 계층(Layer)과 �
 **꼬리질문**
 
 - FSD에서 feature와 entity의 차이는 무엇인가요?
-- FSD의 단방향 의존성 규칙을 위반하면 어떤 문제가 생기나요?
+- 단방향 의존성 규칙을 위반하면 어떤 문제가 발생하나요?
 
 </blockquote>
 
@@ -1855,6 +1878,52 @@ SSR 결과 HTML ≠ Client React 렌더링 결과 → Hydration 불일치
 
 </details>
 
+<details>
+<summary>TanStack Query에서 prefetchQuery와 HydrationBoundary를 사용하는 이유는 무엇인가요?</summary>
+
+### 답변
+
+Next.js App Router 환경에서 서버 컴포넌트 단계에서 데이터를 미리 가져와 클라이언트에 전달하기 위해 사용합니다.
+
+서버 컴포넌트에서 `queryClient.prefetchQuery()`로 데이터를 미리 조회하면, 해당 결과가 QueryClient의 캐시에 저장됩니다. 이 캐시를 `dehydrate()`로 직렬화한 뒤 `HydrationBoundary`의 `state` prop으로 넘기면, 클라이언트 컴포넌트가 마운트될 때 별도의 API 호출 없이 캐시된 데이터를 즉시 사용할 수 있습니다.
+
+이를 통해 초기 데이터 로드 시점이 서버 단계로 앞당겨져 클라이언트 측 워터폴(컴포넌트 마운트 → API 호출 → 렌더링)이 제거되고, 첫 화면 인지 속도가 개선됩니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- prefetchQuery와 fetchQuery의 차이는 무엇인가요?
+- SSR 환경에서 QueryClient를 요청마다 새로 생성해야 하는 이유는?
+
+</blockquote>
+
+</details>
+
+<details>
+<summary>useMutation과 조건부 refetch를 활용한 데이터 갱신 전략은?</summary>
+
+### 답변
+
+TanStack Query에서 `useMutation`의 `onSuccess` 콜백에서 `queryClient.invalidateQueries()`를 호출해 관련 쿼리를 무효화하는 것이 기본 패턴입니다.
+
+하지만 모든 액션에 대해 무조건 refetch하면 불필요한 네트워크 요청이 발생합니다. 사용자 액션의 결과가 이미 mutation 응답에 포함되어 있다면 `setQueryData`로 캐시를 직접 업데이트하고, 서버 상태 동기화가 필요한 경우에만 조건부로 `invalidateQueries`를 호출합니다.
+
+또한 모달 닫기 애니메이션과 refetch 타이밍이 충돌하면 프레임 드랍이 발생할 수 있으므로, 애니메이션 종료 콜백(`onAnimationEnd`, `onTransitionEnd`) 이후에 데이터를 갱신하는 구조가 필요합니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- invalidateQueries와 setQueryData는 각각 언제 사용하나요?
+- 쿼리 키 팩토리 패턴이란 무엇인가요?
+
+</blockquote>
+
+</details>
+
 ---
 
 ## CSS
@@ -1904,35 +1973,6 @@ DOM 트리를 올라가며 `position`이 `static`이 **아닌** 가장 가까운
 - **주의**: 서로 다른 쌓임 맥락에 속한 요소는 `z-index` 값과 무관하게 부모의 순서를 따릅니다.
 
 </details>
-
-</blockquote>
-
-</details>
-
-<details>
-<summary>CSS의 box-sizing 속성은 무엇인가요?</summary>
-
-### 답변
-
-box-sizing은 요소의 너비와 높이를 계산할 때 padding과 border를 포함할지 결정하는 속성입니다.
-
-`content-box`(기본값)는 width/height가 콘텐츠 영역만을 의미하며, padding과 border가 추가되어 실제 크기가 더 커집니다. `border-box`는 width/height에 padding과 border를 포함해 지정한 크기 그대로 유지됩니다.
-
-실무에서는 크기 계산이 직관적인 `border-box`를 전역으로 설정하는 것이 일반적입니다.
-
-```css
-*, *::before, *::after {
-  box-sizing: border-box;
-}
-```
-
-
-<blockquote>
-
-**꼬리질문**
-
-- content-box에서 padding을 추가하면 레이아웃이 깨지는 이유는?
-- box-sizing이 inline 요소에도 적용되나요?
 
 </blockquote>
 
@@ -2093,6 +2133,91 @@ grid는 2차원 레이아웃에 최적화된 속성으로 간격과 비율만 �
 
 </details>
 
+#### ⭐ 심화
+
+> 심화 질문이거나 특정 회사에서 깊게 물어보는 질문입니다. 알면 차별화 포인트가 됩니다.
+
+<details>
+<summary>CSS Variable 기반 테마 시스템은 어떻게 설계하나요?</summary>
+
+### 답변
+
+`:root`에 의미 기반(semantic) CSS 변수를 정의하고, 다크/라이트 모드에 따라 변수 값만 교체하는 구조입니다.
+
+```css
+:root {
+  --color-bg-primary: #ffffff;
+  --color-text-primary: #1a1a1a;
+}
+
+[data-theme="dark"] {
+  --color-bg-primary: #1a1a1a;
+  --color-text-primary: #ffffff;
+}
+```
+
+컴포넌트에서는 `var(--color-bg-primary)`로 참조하므로, 테마 전환 시 변수 값만 바뀌고 컴포넌트 코드는 수정할 필요가 없습니다. Mantine과 Tailwind를 혼용하는 환경에서도 CSS 변수를 단일 진실 원천(Single Source of Truth)으로 삼으면 디자인 토큰 불일치를 방지할 수 있습니다.
+
+`color-primary` 같은 시각적 이름 대신 `color-bg-primary`처럼 의미 기반 이름을 쓰면, 디자인과 개발 간 컬러 불일치를 줄이고 신규 컴포넌트 확장 비용을 최소화할 수 있습니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- CSS 변수와 SCSS 변수의 차이는?
+- prefers-color-scheme 미디어 쿼리와 data-theme 속성 방식의 차이는?
+
+</blockquote>
+
+</details>
+
+<details>
+<summary>Vanilla Extract와 styled-components의 차이는 무엇인가요?</summary>
+
+### 답변
+
+핵심 차이는 스타일이 생성되는 시점입니다. Vanilla Extract는 빌드 타임에, styled-components는 런타임에 CSS를 생성합니다.
+
+Vanilla Extract는 `.css.ts` 파일에서 TypeScript로 스타일을 작성하면 빌드 시 정적 CSS 파일로 추출됩니다. 런타임 오버헤드가 없고 타입 안전한 스타일 작성이 가능합니다. 하지만 props에 따른 동적 스타일링은 CSS 변수나 레시피(recipe) 패턴으로 우회해야 합니다.
+
+styled-components는 런타임에 JavaScript로 CSS를 생성해 `<style>` 태그에 주입합니다. props 기반 동적 스타일링이 자유롭지만, SSR 시 스타일 하이드레이션 처리가 필요하고 번들 크기와 런타임 비용이 추가됩니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- zero-runtime CSS-in-JS의 장점은?
+- Tailwind CSS와 CSS-in-JS의 트레이드오프는?
+
+</blockquote>
+
+</details>
+
+<details>
+<summary>SVG 좌표계 기반 지도 마커 시스템은 왜 뷰포트에 독립적인가요?</summary>
+
+### 답변
+
+SVG는 `viewBox` 속성으로 논리 좌표 공간을 정의하고, 실제 렌더링 크기와 무관하게 내부 좌표가 일정하게 유지되기 때문입니다.
+
+`viewBox="0 0 1000 500"`으로 정의하면 내부 좌표계는 항상 0~1000, 0~500 범위를 사용합니다. 배경 도면과 마커를 같은 좌표 공간 위에 올리면, 컨테이너 크기가 변해도 배경과 마커가 동일한 비율로 스케일됩니다. 별도의 리사이즈 이벤트 리스너나 좌표 보정 로직이 필요 없습니다.
+
+반면 Canvas나 절대 위치(px) 기반으로 마커를 배치하면 컨테이너 크기 변화 시 좌표를 재계산해야 하고, 뷰포트별로 위치가 어긋날 수 있습니다. SVG의 선언적 좌표계가 이 문제를 구조적으로 해결합니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- SVG의 viewBox와 width/height의 관계는?
+- preserveAspectRatio 속성은 어떤 역할을 하나요?
+
+</blockquote>
+
+</details>
+
 ---
 
 ## HTML
@@ -2123,22 +2248,6 @@ grid는 2차원 레이아웃에 최적화된 속성으로 간격과 비율만 �
 </blockquote>
 
 </details>
-
-<details>
-<summary>b와 strong, i와 em의 차이는 무엇인가요?</summary>
-
-### 답변
-시각적으로는 비슷하지만, **의미(시맨틱)를 담는지 여부**가 핵심 차이입니다.
-
-- **b / i**: 순수하게 **시각적 표현**만을 위한 태그. 굵게(`b`), 기울임(`i`)일 뿐 특별한 의미는 없습니다.
-- **strong / em**: **의미적 강조**를 나타냅니다. `strong`은 중요도가 높음, `em`은 강세(emphasis)를 표현합니다.
-- **접근성**: 스크린 리더는 `strong`·`em`을 강조해 읽어주지만 `b`·`i`는 그렇지 않으므로, 의미가 있으면 `strong`·`em`을 사용해야 합니다.
-
-</details>
-
-#### ⭐⭐ 중요
-
-> 자주 출제되며, 알고 있으면 플러스가 되는 질문입니다.
 
 <details>
 <summary>웹 접근성(a11y)을 높이려면 어떻게 해야 하나요?</summary>
@@ -2197,6 +2306,22 @@ grid는 2차원 레이아웃에 최적화된 속성으로 간격과 비율만 �
 </details>
 
 </blockquote>
+
+</details>
+
+#### ⭐⭐ 중요
+
+> 자주 출제되며, 알고 있으면 플러스가 되는 질문입니다.
+
+<details>
+<summary>b와 strong, i와 em의 차이는 무엇인가요?</summary>
+
+### 답변
+시각적으로는 비슷하지만, **의미(시맨틱)를 담는지 여부**가 핵심 차이입니다.
+
+- **b / i**: 순수하게 **시각적 표현**만을 위한 태그. 굵게(`b`), 기울임(`i`)일 뿐 특별한 의미는 없습니다.
+- **strong / em**: **의미적 강조**를 나타냅니다. `strong`은 중요도가 높음, `em`은 강세(emphasis)를 표현합니다.
+- **접근성**: 스크린 리더는 `strong`·`em`을 강조해 읽어주지만 `b`·`i`는 그렇지 않으므로, 의미가 있으면 `strong`·`em`을 사용해야 합니다.
 
 </details>
 
@@ -2499,29 +2624,6 @@ ETag는 서버가 리소스의 **특정 버전을 식별하는 고유 문자열*
 </details>
 
 <details>
-<summary>HTTP/1.1과 HTTP/2의 차이점은 무엇인가요?</summary>
-
-### 답변
-
-HTTP/2는 HTTP/1.1의 성능 한계를 해결하기 위해 설계되었습니다.
-
-HTTP/1.1은 하나의 TCP 연결에서 요청-응답을 순차적으로 처리하여 Head-of-Line Blocking이 발생합니다. 여러 리소스를 동시에 받으려면 다수의 TCP 연결을 열어야 했습니다.
-
-HTTP/2는 하나의 TCP 연결 위에서 여러 요청과 응답을 동시에 주고받는 멀티플렉싱을 지원합니다. 또한 헤더 압축(HPACK), 서버 푸시, 스트림 우선순위 설정 등의 기능이 추가되어 페이지 로딩 속도가 크게 개선됩니다.
-
-
-<blockquote>
-
-**꼬리질문**
-
-- 멀티플렉싱이란 무엇인가요?
-- HTTP/3은 어떤 점이 다른가요?
-
-</blockquote>
-
-</details>
-
-<details>
 <summary>WebSocket과 HTTP의 차이점은 무엇인가요?</summary>
 
 ### 답변
@@ -2566,47 +2668,32 @@ ex ) ai 챗봇 스트리밍, 주문 알림 서비스 등
 
 </details>
 
+#### ⭐ 심화
+
+> 심화 질문이거나 특정 회사에서 깊게 물어보는 질문입니다. 알면 차별화 포인트가 됩니다.
+
 <details>
-<summary>XSS(크로스 사이트 스크립팅)란 무엇이고 어떻게 방어하나요?</summary>
+<summary>Axios 인터셉터를 활용한 토큰 갱신(Refresh Token) 구조는 어떻게 설계하나요?</summary>
 
 ### 답변
 
-XSS는 공격자가 웹 페이지에 악성 스크립트를 삽입하여 사용자의 브라우저에서 실행시키는 보안 공격입니다.
+Axios의 응답 인터셉터에서 401 에러를 감지하면 Refresh Token으로 새 Access Token을 발급받고, 실패했던 요청을 재시도하는 구조입니다.
 
-Stored XSS는 악성 스크립트가 서버에 저장되어 다른 사용자가 페이지를 열 때 실행됩니다. Reflected XSS는 URL 파라미터 등에 포함된 스크립트가 응답에 반영되어 실행됩니다. DOM-based XSS는 클라이언트 자바스크립트가 사용자 입력을 검증 없이 DOM에 삽입할 때 발생합니다.
+응답 인터셉터에서 `error.response.status === 401`을 확인하면, Refresh Token API를 호출해 새 Access Token을 저장하고 원래 요청의 헤더를 갱신한 뒤 `axios(originalRequest)`로 재시도합니다. 이때 동시에 여러 요청이 401을 받는 경우를 대비해, 갱신 중임을 나타내는 플래그와 대기 큐를 두어 토큰 갱신은 한 번만 수행하고 나머지 요청은 갱신 완료 후 순차 재시도합니다.
 
-방어 방법으로는 사용자 입력을 HTML 이스케이프 처리하고, CSP(Content Security Policy) 헤더를 설정하며, 쿠키에 HttpOnly 플래그를 사용합니다. React에서는 JSX가 기본적으로 이스케이프 처리를 해주지만, `dangerouslySetInnerHTML` 사용 시 주의해야 합니다.
+Refresh Token마저 만료된 경우에는 로그아웃 처리하되, 사용자에게 세션 만료 알림을 먼저 보여주는 UX를 함께 설계하는 것이 좋습니다.
 
 
 <blockquote>
 
 **꼬리질문**
 
-<details>
-<summary>CSP(Content Security Policy)란 무엇인가요?</summary>
-
-### 답변
-`let`, `const`로 선언한 변수가 **선언 위치에 도달하기 전까지 접근할 수 없는 구간**입니다.
-
-- **동작**: 선언은 스코프 최상단으로 호이스팅되지만, 초기화 전까지 "미초기화" 상태로 남습니다.
-- **결과**: 이 구간에서 접근하면 `undefined`가 아니라 `ReferenceError`가 발생합니다.
-- **목적**: 변수를 선언 전에 사용하는 실수를 방지합니다.
-
-```javascript
-console.log(x); // ReferenceError (TDZ 구간)
-let x = 1;
-```
-
-</details>
-- React에서 dangerouslySetInnerHTML을 안전하게 사용하는 방법은?
+- 동시 요청 시 토큰 갱신이 중복 호출되는 문제를 어떻게 방지하나요?
+- Access Token을 어디에 저장하는 것이 안전한가요?
 
 </blockquote>
 
 </details>
-
-#### ⭐ 심화
-
-> 심화 질문이거나 특정 회사에서 깊게 물어보는 질문입니다. 알면 차별화 포인트가 됩니다.
 
 <details>
 <summary>REST API 설계에서 프론트엔드는 화면 기준 API를, 백엔드는 오브젝트 중심 모델링을 원해 언더패칭/오버패칭 갈등이 생깁니다. 어떻게 풀어야 할까요?</summary>
@@ -2628,6 +2715,54 @@ let x = 1;
 - BFF란 무엇이고, 언더패칭/오버패칭 문제를 어떻게 절충하나요?
 - BFF를 도입할 여력이 없다면 클라이언트 측에서 어떤 우회 방법이 있나요? (배치 호출, 노멀라이징 캐시)
 - GraphQL 전면 도입과 비교하면 어떤 트레이드오프가 있나요?
+
+</blockquote>
+
+</details>
+
+<details>
+<summary>STOMP WebSocket 통신에서 연결 안정성을 확보하려면 어떤 점을 고려해야 하나요?</summary>
+
+### 답변
+
+STOMP WebSocket 통신에서는 토큰 만료 시 재연결, 구독 관리, 메모리 누수 방지를 함께 고려해야 합니다.
+
+Access Token이 만료되면 STOMP 연결이 끊기는데, 이때 토큰 재발급 후 자동으로 재연결하는 흐름이 필요합니다. 연결 상태를 `useRef`로 관리하면 리렌더링 없이 현재 연결 상태를 추적할 수 있어, 재연결 시점을 정확하게 판단할 수 있습니다.
+
+또한 화면 전환이나 재연결 시 기존 구독을 명시적으로 해제(`unsubscribe`)하지 않으면 중복 구독이 발생해 같은 메시지를 여러 번 수신하게 됩니다. 구독 해제와 연결 종료(`deactivate`) 로직을 분리해 컴포넌트 언마운트나 재연결 시점에 정리해야 할 자원을 명확히 구분하는 것이 중요합니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- WebSocket과 HTTP 폴링의 차이점과 각각 적합한 상황은?
+- useRef로 통신 상태를 관리하는 것과 useState로 관리하는 것의 차이는?
+
+</blockquote>
+
+</details>
+
+<details>
+<summary>WebSocket 미지원 환경에서 실시간 데이터를 처리하려면 어떻게 하나요?</summary>
+
+### 답변
+
+HTTP 폴링(Polling)이나 SSE(Server-Sent Events)로 대체할 수 있습니다.
+
+폴링은 일정 주기로 서버에 요청을 보내 새로운 데이터를 확인하는 방식입니다. 구현이 단순하지만 불필요한 요청이 발생하고 실시간성이 폴링 주기에 의존합니다. Long Polling은 서버가 새 데이터가 생길 때까지 응답을 지연시켜 실시간성을 높입니다.
+
+폴링 환경에서 알람처럼 중복 방지가 필요한 데이터는 이미 처리한 ID를 상태(store)에 저장하고, 새로 수신된 데이터에서 기존 ID를 필터링하는 방식으로 중복을 방지합니다.
+
+SSE는 서버에서 클라이언트로 단방향 스트리밍이 가능하며, HTTP 기반이라 프록시 호환성이 좋습니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- Long Polling과 Short Polling의 차이는?
+- SSE와 WebSocket은 각각 어떤 상황에 적합한가요?
 
 </blockquote>
 
@@ -2686,44 +2821,6 @@ CSS와 JS는 파싱·렌더링 과정에서 서로 다른 방식으로 렌더링
 
 </details>
 
-<details>
-<summary>웹 스토리지(localStorage, sessionStorage)와 쿠키의 차이는?</summary>
-
-### 답변
-
-세 가지 모두 브라우저에 데이터를 저장하지만, 용량, 수명, 서버 전송 여부에서 차이가 있습니다.
-
-쿠키는 약 4KB로 용량이 작고, `Set-Cookie` 헤더로 설정되며, 매 HTTP 요청마다 서버에 자동 전송됩니다. 만료 시간을 설정할 수 있습니다.
-
-localStorage는 약 5~10MB로 용량이 크고, 브라우저를 닫아도 데이터가 유지되며, 서버에 자동 전송되지 않습니다. sessionStorage는 localStorage와 비슷하지만 탭이나 창을 닫으면 데이터가 삭제됩니다.
-
-인증 토큰은 쿠키(HttpOnly 설정), 사용자 설정은 localStorage, 일시적 상태는 sessionStorage에 저장하는 것이 일반적입니다.
-
-
-<blockquote>
-
-**꼬리질문**
-
-- HttpOnly 쿠키란 무엇이고 왜 사용하나요?
-- localStorage에 민감한 정보를 저장하면 안 되는 이유는?
-
-</blockquote>
-
-</details>
-
-<details>
-<summary>async와 defer 속성의 차이는 무엇인가요?</summary>
-
-### 답변
-
-둘 다 HTML 파싱을 차단하지 않고 스크립트를 비동기로 다운로드하지만, **실행 시점과 순서 보장**이 다릅니다.
-
-`async`는 다운로드가 완료되는 즉시 실행하며, 실행 중에는 HTML 파싱이 중단됩니다. 여러 스크립트 간 실행 순서가 보장되지 않으므로 독립적인 스크립트(광고, 분석 도구)에 적합합니다.
-
-`defer`는 다운로드를 병렬로 하되, HTML 파싱이 모두 끝난 후에 실행합니다. 선언 순서대로 실행이 보장되므로 DOM에 의존하는 스크립트에 적합합니다. `DOMContentLoaded` 이벤트 직전에 실행됩니다.
-
-</details>
-
 #### ⭐⭐ 중요
 
 > 자주 출제되며, 알고 있으면 플러스가 되는 질문입니다.
@@ -2770,6 +2867,40 @@ HTML 파싱 중 `script` 태그를 만나면 파싱을 중단하고 자바스크
 
 </details>
 
+<details>
+<summary>Sentry를 프론트엔드에 도입할 때 어떤 점을 고려해야 하나요?</summary>
+
+### 답변
+
+Sentry 도입 시 **로그 레벨 설계**, **대시보드 구성**, **알림 체계**를 함께 고려해야 합니다.
+
+**로그 레벨 설계**가 가장 중요합니다. 모든 이벤트를 무차별 수집하면 노이즈와 비용이 늘어나므로 5단계로 분류합니다.
+
+- `debug`: 개발 단계에서만 사용하며 로그 서버로 전송하지 않습니다.
+- `info`: 데이터가 변경되는 사용자 행동(로그인, 구매 성공 등)을 기록합니다. 단순 조회(상품 목록 등)는 트래픽 낭비이므로 수집하지 않습니다.
+- `warning`: 외부 시스템 연동 실패(회원가입 실패, 푸시 알림 유실 등)를 기록합니다. 단, 사용자 측 네트워크 오류(오프라인, 타임아웃)는 대응 가능한 조치가 없으므로 제외합니다. 이 레벨부터 실시간 알림 대상이 됩니다.
+- `error`: 방어 코드로도 통제할 수 없는 내부 로직 오류(null 참조, enum 파싱 실패, 도달 불가능한 분기 진입 등)를 기록하며 즉시 알림을 설정합니다.
+- `fatal`: 앱 크래시나 처리되지 않은 예외로, Sentry가 자동 감지해 전송합니다.
+
+**대시보드 구성**에서는 crash-free users 비율, 에러 발생 횟수, 에러가 가장 많은 API Top 5, 핵심 이벤트(로그인·구매)의 성공/실패 비율을 시각화합니다. `tags.module`(API, Logic, UI)과 `tags.eventName`(postLogin, putOrder)으로 구조화하면 GroupBy로 집계와 필터링이 가능합니다.
+
+**알림 체계**에서는 중복 알림 방지를 위해 10~15분 대기 시간을 설정하고, 일반 채널과 긴급 채널을 분리합니다. 알림 임계치는 처음에 넉넉히 설정한 뒤 한두 주 운영하며 조정합니다. 예시로는 API 오류 5분간 100회 이상, 로그인 실패율 3% 이상 5분 지속, crash-free users 95% 이하 등이 있습니다.
+
+초기에는 작게 시작해(앱 크래시 + 핵심 기능 성공/실패만 수집) 운영하면서 점진적으로 확장하는 것이 좋습니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- Sentry의 tags, message, extra는 각각 어떤 용도로 사용하나요?
+- beforeSend 콜백으로 민감 정보를 마스킹하는 방법은?
+- 새 릴리스 배포 후 crash-free users 비율이 급락하면 어떻게 대응하나요?
+
+</blockquote>
+
+</details>
+
 ---
 
 ## CS
@@ -2790,7 +2921,14 @@ HTML 파싱 > DOM 트리 생성 > CSS 파싱 > CSSOM 생성 > Render Tree 결합
 
 **꼬리질문**
 
-- reflow와 repaint의 차이와 최소화하는 방법은?
+<details>
+<summary>reflow와 repaint의 차이와 최소화하는 방법은?</summary>
+
+### 답변
+- reflow는 레이아웃 전체 재계산하는 작업, DOM 구조나 크기/위치 변경 시 발생
+- repaint는 시각적 스타일을 다시 그리는 작업, 색상이나 스타일만 변경되는 경우 발생
+
+</details>
 - &lt;script&gt; 태그 위치가 렌더링에 영향을 주는 이유는?
 
 </blockquote>
@@ -2859,15 +2997,6 @@ HTML 파싱 > DOM 트리 생성 > CSS 파싱 > CSSOM 생성 > Render Tree 결합
 
 </details>
 
-<details>
-<summary>reflow와 repaint의 차이에 대해 설명해주세요.</summary>
-
-### 답변
-- reflow는 레이아웃 전체 재계산하는 작업, DOM 구조나 크기/위치 변경 시 발생
-- repaint는 시각적 스타일을 다시 그리는 작업, 색상이나 스타일만 변경되는 경우 발생
-
-</details>
-
 #### ⭐ 심화
 
 > 심화 질문이거나 특정 회사에서 깊게 물어보는 질문입니다. 알면 차별화 포인트가 됩니다.
@@ -2882,19 +3011,6 @@ HTML 파싱 > DOM 트리 생성 > CSS 파싱 > CSSOM 생성 > Render Tree 결합
 공개키로 암호화한 데이터는 짝이 되는 개인키로만 복호화할 수 있고, 반대로 개인키로 서명한 데이터는 공개키로 검증할 수 있습니다.
 
 대칭키보다 연산 속도가 느리지만 안전한 키 교환과 디지털 서명이 가능해, TLS 핸드셰이크 같은 초기 통신 설정에 주로 사용됩니다.
-
-</details>
-
-<details>
-<summary>TLS 핸드셰이크 과정에서 대칭키와 비대칭키는 어떻게 함께 사용되나요?</summary>
-
-### 답변
-
-TLS 핸드셰이크에서는 비대칭키 암호화로 안전하게 대칭키를 교환하고, 이후 실제 데이터 통신은 대칭키로 수행합니다.
-
-클라이언트가 서버에 연결을 요청하면, 서버는 공개키가 포함된 인증서를 보냅니다. 클라이언트는 인증서를 검증한 뒤, 세션에 사용할 대칭키(또는 대칭키 생성에 필요한 값)를 서버의 공개키로 암호화하여 전송합니다. 서버는 개인키로 복호화하여 대칭키를 얻습니다.
-
-이후 통신은 속도가 빠른 대칭키 암호화로 진행됩니다. 비대칭키의 안전한 키 교환과 대칭키의 빠른 암호화, 두 장점을 결합한 방식입니다.
 
 </details>
 
@@ -2919,30 +3035,9 @@ TLS 핸드셰이크에서는 비대칭키 암호화로 안전하게 대칭키를
 
 </details>
 
-<details>
-<summary>큐와 스택의 차이는 무엇인가요?</summary>
+#### ⭐⭐ 중요
 
-### 답변
-
-스택과 큐는 데이터를 넣고 빼는 순서가 반대인 선형 자료구조입니다.
-
-스택은 LIFO(Last In, First Out) 구조로, 가장 마지막에 들어온 데이터가 먼저 나갑니다. 함수 콜 스택, 브라우저 뒤로가기, 실행 취소(Undo) 등에 활용됩니다.
-
-큐는 FIFO(First In, First Out) 구조로, 먼저 들어온 데이터가 먼저 나갑니다. 이벤트 큐, BFS 탐색, 프린터 대기열 등에 활용됩니다.
-
-자바스크립트에서 스택은 배열의 `push`/`pop`, 큐는 `push`/`shift`로 구현할 수 있습니다.
-
-
-<blockquote>
-
-**꼬리질문**
-
-- 자바스크립트의 콜 스택은 어떻게 동작하나요?
-- 우선순위 큐란 무엇인가요?
-
-</blockquote>
-
-</details>
+> 자주 출제되며, 알고 있으면 플러스가 되는 질문입니다.
 
 <details>
 <summary>트리가 뭔가요?</summary>
@@ -2954,65 +3049,6 @@ TLS 핸드셰이크에서는 비대칭키 암호화로 안전하게 대칭키를
 최상위 노드를 루트(root)라 하며, 자식이 없는 노드를 리프(leaf)라고 합니다. 사이클이 없는 연결 구조라는 점이 특징입니다.
 
 대표적으로 이진 트리, 이진 탐색 트리(BST), AVL 트리, B-트리 등이 있으며, 파일 시스템, DOM 구조, 데이터베이스 인덱싱 등에 널리 활용됩니다.
-
-</details>
-
-<details>
-<summary>해시 테이블이란 무엇인가요?</summary>
-
-### 답변
-
-해시 테이블은 키-값 쌍을 저장하는 자료구조로, 해시 함수를 통해 키를 인덱스로 변환하여 데이터를 저장하고 조회합니다.
-
-평균적으로 삽입, 삭제, 검색 모두 O(1)의 시간 복잡도를 가져 빠른 접근이 가능합니다. 하지만 서로 다른 키가 같은 인덱스에 매핑되는 해시 충돌이 발생할 수 있으며, 이를 해결하기 위해 체이닝(연결 리스트)이나 개방 주소법(다른 빈 슬롯 탐색) 등의 방법을 사용합니다.
-
-자바스크립트에서는 `Object`와 `Map`이 해시 테이블 기반으로 구현되어 있습니다.
-
-
-<blockquote>
-
-**꼬리질문**
-
-- 해시 충돌이 발생하면 어떻게 해결하나요?
-- Object와 Map의 차이는 무엇인가요?
-
-</blockquote>
-
-</details>
-
-#### ⭐⭐ 중요
-
-> 자주 출제되며, 알고 있으면 플러스가 되는 질문입니다.
-
-<details>
-<summary>연결 리스트(Linked List)와 배열 기반 리스트의 차이는 무엇인가요?</summary>
-
-### 답변
-
-메모리 구조와 연산 성능에서 차이가 있습니다.
-
-배열 기반 리스트는 연속된 메모리에 데이터를 저장하여 인덱스로 O(1) 접근이 가능하지만, 중간 삽입·삭제 시 요소를 이동시켜야 해 O(n)이 소요됩니다.
-
-연결 리스트는 각 노드가 데이터와 다음 노드의 주소(포인터)를 가지며 메모리상 흩어져 있습니다. 중간 삽입·삭제가 O(1)이지만 특정 위치 접근은 처음부터 순회해야 하므로 O(n)입니다.
-
-접근이 잦으면 배열, 삽입·삭제가 잦으면 연결 리스트가 유리합니다.
-
-</details>
-
-#### ⭐ 심화
-
-> 심화 질문이거나 특정 회사에서 깊게 물어보는 질문입니다. 알면 차별화 포인트가 됩니다.
-
-<details>
-<summary>이진 탐색 트리(BST)의 시간 복잡도는 항상 O(log n)인가요?</summary>
-
-### 답변
-
-아니요, BST의 시간 복잡도는 트리의 균형 여부에 따라 달라집니다.
-
-균형이 잘 잡힌 BST에서는 탐색, 삽입, 삭제가 모두 O(log n)입니다. 하지만 데이터가 정렬된 순서로 삽입되면 트리가 한쪽으로 치우쳐(skewed) 사실상 연결 리스트와 같은 형태가 되어, 최악의 경우 O(n)까지 성능이 저하됩니다.
-
-이 문제를 해결하기 위해 AVL 트리나 레드-블랙 트리 같은 자가 균형 이진 탐색 트리(Self-Balancing BST)가 사용됩니다. 이들은 삽입·삭제 시 자동으로 트리를 회전시켜 균형을 유지하므로, 항상 O(log n) 성능을 보장합니다.
 
 </details>
 
@@ -3091,6 +3127,29 @@ entry 설정에 지정된 파일부터 시작해 import/require 문을 따라가
 > 심화 질문이거나 특정 회사에서 깊게 물어보는 질문입니다. 알면 차별화 포인트가 됩니다.
 
 <details>
+<summary>Storybook과 MSW를 조합한 Mock API 환경은 어떻게 구성하나요?</summary>
+
+### 답변
+
+Storybook에서 MSW(Mock Service Worker)를 연동하면 실제 백엔드 없이 API 응답을 시뮬레이션하면서 컴포넌트를 개발하고 테스트할 수 있습니다.
+
+MSW는 Service Worker를 통해 브라우저의 네트워크 요청을 가로채고, 미리 정의한 핸들러에서 목업 응답을 반환합니다. Storybook의 `msw-storybook-addon`을 사용하면 스토리 단위로 핸들러를 지정할 수 있어, 같은 컴포넌트에 대해 성공/실패/로딩 등 다양한 상태를 시나리오별로 분리해서 확인할 수 있습니다.
+
+이 구조의 핵심은 프론트엔드가 API 명세만 확정되면 백엔드 구현과 병렬로 개발을 진행할 수 있다는 점이며, 백엔드 API가 완성되면 MSW 핸들러만 제거하면 실제 서버와 바로 연결됩니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- MSW가 Service Worker 기반인 것과 서버 사이드(node) 기반인 것의 차이는?
+- Storybook Decorator를 활용해 인증 상태를 주입하는 방법은?
+
+</blockquote>
+
+</details>
+
+<details>
 <summary>Vite에서 pre-bundling은 왜 필요한가요? 어떤 문제를 해결하기 위한 과정인가요?</summary>
 
 ### 답변
@@ -3100,6 +3159,29 @@ Pre-bundling은 의존성을 ESM으로 통일하고 모듈 수를 줄여, 브라
 해결하는 문제는 두 가지입니다. CommonJS나 UMD로 작성된 의존성을 ESM으로 변환해 브라우저가 직접 로드할 수 있게 하는 것이 하나고, 내부적으로 수많은 모듈로 구성된 패키지(예: lodash-es는 600개 이상의 모듈)를 하나의 모듈로 합쳐 HTTP 요청 수를 줄이는 것이 나머지입니다.
 
 개별 모듈마다 요청하면 네트워크 혼잡과 브라우저 성능 저하가 발생하기 때문에, 개발 환경에서도 의존성만큼은 미리 번들링해 두는 것이 효율적입니다.
+
+</details>
+
+<details>
+<summary>Jenkins 기반 CI/CD 파이프라인은 어떻게 구성하나요?</summary>
+
+### 답변
+
+GitHub Webhook과 Jenkins를 연동해 특정 브랜치에 push가 발생하면 빌드와 배포가 자동으로 수행되는 파이프라인을 구성합니다.
+
+GitHub에서 Webhook을 설정해 push 이벤트를 Jenkins에 전달하면, Jenkins가 소스를 체크아웃하고 `npm install` → `npm run build` → 배포 스크립트 실행 순서로 파이프라인을 실행합니다. Jenkinsfile에 이 단계를 선언적으로 정의하면 파이프라인 변경 이력도 Git으로 관리됩니다.
+
+개발 서버와 운영 서버를 분리할 때는 브랜치별로 다른 파이프라인을 트리거하도록 구성하고, 배포 산출물에 커밋 메시지와 배포일자를 자동 기록해 어느 시점의 어떤 변경이 배포됐는지 추적할 수 있게 합니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- Jenkinsfile의 Declarative Pipeline과 Scripted Pipeline의 차이는?
+- GitHub Actions와 Jenkins의 장단점 비교는?
+
+</blockquote>
 
 </details>
 
