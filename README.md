@@ -55,15 +55,75 @@
 ## 📚 Interview
 
 <!-- TOC:START -->
-> **106** 개 질문 · 마지막 업데이트: 2026-07-28
+> **126** 개 질문 · 마지막 업데이트: 2026-10-20
 
 ---
 
 ## JavaScript
 
-#### ⭐⭐⭐ 필수
+<details>
+<summary>다른 언어는 캡슐화·은닉화를 접근 제어자 같은 전용 문법으로 지원하는데, 자바스크립트는 왜 클로저로 이 문제를 풀게 되었을까요?</summary>
 
-> 신입 면접에서 거의 반드시 나오는 단골 질문입니다. 정확하게 답변할 수 있어야 합니다.
+### 답변
+
+자바스크립트의 설계 중심이 **일급 함수와 렉시컬 스코프**이기 때문입니다.
+
+함수가 값처럼 전달·반환되는 언어에서 동작이 예측 가능하려면, 함수가 어디서 호출되든 **정의된 시점의 스코프를 보존**해야 합니다. 그게 클로저입니다. 즉 클로저는 은닉을 위해 만들어진 문법이 아니라, 일급 함수를 지탱하기 위한 렉시컬 환경 보존의 결과이고, **은닉은 그 부수 효과**로 따라온 것입니다.
+
+또한 ES6 전까지 자바스크립트에는 클래스 문법이 없었고, 이후에도 객체보다 함수 단위 모듈화가 자연스러워 IIFE·모듈 패턴·커링의 기반으로 클로저가 일급 도구가 되었습니다. Java/C++처럼 클래스가 1급 단위인 언어는 인스턴스의 private 필드로 같은 문제(상태 은닉)를 푸는 반면, 자바스크립트는 함수의 본질적 성질에서 은닉이 자연스럽게 따라온 것입니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- 렉시컬 스코프란 무엇이고, 클로저가 성립하는 데 왜 전제 조건이 되나요?
+- ES2022부터 `#privateField`라는 진짜 private 문법이 생겼는데, 그럼에도 클로저 기반 은닉이 여전히 쓰이는 이유는 무엇인가요?
+
+</blockquote>
+
+</details>
+
+<details>
+<summary>대량 데이터 일괄 처리 시 병렬 API 호출은 어떻게 설계하나요?</summary>
+
+### 답변
+
+`Promise.all` 또는 `Promise.allSettled`를 사용해 여러 API 호출을 동시에 실행하되, 동시 요청 수를 제한하는 청크 단위 처리가 핵심입니다.
+
+수백 건의 데이터를 한 번에 `Promise.all`로 보내면 서버에 과부하가 걸리므로, 배열을 일정 크기(예: 10~50건)로 나눈 뒤 청크 단위로 병렬 처리합니다. 각 청크가 완료되면 다음 청크를 실행하는 방식입니다. `Promise.allSettled`를 쓰면 일부 실패해도 나머지 결과를 확인할 수 있어 부분 실패 처리에 유리합니다.
+
+또한 API 호출 전에 클라이언트 측에서 유효성 검증을 수행하면 형식 오류가 있는 데이터를 사전에 걸러내 불필요한 서버 호출을 줄일 수 있습니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+<details>
+<summary>Promise.all과 Promise.allSettled의 차이는?</summary>
+
+### 답변
+**실패 처리 방식**이 다릅니다.
+
+- **Promise.all**: 하나라도 거부되면 **즉시 전체가 거부**됩니다. 모든 작업이 성공해야 할 때 사용합니다.
+- **Promise.allSettled**: 모든 Promise가 **이행이든 거부든 끝날 때까지 기다리고**, 각각의 결과(`{status, value/reason}`)를 배열로 반환합니다.
+- **선택 기준**: 부분 실패를 허용하고 각 결과를 개별 처리하고 싶으면 `allSettled`, 전부 성공해야 의미 있는 작업이면 `all`을 사용합니다.
+
+```javascript
+const results = await Promise.allSettled([fetchA(), fetchB()]);
+results.forEach(r => {
+  if (r.status === 'fulfilled') console.log(r.value);
+  else console.log(r.reason);
+});
+```
+
+</details>
+- 청크 크기는 어떤 기준으로 결정하나요?
+
+</blockquote>
+
+</details>
 
 <details>
 <summary>동기와 비동기의 차이는 무엇인가요?</summary>
@@ -120,314 +180,6 @@
 </blockquote>
 
 </details>
-
-<details>
-<summary>이벤트 루프가 어떻게 동작하나요?</summary>
-
-### 답변
-
-콜 스택, 매크로태스크 큐, 마이크로태스크 큐로 구성되어 비동기 작업을 처리합니다.
-
-- **1단계**: 콜 스택이 비면 마이크로태스크 큐를 먼저 확인합니다.
-- **2단계**: 마이크로태스크 큐가 비면 매크로태스크 큐에서 하나를 꺼내 실행합니다.
-- **분류**: `Promise.then`은 마이크로태스크, `setTimeout`은 매크로태스크에 등록됩니다.
-
-
-<blockquote>
-
-**꼬리질문**
-
-<details>
-<summary>마이크로태스크와 매크로태스크의 차이는?</summary>
-
-### 답변
-둘 다 비동기 콜백이 대기하는 큐지만, **실행 우선순위와 비우는 방식**이 다릅니다.
-
-- **마이크로태스크**: `Promise.then`, `queueMicrotask`, `MutationObserver`. 콜 스택이 비면 **큐가 완전히 빌 때까지 전부** 실행됩니다.
-- **매크로태스크**: `setTimeout`, `setInterval`, 이벤트 콜백. 한 루프에서 **하나만** 꺼내 실행합니다.
-- **핵심**: 매크로태스크 하나가 끝날 때마다 마이크로태스크 큐를 먼저 모두 비우므로, 마이크로태스크가 항상 먼저 처리됩니다.
-
-```javascript
-setTimeout(() => console.log('macro'), 0);
-Promise.resolve().then(() => console.log('micro'));
-// 출력: micro → macro
-```
-
-</details>
-
-<details>
-<summary>requestAnimationFrame은 어디에 속하나요?</summary>
-
-### 답변
-매크로태스크나 마이크로태스크와는 별개로, **렌더링 직전에 실행되는 전용 콜백**입니다.
-
-- **실행 시점**: 브라우저가 다음 리페인트를 그리기 직전, 보통 초당 60회(약 16.7ms 간격)로 호출됩니다.
-- **장점**: 화면 주사율에 맞춰 실행되므로 `setTimeout` 기반 애니메이션보다 부드럽고, 탭이 비활성화되면 자동으로 멈춰 자원을 아낍니다.
-- **용도**: 애니메이션이나 시각적 변경을 프레임 단위로 처리할 때 사용합니다.
-
-</details>
-
-</blockquote>
-
-</details>
-
-<details>
-<summary>클로저란 무엇인가요?</summary>
-
-### 답변
-
-클로저는 함수와 그 함수가 선언될 당시의 렉시컬 환경의 조합으로, 함수가 선언된 스코프를 기억하여 해당 스코프 밖에서 실행되더라도 그 환경에 접근할 수 있는 기능입니다. 내부 함수가 외부 함수를 참조하면, 외부 함수의 실행이 끝나도 그 변수는 사라지지 않고 계속 참조할 수 있습니다.
-
-예를 들어, 다음과 같은 코드에서 클로저를 확인할 수 있습니다:
-
-```javascript
-function outer() {
-  let count = 0;
-  return function inner() {
-    return ++count;
-  };
-}
-
-const counter = outer();
-console.log(counter()); // 1
-console.log(counter()); // 2
-```
-
-위 코드에서 외부 함수 `outer`의 변수 `count`는 내부 함수 `inner`의 클로저에 의해 유지되며, `counter`를 호출할 때마다 `count`의 값이 증가합니다.
-
-
-<blockquote>
-
-**꼬리질문**
-
-<details>
-<summary>클로저가 메모리 누수를 일으킬 수 있나요?</summary>
-
-### 답변
-네, 클로저가 참조하는 외부 변수는 가비지 컬렉션 대상에서 제외되기 때문에, 더 이상 필요 없는 값을 계속 붙잡고 있으면 메모리 누수로 이어질 수 있습니다.
-
-- **원인**: 클로저가 살아있는 한, 그 클로저가 참조하는 스코프의 변수도 메모리에 유지됩니다.
-- **대표 사례**: 사라진 DOM 요소를 참조하는 이벤트 핸들러를 제거하지 않으면, 요소가 없어져도 참조가 남아 해제되지 않습니다.
-- **해결**: 사용이 끝난 핸들러는 `removeEventListener`로 제거하고, 불필요한 참조는 `null`로 끊습니다.
-
-</details>
-
-<details>
-<summary>클로저를 활용한 모듈 패턴은 어떻게 구현하나요?</summary>
-
-### 답변
-즉시 실행 함수(IIFE)로 스코프를 만들고, 내부 변수는 숨긴 채 필요한 것만 반환해 **은닉과 공개를 분리**하는 방식입니다.
-
-- **원리**: 함수 스코프 안의 변수는 외부에서 접근 불가(private), 반환된 객체의 메서드만 접근 가능(public).
-- **효과**: 전역 오염을 막고, 클로저로 내부 상태를 안전하게 유지합니다.
-
-```javascript
-const counter = (function () {
-  let count = 0; // private
-  return {
-    increment() { return ++count; },
-    get() { return count; },
-  };
-})();
-counter.increment(); // 1
-```
-
-</details>
-- var와 let에서 클로저 동작이 다른 이유는?
-
-<details>
-<summary>React Hooks에서 클로저가 어떤 역할을 하나요?</summary>
-
-### 답변
-- 리렌더링될 때마다 그 시점의 state와 props 값을 함수 내부에 고정해서 기억하게 해주는 역할
-- 매 렌더링마다 함수 컴포넌트가 통째로 다시 실행되면서 그 안의 이벤트 핸들러나 useEffect 콜백이 그 시점의 값을 캡처하는 것
-- 그래서 useEffect에서 deps 배열을 빠뜨리면, 콜백 내부의 state가 처음 렌더링 시점 값으로 고정돼버리는 stale closure 문제가 발생할 수 있음
-
-</details>
-
-</blockquote>
-
-</details>
-
-<details>
-<summary>호이스팅이란 무엇인가요?</summary>
-
-### 답변
-
-호이스팅은 변수와 함수의 선언문이 해당 스코프의 최상단으로 끌어올려지는 현상을 뜻하며 초기화되기 전에 변수와 함수에 접근이 가능합니다. </br>
-단, let과 const는 TDZ로 인해 접근 시 에러가 발생합니다.
-
-
-<blockquote>
-
-**꼬리질문**
-
-<details>
-<summary>var, let, const의 호이스팅 동작 차이는 무엇인가요?</summary>
-
-### 답변
-- var은 호이스팅 되면서 undefined로 초기화 > 선언 전 접근해도 에러 없이 undefined 반환
-- let/const는 호이스팅은 되지만 TDZ가 존재하기 때문에 초기화가 안됨 > 선언 전 접근 시 에러 발생
-- TDZ : 스코프 시작 시점부터 실제 선언문이 실행되기 전까지 변수에 접근할 수 없는 구간
-
-</details>
-
-<details>
-<summary>TDZ는 무엇인가요?</summary>
-
-### 답변
-
-Map은 Object와 달리 key를 문자열로 변환하지 않고 참조값 자체로 관리하기 때문에 객체를 key로 사용할 수 있습니다.
-
-예를들어 같은 형태의 객체라도 참조가 다르면 다른 key로 판단합니다.
-
-</details>
-
-</blockquote>
-
-</details>
-
-<details>
-<summary>Promise란 무엇이고 왜 사용하나요?</summary>
-
-### 답변
-
-Promise는 비동기 작업의 성공/실패를 나타내는 객체로 pending, fulfilled, rejected 총 세 가지 상태를 가집니다.
-
-
-<blockquote>
-
-**꼬리질문**
-
-<details>
-<summary>Promise.all과 Promise.allSettled의 차이는?</summary>
-
-### 답변
-**실패 처리 방식**이 다릅니다.
-
-- **Promise.all**: 하나라도 거부되면 **즉시 전체가 거부**됩니다. 모든 작업이 성공해야 할 때 사용합니다.
-- **Promise.allSettled**: 모든 Promise가 **이행이든 거부든 끝날 때까지 기다리고**, 각각의 결과(`{status, value/reason}`)를 배열로 반환합니다.
-- **선택 기준**: 부분 실패를 허용하고 각 결과를 개별 처리하고 싶으면 `allSettled`, 전부 성공해야 의미 있는 작업이면 `all`을 사용합니다.
-
-```javascript
-const results = await Promise.allSettled([fetchA(), fetchB()]);
-results.forEach(r => {
-  if (r.status === 'fulfilled') console.log(r.value);
-  else console.log(r.reason);
-});
-```
-
-</details>
-- async/await은 Promise와 어떤 관계인가요?
-
-</blockquote>
-
-</details>
-
-<details>
-<summary>this란?</summary>
-
-### 답변
-
-this는 자신이 속한 객체 또는 자신이 생성할 인스턴스를 가리키는 자기 참조 변수를 뜻합니다. </br >
-자바스크립트 엔진에 의해 암묵적으로 생성되며, 코드 어디서든 참조가 가능합니다. </br>
-this 바인딩은 함수 호출 방식에 의해 동적으로 결정됩니다.
-
-
-<blockquote>
-
-**꼬리질문**
-
-<details>
-<summary>bind, call, apply의 차이는?</summary>
-
-### 답변
-- bind, call, apply 셋 다 this를 명시적으로 지정
-- bind는 새 함수 반환
-- call/apply는 즉시 실행되는데, call은 인자를 쉼표로 나열하고 apply는 배열로 전달된다는 차이가 있음
-
-</details>
-
-<details>
-<summary>이벤트 리스너 콜백에서 this가 가리키는 것은?</summary>
-
-### 답변
-- 이벤트 리스너 콜백에서 this가 가리키는 것은 함수 선언 방식에 차이가 있음
-- 일반 함수로 작성 시 이벤트가 발생한 DOM 요소를 가리킴
-- 화살표 함수로 작성 시 렉시컬 this 적용돼 상위 스코프의 this를 가리킴
-
-</details>
-
-</blockquote>
-
-</details>
-
-<details>
-<summary>var, let, const의 차이는 무엇인가요?</summary>
-
-### 답변
-
-스코프, 호이스팅, 재할당 가능 여부에서 차이가 있습니다.
-
-- **var**: 함수 스코프, 호이스팅 시 `undefined`로 초기화, 재선언·재할당 가능
-- **let**: 블록 스코프, TDZ 존재, 재할당 가능·재선언 불가
-- **const**: 블록 스코프, TDZ 존재, 재할당·재선언 불가 (객체 내부 값은 변경 가능)
-
-```javascript
-console.log(x); // undefined (var 호이스팅)
-var x = 1;
-
-console.log(y); // ReferenceError (TDZ)
-let y = 2;
-```
-
-
-<blockquote>
-
-**꼬리질문**
-
-<details>
-<summary>TDZ(Temporal Dead Zone)란 무엇인가요?</summary>
-
-### 답변
-`let`, `const`로 선언한 변수가 **선언 위치에 도달하기 전까지 접근할 수 없는 구간**입니다.
-
-- **동작**: 선언은 스코프 최상단으로 호이스팅되지만, 초기화 전까지 "미초기화" 상태로 남습니다.
-- **결과**: 이 구간에서 접근하면 `undefined`가 아니라 `ReferenceError`가 발생합니다.
-- **목적**: 변수를 선언 전에 사용하는 실수를 방지합니다.
-
-```javascript
-console.log(x); // ReferenceError (TDZ 구간)
-let x = 1;
-```
-
-</details>
-
-<details>
-<summary>`const`로 선언한 객체의 프로퍼티를 변경할 수 있는 이유는?</summary>
-
-### 답변
-`const`는 **변수가 가리키는 참조(주소)를 고정**할 뿐, 참조가 가리키는 값 내부의 변경까지 막지는 않기 때문입니다.
-
-- **원리**: 객체 변수에는 실제 객체가 아니라 그 객체의 참조가 담깁니다. `const`는 이 참조의 재할당만 금지합니다.
-- **결과**: 프로퍼티 추가·수정·삭제는 가능하지만, 변수에 다른 객체를 재할당하면 에러가 납니다.
-- **완전 고정**: 내부 값까지 막으려면 `Object.freeze()`를 사용합니다.
-
-```javascript
-const obj = { a: 1 };
-obj.a = 2;      // 가능
-obj = { a: 3 }; // TypeError (재할당 불가)
-```
-
-</details>
-
-</blockquote>
-
-</details>
-
-#### ⭐⭐ 중요
-
-> 자주 출제되며, 알고 있으면 플러스가 되는 질문입니다.
 
 <details>
 <summary>실행 컨텍스트란?</summary>
@@ -510,6 +262,56 @@ DOM 노드, 함수, 그리고 일부 특수 객체는 복사할 수 없습니다
 </details>
 
 <details>
+<summary>이벤트 루프가 어떻게 동작하나요?</summary>
+
+### 답변
+
+콜 스택, 매크로태스크 큐, 마이크로태스크 큐로 구성되어 비동기 작업을 처리합니다.
+
+- **1단계**: 콜 스택이 비면 마이크로태스크 큐를 먼저 확인합니다.
+- **2단계**: 마이크로태스크 큐가 비면 매크로태스크 큐에서 하나를 꺼내 실행합니다.
+- **분류**: `Promise.then`은 마이크로태스크, `setTimeout`은 매크로태스크에 등록됩니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+<details>
+<summary>마이크로태스크와 매크로태스크의 차이는?</summary>
+
+### 답변
+둘 다 비동기 콜백이 대기하는 큐지만, **실행 우선순위와 비우는 방식**이 다릅니다.
+
+- **마이크로태스크**: `Promise.then`, `queueMicrotask`, `MutationObserver`. 콜 스택이 비면 **큐가 완전히 빌 때까지 전부** 실행됩니다.
+- **매크로태스크**: `setTimeout`, `setInterval`, 이벤트 콜백. 한 루프에서 **하나만** 꺼내 실행합니다.
+- **핵심**: 매크로태스크 하나가 끝날 때마다 마이크로태스크 큐를 먼저 모두 비우므로, 마이크로태스크가 항상 먼저 처리됩니다.
+
+```javascript
+setTimeout(() => console.log('macro'), 0);
+Promise.resolve().then(() => console.log('micro'));
+// 출력: micro → macro
+```
+
+</details>
+
+<details>
+<summary>requestAnimationFrame은 어디에 속하나요?</summary>
+
+### 답변
+매크로태스크나 마이크로태스크와는 별개로, **렌더링 직전에 실행되는 전용 콜백**입니다.
+
+- **실행 시점**: 브라우저가 다음 리페인트를 그리기 직전, 보통 초당 60회(약 16.7ms 간격)로 호출됩니다.
+- **장점**: 화면 주사율에 맞춰 실행되므로 `setTimeout` 기반 애니메이션보다 부드럽고, 탭이 비활성화되면 자동으로 멈춰 자원을 아낍니다.
+- **용도**: 애니메이션이나 시각적 변경을 프레임 단위로 처리할 때 사용합니다.
+
+</details>
+
+</blockquote>
+
+</details>
+
+<details>
 <summary>이벤트 버블링과 캡처링은 무엇인가요?</summary>
 
 ### 답변
@@ -570,6 +372,142 @@ link.addEventListener('click', (e) => {
 ```
 
 </details>
+
+</blockquote>
+
+</details>
+
+<details>
+<summary>클로저란 무엇인가요?</summary>
+
+### 답변
+
+함수가 선언된 렉시컬 환경을 기억하여, 해당 스코프 밖에서 실행되더라도 그 환경에 접근할 수 있는 기능입니다.
+
+```javascript
+function outer() {
+  let count = 0;
+  return function inner() {
+    return ++count;
+  };
+}
+
+const counter = outer();
+counter(); // 1
+counter(); // 2
+```
+
+- **핵심**: 외부 함수의 변수 `count`가 내부 함수 `inner`의 클로저에 의해 유지됩니다.
+
+### 답변
+
+클로저는 함수와 그 함수가 선언될 당시의 렉시컬 환경의 조합입니다. </br>
+내부 함수가 외부 함수를 참조하면, 외부 함수의 실행이 끝나도 그 변수가 사라지지 않고 남아있어 계속 참조할 수 있습니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+<details>
+<summary>클로저가 메모리 누수를 일으킬 수 있나요?</summary>
+
+### 답변
+네, 클로저가 참조하는 외부 변수는 가비지 컬렉션 대상에서 제외되기 때문에, 더 이상 필요 없는 값을 계속 붙잡고 있으면 메모리 누수로 이어질 수 있습니다.
+
+- **원인**: 클로저가 살아있는 한, 그 클로저가 참조하는 스코프의 변수도 메모리에 유지됩니다.
+- **대표 사례**: 사라진 DOM 요소를 참조하는 이벤트 핸들러를 제거하지 않으면, 요소가 없어져도 참조가 남아 해제되지 않습니다.
+- **해결**: 사용이 끝난 핸들러는 `removeEventListener`로 제거하고, 불필요한 참조는 `null`로 끊습니다.
+
+</details>
+
+<details>
+<summary>클로저를 활용한 모듈 패턴은 어떻게 구현하나요?</summary>
+
+### 답변
+즉시 실행 함수(IIFE)로 스코프를 만들고, 내부 변수는 숨긴 채 필요한 것만 반환해 **은닉과 공개를 분리**하는 방식입니다.
+
+- **원리**: 함수 스코프 안의 변수는 외부에서 접근 불가(private), 반환된 객체의 메서드만 접근 가능(public).
+- **효과**: 전역 오염을 막고, 클로저로 내부 상태를 안전하게 유지합니다.
+
+```javascript
+const counter = (function () {
+  let count = 0; // private
+  return {
+    increment() { return ++count; },
+    get() { return count; },
+  };
+})();
+counter.increment(); // 1
+```
+
+</details>
+- var와 let에서 클로저 동작이 다른 이유는?
+- React Hooks에서 클로저가 어떤 역할을 하나요?
+
+</blockquote>
+
+</details>
+
+<details>
+<summary>프로토타입 체인을 실행 컨텍스트와 엮어서 설명해 주세요.</summary>
+
+### 답변
+
+둘은 "코드 실행 직전의 준비 과정"으로 한 줄기로 엮입니다.
+
+- **실행 컨텍스트**: 코드가 실행되는 환경입니다. 생성 단계에서 스코프 내 식별자를 미리 등록하고(이 등록이 우리가 보는 **호이스팅**의 정체), LexicalEnvironment와 this 바인딩을 준비한 뒤 실행 단계로 넘어갑니다.
+- **호이스팅과 프로토타입의 연결**: 함수 선언문이 호이스팅될 때 함수 객체가 통째로 만들어지는데, 이때 그 함수의 `prototype` 객체도 함께 준비됩니다.
+- **프로토타입 체인**: 모든 객체는 `[[Prototype]]` 링크를 가지며, 속성을 찾을 때 자신에게 없으면 이 체인을 타고 올라가며 탐색합니다.
+
+정리하면 **컨텍스트 생성 → 식별자 등록(호이스팅, 이때 함수의 prototype도 세팅) → this 바인딩 → 실행 중 속성 접근 시 프로토타입 체인 탐색**의 흐름입니다. 식별자를 찾는 것은 실행 컨텍스트의 스코프 체인이, 객체의 속성을 찾는 것은 프로토타입 체인이 담당한다는 역할 구분이 핵심입니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- 함수 선언문과 함수 표현식의 호이스팅 동작 차이는 무엇인가요?
+- `__proto__`와 `prototype`의 차이는 무엇인가요?
+- 스코프 체인 탐색과 프로토타입 체인 탐색은 각각 언제 일어나나요?
+
+</blockquote>
+
+</details>
+
+<details>
+<summary>호이스팅과 실행 컨텍스트는 어떤 관계인가요?</summary>
+
+### 답변
+- 실행 컨텍스트 생성 단계에서 변수와 함수 선언이 먼저 메모리에 등록
+- var는 undefined로 초기화
+- let/const는 TDZ로 인해 접근 시 에러 발생
+
+</details>
+
+<details>
+<summary>호이스팅이란 무엇인가요?</summary>
+
+### 답변
+
+호이스팅은 변수와 함수의 선언문이 해당 스코프의 최상단으로 끌어올려지는 현상을 뜻하며 초기화되기 전에 변수와 함수에 접근이 가능합니다. </br>
+단, let과 const는 TDZ로 인해 접근 시 에러가 발생합니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+<details>
+<summary>var, let, const의 호이스팅 동작 차이는 무엇인가요?</summary>
+
+### 답변
+- var은 호이스팅 되면서 undefined로 초기화 > 선언 전 접근해도 에러 없이 undefined 반환
+- let/const는 호이스팅은 되지만 TDZ가 존재하기 때문에 초기화가 안됨 > 선언 전 접근 시 에러 발생
+- TDZ : 스코프 시작 시점부터 실제 선언문이 실행되기 전까지 변수에 접근할 수 없는 구간
+
+</details>
+- TDZ는 무엇인가요?
 
 </blockquote>
 
@@ -639,6 +577,43 @@ Map은 Object와 달리 key를 문자열로 변환하지 않고 참조값 자체
 예를들어 같은 형태의 객체라도 참조가 다르면 다른 key로 판단합니다.
 
 </details>
+
+</blockquote>
+
+</details>
+
+<details>
+<summary>Promise란 무엇이고 왜 사용하나요?</summary>
+
+### 답변
+
+Promise는 비동기 작업의 성공/실패를 나타내는 객체로 pending, fulfilled, rejected 총 세 가지 상태를 가집니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+<details>
+<summary>Promise.all과 Promise.allSettled의 차이는?</summary>
+
+### 답변
+**실패 처리 방식**이 다릅니다.
+
+- **Promise.all**: 하나라도 거부되면 **즉시 전체가 거부**됩니다. 모든 작업이 성공해야 할 때 사용합니다.
+- **Promise.allSettled**: 모든 Promise가 **이행이든 거부든 끝날 때까지 기다리고**, 각각의 결과(`{status, value/reason}`)를 배열로 반환합니다.
+- **선택 기준**: 부분 실패를 허용하고 각 결과를 개별 처리하고 싶으면 `allSettled`, 전부 성공해야 의미 있는 작업이면 `all`을 사용합니다.
+
+```javascript
+const results = await Promise.allSettled([fetchA(), fetchB()]);
+results.forEach(r => {
+  if (r.status === 'fulfilled') console.log(r.value);
+  else console.log(r.reason);
+});
+```
+
+</details>
+- async/await은 Promise와 어떤 관계인가요?
 
 </blockquote>
 
@@ -720,159 +695,6 @@ results.forEach(r => {
 ### 답변
 - 즉시 실행되지 않고 마이크로태스크 큐에 들어가서, 현재 실행 중인 동기 코드 종료 직후 실행
 - setTimeout() 같은 매크로태스크보다 항상 먼저 처리됨
-
-</details>
-
-<details>
-<summary>useLayoutEffect와 useEffect의 차이점은 무엇인가요?</summary>
-
-### 답변
-
-두 Hook 모두 Side Effect를 처리하지만 실행 시점이 다릅니다.
-useEffect는 브라우저가 화면을 그린 후 비동기적으로 실행됩니다.
-
-반면 useLayoutEffect는 DOM이 변경된 직후, 브라우저가 화면을 그리기 전에 동기적으로 실행됩니다.
-따라서 DOM의 크기나 위치를 측정하거나 화면이 그려지기 전에 스타일을 변경해야 하는 경우 useLayoutEffect를 사용합니다.
-
-다만 렌더링을 차단하기 때문에 꼭 필요한 경우에만 사용하는 것이 좋습니다.
-
-
-<blockquote>
-
-**꼬리질문**
-
-<details>
-<summary>useLayoutEffect는 언제 사용하는 것이 적절한가요?</summary>
-
-### 답변
-
-브라우저 렌더링 후 레이아웃이 변경되어 사용자 경험이 떨어질때 사용됩니다.
-
-</details>
-
-<details>
-<summary>useLayoutEffect를 남용하면 어떤 문제가 발생할 수 있나요?</summary>
-
-### 답변
-
-useLayoutEffect는 브라우저 렌더링 전에 실행되므로 남용하게 된다면 사용자가 흰 화면을 오래 봐
-사용자 경험이 떨어질 수 있습니다.
-
-</details>
-
-</blockquote>
-
-</details>
-
-#### ⭐ 심화
-
-> 심화 질문이거나 특정 회사에서 깊게 물어보는 질문입니다. 알면 차별화 포인트가 됩니다.
-
-<details>
-<summary>다른 언어는 캡슐화·은닉화를 접근 제어자 같은 전용 문법으로 지원하는데, 자바스크립트는 왜 클로저로 이 문제를 풀게 되었을까요?</summary>
-
-### 답변
-
-자바스크립트의 설계 중심이 **일급 함수와 렉시컬 스코프**이기 때문입니다.
-
-함수가 값처럼 전달·반환되는 언어에서 동작이 예측 가능하려면, 함수가 어디서 호출되든 **정의된 시점의 스코프를 보존**해야 합니다. 그게 클로저입니다. 즉 클로저는 은닉을 위해 만들어진 문법이 아니라, 일급 함수를 지탱하기 위한 렉시컬 환경 보존의 결과이고, **은닉은 그 부수 효과**로 따라온 것입니다.
-
-또한 ES6 전까지 자바스크립트에는 클래스 문법이 없었고, 이후에도 객체보다 함수 단위 모듈화가 자연스러워 IIFE·모듈 패턴·커링의 기반으로 클로저가 일급 도구가 되었습니다. Java/C++처럼 클래스가 1급 단위인 언어는 인스턴스의 private 필드로 같은 문제(상태 은닉)를 푸는 반면, 자바스크립트는 함수의 본질적 성질에서 은닉이 자연스럽게 따라온 것입니다.
-
-
-<blockquote>
-
-**꼬리질문**
-
-- 렉시컬 스코프란 무엇이고, 클로저가 성립하는 데 왜 전제 조건이 되나요?
-- ES2022부터 `#privateField`라는 진짜 private 문법이 생겼는데, 그럼에도 클로저 기반 은닉이 여전히 쓰이는 이유는 무엇인가요?
-
-</blockquote>
-
-</details>
-
-<details>
-<summary>대량 데이터 일괄 처리 시 병렬 API 호출은 어떻게 설계하나요?</summary>
-
-### 답변
-
-`Promise.all` 또는 `Promise.allSettled`를 사용해 여러 API 호출을 동시에 실행하되, 동시 요청 수를 제한하는 청크 단위 처리가 핵심입니다.
-
-수백 건의 데이터를 한 번에 `Promise.all`로 보내면 서버에 과부하가 걸리므로, 배열을 일정 크기(예: 10~50건)로 나눈 뒤 청크 단위로 병렬 처리합니다. 각 청크가 완료되면 다음 청크를 실행하는 방식입니다. `Promise.allSettled`를 쓰면 일부 실패해도 나머지 결과를 확인할 수 있어 부분 실패 처리에 유리합니다.
-
-또한 API 호출 전에 클라이언트 측에서 유효성 검증을 수행하면 형식 오류가 있는 데이터를 사전에 걸러내 불필요한 서버 호출을 줄일 수 있습니다.
-
-
-<blockquote>
-
-**꼬리질문**
-
-<details>
-<summary>Promise.all과 Promise.allSettled의 차이는?</summary>
-
-### 답변
-**실패 처리 방식**이 다릅니다.
-
-- **Promise.all**: 하나라도 거부되면 **즉시 전체가 거부**됩니다. 모든 작업이 성공해야 할 때 사용합니다.
-- **Promise.allSettled**: 모든 Promise가 **이행이든 거부든 끝날 때까지 기다리고**, 각각의 결과(`{status, value/reason}`)를 배열로 반환합니다.
-- **선택 기준**: 부분 실패를 허용하고 각 결과를 개별 처리하고 싶으면 `allSettled`, 전부 성공해야 의미 있는 작업이면 `all`을 사용합니다.
-
-```javascript
-const results = await Promise.allSettled([fetchA(), fetchB()]);
-results.forEach(r => {
-  if (r.status === 'fulfilled') console.log(r.value);
-  else console.log(r.reason);
-});
-```
-
-</details>
-- 청크 크기는 어떤 기준으로 결정하나요?
-
-</blockquote>
-
-</details>
-
-<details>
-<summary>프로토타입 체인을 실행 컨텍스트와 엮어서 설명해 주세요.</summary>
-
-### 답변
-
-둘은 "코드 실행 직전의 준비 과정"으로 한 줄기로 엮입니다.
-
-- **실행 컨텍스트**: 코드가 실행되는 환경입니다. 생성 단계에서 스코프 내 식별자를 미리 등록하고(이 등록이 우리가 보는 **호이스팅**의 정체), LexicalEnvironment와 this 바인딩을 준비한 뒤 실행 단계로 넘어갑니다.
-- **호이스팅과 프로토타입의 연결**: 함수 선언문이 호이스팅될 때 함수 객체가 통째로 만들어지는데, 이때 그 함수의 `prototype` 객체도 함께 준비됩니다.
-- **프로토타입 체인**: 모든 객체는 `[[Prototype]]` 링크를 가지며, 속성을 찾을 때 자신에게 없으면 이 체인을 타고 올라가며 탐색합니다.
-
-정리하면 **컨텍스트 생성 → 식별자 등록(호이스팅, 이때 함수의 prototype도 세팅) → this 바인딩 → 실행 중 속성 접근 시 프로토타입 체인 탐색**의 흐름입니다. 식별자를 찾는 것은 실행 컨텍스트의 스코프 체인이, 객체의 속성을 찾는 것은 프로토타입 체인이 담당한다는 역할 구분이 핵심입니다.
-
-
-<blockquote>
-
-**꼬리질문**
-
-<details>
-<summary>함수 선언문과 함수 표현식의 호이스팅 동작 차이는 무엇인가요?</summary>
-
-### 답변
-- var은 호이스팅 되면서 undefined로 초기화 > 선언 전 접근해도 에러 없이 undefined 반환
-- let/const는 호이스팅은 되지만 TDZ가 존재하기 때문에 초기화가 안됨 > 선언 전 접근 시 에러 발생
-- TDZ : 스코프 시작 시점부터 실제 선언문이 실행되기 전까지 변수에 접근할 수 없는 구간
-
-</details>
-- `__proto__`와 `prototype`의 차이는 무엇인가요?
-- 스코프 체인 탐색과 프로토타입 체인 탐색은 각각 언제 일어나나요?
-
-</blockquote>
-
-</details>
-
-<details>
-<summary>호이스팅과 실행 컨텍스트는 어떤 관계인가요?</summary>
-
-### 답변
-- 실행 컨텍스트 생성 단계에서 변수와 함수 선언이 먼저 메모리에 등록
-- var는 undefined로 초기화
-- let/const는 TDZ로 인해 접근 시 에러 발생
 
 </details>
 
@@ -966,13 +788,183 @@ ex ) modal 등
 
 </details>
 
+<details>
+<summary>this란?</summary>
+
+### 답변
+
+this는 자신이 속한 객체 또는 자신이 생성할 인스턴스를 가리키는 자기 참조 변수를 뜻합니다. </br >
+자바스크립트 엔진에 의해 암묵적으로 생성되며, 코드 어디서든 참조가 가능합니다. </br>
+this 바인딩은 함수 호출 방식에 의해 동적으로 결정됩니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+<details>
+<summary>bind, call, apply의 차이는?</summary>
+
+### 답변
+- bind, call, apply 셋 다 this를 명시적으로 지정
+- bind는 새 함수 반환
+- call/apply는 즉시 실행되는데, call은 인자를 쉼표로 나열하고 apply는 배열로 전달된다는 차이가 있음
+
+</details>
+
+<details>
+<summary>이벤트 리스너 콜백에서 this가 가리키는 것은?</summary>
+
+### 답변
+- 이벤트 리스너 콜백에서 this가 가리키는 것은 함수 선언 방식에 차이가 있음
+- 일반 함수로 작성 시 이벤트가 발생한 DOM 요소를 가리킴
+- 화살표 함수로 작성 시 렉시컬 this 적용돼 상위 스코프의 this를 가리킴
+
+</details>
+
+</blockquote>
+
+</details>
+
+<details>
+<summary>useLayoutEffect와 useEffect의 차이점은 무엇인가요?</summary>
+
+### 답변
+
+두 Hook 모두 Side Effect를 처리하지만 실행 시점이 다릅니다.
+useEffect는 브라우저가 화면을 그린 후 비동기적으로 실행됩니다.
+
+반면 useLayoutEffect는 DOM이 변경된 직후, 브라우저가 화면을 그리기 전에 동기적으로 실행됩니다.
+따라서 DOM의 크기나 위치를 측정하거나 화면이 그려지기 전에 스타일을 변경해야 하는 경우 useLayoutEffect를 사용합니다.
+
+다만 렌더링을 차단하기 때문에 꼭 필요한 경우에만 사용하는 것이 좋습니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+<details>
+<summary>useLayoutEffect는 언제 사용하는 것이 적절한가요?</summary>
+
+### 답변
+
+브라우저 렌더링 후 레이아웃이 변경되어 사용자 경험이 떨어질때 사용됩니다.
+
+</details>
+
+<details>
+<summary>useLayoutEffect를 남용하면 어떤 문제가 발생할 수 있나요?</summary>
+
+### 답변
+
+useLayoutEffect는 브라우저 렌더링 전에 실행되므로 남용하게 된다면 사용자가 흰 화면을 오래 봐
+사용자 경험이 떨어질 수 있습니다.
+
+</details>
+
+</blockquote>
+
+</details>
+
+<details>
+<summary>var, let, const의 차이는 무엇인가요?</summary>
+
+### 답변
+
+스코프, 호이스팅, 재할당 가능 여부에서 차이가 있습니다.
+
+- **var**: 함수 스코프, 호이스팅 시 `undefined`로 초기화, 재선언·재할당 가능
+- **let**: 블록 스코프, TDZ 존재, 재할당 가능·재선언 불가
+- **const**: 블록 스코프, TDZ 존재, 재할당·재선언 불가 (객체 내부 값은 변경 가능)
+
+```javascript
+console.log(x); // undefined (var 호이스팅)
+var x = 1;
+
+console.log(y); // ReferenceError (TDZ)
+let y = 2;
+```
+
+
+<blockquote>
+
+**꼬리질문**
+
+<details>
+<summary>TDZ(Temporal Dead Zone)란 무엇인가요?</summary>
+
+### 답변
+`let`, `const`로 선언한 변수가 **선언 위치에 도달하기 전까지 접근할 수 없는 구간**입니다.
+
+- **동작**: 선언은 스코프 최상단으로 호이스팅되지만, 초기화 전까지 "미초기화" 상태로 남습니다.
+- **결과**: 이 구간에서 접근하면 `undefined`가 아니라 `ReferenceError`가 발생합니다.
+- **목적**: 변수를 선언 전에 사용하는 실수를 방지합니다.
+
+```javascript
+console.log(x); // ReferenceError (TDZ 구간)
+let x = 1;
+```
+
+</details>
+
+<details>
+<summary>`const`로 선언한 객체의 프로퍼티를 변경할 수 있는 이유는?</summary>
+
+### 답변
+`const`는 **변수가 가리키는 참조(주소)를 고정**할 뿐, 참조가 가리키는 값 내부의 변경까지 막지는 않기 때문입니다.
+
+- **원리**: 객체 변수에는 실제 객체가 아니라 그 객체의 참조가 담깁니다. `const`는 이 참조의 재할당만 금지합니다.
+- **결과**: 프로퍼티 추가·수정·삭제는 가능하지만, 변수에 다른 객체를 재할당하면 에러가 납니다.
+- **완전 고정**: 내부 값까지 막으려면 `Object.freeze()`를 사용합니다.
+
+```javascript
+const obj = { a: 1 };
+obj.a = 2;      // 가능
+obj = { a: 3 }; // TypeError (재할당 불가)
+```
+
+</details>
+
+</blockquote>
+
+</details>
+
+<details>
+<summary>XLSX 파싱과 클라이언트 측 유효성 검증은 어떻게 구현하나요?</summary>
+
+### 답변
+
+SheetJS(xlsx) 라이브러리로 엑셀 파일을 파싱하고, API 호출 전에 데이터 형식을 검증해 불필요한 서버 요청을 줄입니다.
+
+`<input type="file">`로 파일을 받아 `FileReader.readAsArrayBuffer()`로 읽은 뒤, `XLSX.read()`로 워크북 객체를 생성합니다. `XLSX.utils.sheet_to_json()`으로 시트를 JSON 배열로 변환하면 각 행의 데이터에 접근할 수 있습니다.
+
+변환된 데이터에 대해 필수 필드 누락, 이메일/전화번호 형식, 중복 값 등을 클라이언트에서 먼저 검증합니다. 유효성 검증을 통과한 데이터만 서버로 전송하면 형식 오류로 인한 불필요한 API 호출을 사전에 차단할 수 있습니다. 오류가 있는 행은 행 번호와 함께 사용자에게 피드백합니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- FileReader의 readAsArrayBuffer와 readAsText의 차이는?
+- 대용량 엑셀 파일을 파싱할 때 웹 워커를 사용하는 이유는?
+
+</blockquote>
+
+</details>
+
 ---
 
 ## TypeScript
 
-#### ⭐⭐⭐ 필수
+<details>
+<summary>선언 병합을 실제 사용하는 경우는 언제인가요?</summary>
 
-> 신입 면접에서 거의 반드시 나오는 단골 질문입니다. 정확하게 답변할 수 있어야 합니다.
+### 답변
+- 외부 라이브러리 타입 확장 시 많이 사용
+- Express의 Request 인터페이스에 커스텀 프로퍼티 추가
+
+</details>
 
 <details>
 <summary>타입스크립트를 사용하는 이유는?</summary>
@@ -986,14 +978,7 @@ ex ) modal 등
 
 **꼬리질문**
 
-<details>
-<summary>any 타입을 쓰면 안 되는 이유는?</summary>
-
-### 답변
-- any 타입 사용 시 타입 검사를 완전히 비활성화하기 때문에 타입스크립트 사용 의미가 없어짐
-- unknown을 사용해 타입 가드로 좁히는 게 안전
-
-</details>
+- any 타입을 쓰면 안 되는 이유는?
 
 <details>
 <summary>타입 가드란?</summary>
@@ -1006,6 +991,23 @@ ex ) modal 등
 </details>
 
 </blockquote>
+
+</details>
+
+<details>
+<summary>타입스크립트에서 any 타입을 쓰면 안 되는 이유는 무엇인가요?</summary>
+
+### 답변
+- any 타입 사용 시 타입 검사를 완전히 비활성화하기 때문에 타입스크립트 사용 의미가 없어짐
+- unknown을 사용해 타입 가드로 좁히는 게 안전
+
+</details>
+
+<details>
+<summary>type과 interface 중 type을 선택하는 상황은 언제인가요?</summary>
+
+### 답변
+- 유니온 타입, 튜플, 함수 타입 등 interface로 표현하기 어려운 복잡한 타입 조합 필요한 경우 사용
 
 </details>
 
@@ -1070,9 +1072,25 @@ type C = A & { y: string } // 인터섹션
 
 </details>
 
-#### ⭐⭐ 중요
+<details>
+<summary>TypeScript에서 type과 interface의 차이는?</summary>
 
-> 자주 출제되며, 알고 있으면 플러스가 되는 질문입니다.
+### 답변
+
+interface는 선언 병합이 가능하고, extends로 확장이 가능합니다. </br>
+type은 유니온, 인터섹션, 조건부 타입 같은 복잡한 타입 조합이 가능합니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- 어떤 상황에서 type을 선택하나요?
+- 선언 병합이 실제로 쓰이는 경우는?
+
+</blockquote>
+
+</details>
 
 <details>
 <summary>TypeScript의 제네릭(Generic)은 왜 사용하나요?</summary>
@@ -1137,52 +1155,74 @@ getProp(user, 'name'); // string으로 추론
 
 </details>
 
-#### ⭐ 심화
+---
 
-> 심화 질문이거나 특정 회사에서 깊게 물어보는 질문입니다. 알면 차별화 포인트가 됩니다.
+## React
 
 <details>
-<summary>선언 병합을 실제 사용하는 경우는 언제인가요?</summary>
+<summary>가상 DOM은 실제로 성능상 항상 빠르다고 생각하나요?</summary>
 
 ### 답변
-- 외부 라이브러리 타입 확장 시 많이 사용
-- Express의 Request 인터페이스에 커스텀 프로퍼티 추가
+- 가상 DOM이 항상 빠른 건 아니고, 단순 페이지인 경우엔 오히려 오버헤드
+- 상태 변경이 잦고 DOM 업데이트가 많은 복잡한 UI인 경우에만 효과적
 
 </details>
 
 <details>
-<summary>TypeScript에서 type과 interface의 차이는?</summary>
+<summary>거대 폼을 확장가능하게 구현하셨다고 하셨는데 일반 폼 설계/구현과 다른 점이 있었던건가요?</summary>
 
 ### 답변
 
-interface는 선언 병합이 가능하고, extends로 확장이 가능합니다. </br>
-type은 유니온, 인터섹션, 조건부 타입 같은 복잡한 타입 조합이 가능합니다.
+</details>
+
+<details>
+<summary>디바이스 감지 기반 동적 라우팅은 어떻게 구현하나요?</summary>
+
+### 답변
+
+User-Agent 또는 화면 크기를 기반으로 웹/모바일 진입점을 분기합니다.
+
+서버 사이드에서는 요청 헤더의 `User-Agent` 문자열을 파싱해 모바일 기기 여부를 판별하고, 해당하는 페이지로 리다이렉트합니다. 클라이언트에서는 `window.matchMedia`나 `navigator.userAgent`로 판별할 수 있지만, 초기 렌더링에서 깜빡임(FOUC)이 발생할 수 있어 서버 단에서 처리하는 것이 UX상 유리합니다.
+
+한 프로젝트 안에 관리자용 웹과 작업자용 모바일이 함께 있는 경우, 라우트 레벨에서 `/admin/*`과 `/mobile/*`로 분기하고 공통 로직은 상위 레이어에서 공유하는 구조가 효과적입니다. 반응형 디자인과 달리 완전히 다른 UI/UX를 제공해야 할 때 이 방식을 사용합니다.
 
 
 <blockquote>
 
 **꼬리질문**
 
-<details>
-<summary>어떤 상황에서 type을 선택하나요?</summary>
-
-### 답변
-- 유니온 타입, 튜플, 함수 타입 등 interface로 표현하기 어려운 복잡한 타입 조합 필요한 경우 사용
-
-</details>
-- 선언 병합이 실제로 쓰이는 경우는?
+- User-Agent 기반 감지의 한계점은 무엇인가요?
+- 반응형 디자인과 적응형 디자인의 차이는?
 
 </blockquote>
 
 </details>
 
----
+<details>
+<summary>레이아웃과 레이아웃을 사용하는 여러 개의 애플리케이션을 각각 별도로 개발한다고 했을 때 어떻게 해야 유저에게 하나의 애플리케이션으로 서빙할 수 있을까요?</summary>
 
-## React
+### 답변
 
-#### ⭐⭐⭐ 필수
+</details>
 
-> 신입 면접에서 거의 반드시 나오는 단골 질문입니다. 정확하게 답변할 수 있어야 합니다.
+<details>
+<summary>리렌더링이 발생하는 조건은 무엇인가요?</summary>
+
+### 답변
+
+리액트 컴포넌트는 state 변경, props 변경, 부모 컴포넌트 리렌더링, Context 값 변경 시 리렌더링이 발생합니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- 불필요한 리렌더링을 방지하는 방법은 무엇인가요?
+- React.memo와 useMemo, useCallback의 차이는 무엇인가요?
+
+</blockquote>
+
+</details>
 
 <details>
 <summary>리액트를 사용하는 이유는?</summary>
@@ -1205,6 +1245,15 @@ type은 유니온, 인터섹션, 조건부 타입 같은 복잡한 타입 조합
 </details>
 
 <details>
+<summary>리액트에서 이벤트 핸들러 함수를 화살표 함수로 사용하는 이유는 무엇인가요?</summary>
+
+### 답변
+- 클래스 컴포넌트에서 일반 함수는 호출 시 this가 undefined가 되기 때문에 화살표 함수로 선언하거나 bind로 묶어야 함
+- 함수형 컴포넌트에서는 this 문제 없지만, 클로저로 특정 값을 캡처해 전달하기 편해서 자주 사용
+
+</details>
+
+<details>
 <summary>리액트에서 이벤트를 어떻게 핸들링하나요?</summary>
 
 ### 답변
@@ -1216,16 +1265,18 @@ JSX에서는 onClick, onChange 같은 camelCase 속성으로 핸들러를 연결
 
 **꼬리질문**
 
-<details>
-<summary>리액트의 합성 이벤트란 무엇인가요?</summary>
-
-### 답변
-- 브라우저마다 다른 이벤트 동작을 통일하기 위해 제공하는 객체
-
-</details>
+- 리액트의 합성 이벤트란 무엇인가요?
 - e.preventDefault(), e.stopPropagination() 차이는?
 
 </blockquote>
+
+</details>
+
+<details>
+<summary>리액트에서 합성 이벤트란 무엇인가요?</summary>
+
+### 답변
+- 브라우저마다 다른 이벤트 동작을 통일하기 위해 제공하는 객체
 
 </details>
 
@@ -1243,9 +1294,14 @@ JSX에서는 onClick, onChange 같은 camelCase 속성으로 핸들러를 연결
 **꼬리질문**
 
 - useEffect clenup 함수는 언제 실행되나요?
+- 마운트와 언마운트가 각각 어떤 시점인가요?
+
+</blockquote>
+
+</details>
 
 <details>
-<summary>마운트와 언마운트가 각각 어떤 시점인가요?</summary>
+<summary>마운트와 언마운트는 각각 어떤 시점인가요?</summary>
 
 ### 답변
 - 마운트는 컴포넌트가 처음 DOM에 삽입되는 시점
@@ -1253,7 +1309,74 @@ JSX에서는 onClick, onChange 같은 camelCase 속성으로 핸들러를 연결
 
 </details>
 
+<details>
+<summary>불필요한 리렌더링 방지 방법</summary>
+
+### 답변
+- React.memo, useMemo, useCallback을 사용하여 메모이제이션이나 컴포넌트 쪼개기, key 최적화, state를 필요한 범위로 최소화 및 끌어내리기
+
+</details>
+
+<details>
+<summary>사용자 역할 기반 UI 분기(RBAC)는 어떻게 설계하나요?</summary>
+
+### 답변
+
+RBAC(Role-Based Access Control)는 사용자 역할에 따라 메뉴, 기능, 화면 접근을 제어하는 패턴입니다.
+
+선언적 메뉴 트리에 각 메뉴의 접근 가능 역할을 설정 객체로 정의하고, 로그인 정보의 `permission_level`과 `현장_id` 조합으로 동적 렌더링합니다. 이렇게 하면 권한 변경이나 신규 메뉴 추가 시 설정 객체만 수정하면 되어 확장 비용이 최소화됩니다.
+
+```typescript
+const menuConfig = [
+  { path: '/dashboard', label: '대시보드', roles: ['admin', 'manager'] },
+  { path: '/inspection', label: '점검', roles: ['admin', 'manager', 'worker'] },
+  { path: '/settings', label: '설정', roles: ['admin'] },
+];
+```
+
+라우트 레벨에서도 `ProtectedRoute` 같은 래퍼 컴포넌트로 권한이 없는 페이지 접근을 차단합니다. 단, 프론트엔드 권한 체크는 UX 용도이며, 실제 보안은 반드시 서버 측에서도 검증해야 합니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- 프론트엔드에서만 권한을 체크하면 안 되는 이유는?
+- permission_level과 현장_id 조합 기반 동적 권한 생성은 어떻게 구현하나요?
+
 </blockquote>
+
+</details>
+
+<details>
+<summary>상태 머신 기반 UI 렌더링이란 무엇인가요?</summary>
+
+### 답변
+
+상태 머신(State Machine)은 가능한 상태와 상태 간 전이를 명시적으로 정의해, 불가능한 상태 조합을 원천 차단하는 패턴입니다.
+
+다단계 점검 프로세스(최초 점검, 일일 점검, 분기 점검, 고장 상황)처럼 상태가 복잡한 도메인에서 `if-else`나 `boolean` 플래그 조합으로 UI를 분기하면 상태 간 의존성이 숨겨져 버그가 발생하기 쉽습니다.
+
+상태 머신을 사용하면 각 상태에서 허용되는 전이(transition)만 정의하므로 "점검 중인데 동시에 완료된" 같은 불가능한 상태가 코드상 존재할 수 없습니다. React에서는 `useReducer`로 간단한 상태 머신을 구현하거나, XState 같은 라이브러리를 사용해 시각적 상태 차트까지 활용할 수 있습니다.
+
+상태별 UI 컴포넌트를 매핑하면 각 상태에 대응하는 화면이 명확해지고, 신규 상태 추가 시에도 기존 로직에 영향을 주지 않습니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- useReducer와 useState의 차이는 무엇인가요?
+- XState의 장점과 도입 시 고려할 점은?
+
+</blockquote>
+
+</details>
+
+<details>
+<summary>상태 변화에 따라 렌더링을 제어할 수 있는데 렌더 할 배열 상태를 굳이 렌더큐와 백그라운드큐로 분리한 이유가 뭔가요?</summary>
+
+### 답변
 
 </details>
 
@@ -1266,6 +1389,147 @@ JSX에서는 onClick, onChange 같은 camelCase 속성으로 핸들러를 연결
 - **역할**: 이전과 새 가상 DOM을 비교할 때, 같은 `key`를 가진 요소는 동일 요소로 간주해 재사용합니다.
 - **key가 없거나 index를 쓰면**: 순서가 바뀔 때 잘못된 요소를 재사용해 상태가 엉키거나 불필요한 재렌더링이 발생합니다.
 - **원칙**: 고유하고 안정적인 값(예: id)을 사용해야 합니다.
+
+</details>
+
+<details>
+<summary>컴포넌트 단위로 개발 시에 장점은 무엇인가요?</summary>
+
+### 답변
+- UI를 독립적인 단위로 분리하여 재사용성 향상
+- 공통 컴포넌트로 구현 시 여러 곳에서 사용 가능하며 수정 시 한 곳에서만 수정하면 됨
+- 각 컴포넌트가 자체 상태와 로직을 가져 독립적으로 테스트 및 유지보수 가능
+
+</details>
+
+<details>
+<summary>쿼리 키 팩토리 패턴은 무엇이고 왜 사용하나요?</summary>
+
+### 답변
+
+쿼리 키 팩토리는 TanStack Query의 쿼리 키를 중앙에서 계층적으로 관리하는 패턴입니다.
+
+```typescript
+const tripsQueries = {
+  all: () => ['trips'] as const,
+  lists: () => [...tripsQueries.all(), 'list'] as const,
+  infinite: (filters: Filters) => [...tripsQueries.lists(), 'infinite', filters] as const,
+  detail: (id: number) => [...tripsQueries.all(), 'detail', id] as const,
+};
+```
+
+이 구조에서 `queryClient.invalidateQueries({ queryKey: tripsQueries.all() })`을 호출하면 trips 관련 모든 쿼리가 한 번에 무효화됩니다. 쿼리 키가 문자열로 흩어져 있으면 키 불일치로 캐시가 제대로 무효화되지 않는 버그가 발생하기 쉬운데, 팩토리 패턴이 이를 방지합니다.
+
+또한 TypeScript의 `as const`와 결합하면 쿼리 키의 타입 추론이 가능해져, 잘못된 키 사용을 컴파일 타임에 잡을 수 있습니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- invalidateQueries의 키 매칭 규칙은 어떻게 동작하나요?
+- staleTime과 gcTime(cacheTime)의 차이는?
+
+</blockquote>
+
+</details>
+
+<details>
+<summary>DevTools Profiler로 렌더링 병목을 진단하는 방법은?</summary>
+
+### 답변
+
+React DevTools의 Profiler 탭에서 컴포넌트별 렌더링 횟수와 소요 시간을 기록하고 분석합니다.
+
+Profiler에서 녹화를 시작한 뒤 특정 인터랙션을 수행하면, 각 커밋(commit)에서 어떤 컴포넌트가 렌더링됐고 얼마나 걸렸는지 플레임 차트로 확인할 수 있습니다. "Why did this render?" 옵션을 활성화하면 리렌더링 원인(props 변경, state 변경, 부모 리렌더)도 함께 표시됩니다.
+
+모달의 콜백 함수가 매 렌더마다 새로 생성되어 하위 컴포넌트가 불필요하게 리렌더되는 경우, 콜백을 `useCallback`으로 감싸고 리스트 컴포넌트에 `React.memo`를 적용하면 리렌더를 최소화할 수 있습니다. 단, 무분별한 memo 적용은 오히려 메모리 비용만 늘리므로 Profiler로 실제 병목이 확인된 지점에만 적용하는 것이 좋습니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- React.memo와 useMemo의 차이는?
+- useCallback은 언제 사용하는 것이 적절한가요?
+
+</blockquote>
+
+</details>
+
+<details>
+<summary>e.preventDefault()와 e.stopPropagation()의 차이는 무엇인가요?</summary>
+
+### 답변
+- e.preventDefault()는 폼 제출, 링크 이동과 같은 브라우저 기본 동작 막음
+- e.stopPropagation()은 이벤트가 부모 요소로 버블링되는 것을 막음
+
+</details>
+
+<details>
+<summary>FSD(Feature-Sliced Design) 아키텍처에서 웹과 모바일 공통 로직 중복을 어떻게 해소하나요?</summary>
+
+### 답변
+
+FSD 아키텍처의 계층 구조를 활용해 공통 도메인 로직을 상위 레이어에 응집시키고, 플랫폼별 UI는 하위 레이어에서 분기합니다.
+
+`entities` 레이어에 도메인 모델과 타입을, `features` 레이어에 공통 API 호출과 비즈니스 로직을 정의합니다. 웹과 모바일은 각자의 `pages`와 `widgets` 레이어에서 상위 레이어의 로직을 주입받아 화면만 다르게 구성합니다.
+
+이렇게 하면 API 호출이나 도메인 로직 수정이 한 지점에서 끝나고, 신규 기능 추가 시 양쪽에 중복 작업을 하지 않아도 됩니다. 핵심은 FSD의 단방향 의존성 규칙(상위 레이어는 하위 레이어만 참조)을 지켜 계층 간 결합도를 낮추는 것입니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- FSD에서 feature와 entity의 차이는 무엇인가요?
+- 단방향 의존성 규칙을 위반하면 어떤 문제가 발생하나요?
+
+</blockquote>
+
+</details>
+
+<details>
+<summary>hydration이란 무엇인가요?</summary>
+
+### 답변
+
+Hydration은 서버에서 미리 생성한 HTML에 React가 이벤트와 상태를 연결하여 상호작용이 가능하도록 만드는 과정입니다.
+SSR에서는 서버가 먼저 HTML을 생성하여 브라우저에 전달하고, 이후 브라우저에서 React가 해당 HTML을 이어받아 이벤트를 연결합니다.
+
+덕분에 초기 화면은 빠르게 표시하면서도 이후에는 일반적인 React 애플리케이션처럼 동작할 수 있습니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+<details>
+<summary>SSR과 CSR의 차이점은 무엇인가요?</summary>
+
+### 답변
+
+SSR은 서버에서 html을 렌더링하는 것이고 CSR는 클라이언트에서
+렌더링하는 것입니다.
+
+SSR는 서버에서 html을 렌더링하기때문에 seo에 좋지만
+요청마다 새로 화면을 그려야한다는 단점이 있습니다.
+CSR는 seo가 안좋지만 한번 그려두면 그 이후는 부분적으로 바뀌는 부분만 렌더링되기때문에 화면 깜빡임이 없습니다.
+
+</details>
+
+<details>
+<summary>Hydration Mismatch는 왜 발생하나요?</summary>
+
+### 답변
+
+SSR 결과 HTML ≠ Client React 렌더링 결과 → Hydration 불일치
+
+서버와 클라이언트의 결과가 다르기 때문에 발생합니다.
+
+</details>
+
+</blockquote>
 
 </details>
 
@@ -1283,6 +1547,14 @@ JSX가 단일 루트 요소를 요구하는 이유도 여기에 있습니다. Ja
 </details>
 
 <details>
+<summary>props drilling 문제를 해결하는 방법</summary>
+
+### 답변
+- context api나 zustand 같은 전역 상태 관리 라이브러리 사용
+
+</details>
+
+<details>
 <summary>props와 state의 차이는 무엇인가요?</summary>
 
 ### 답변
@@ -1295,16 +1567,20 @@ state는 자식 컴포넌트 내부에서 값을 변경할 수 있습니다.
 
 **꼬리질문**
 
-<details>
-<summary>props drilling 문제를 어떻게 해결할 수 있나요?</summary>
-
-### 답변
-- context api나 zustand 같은 전역 상태 관리 라이브러리 사용
-
-</details>
+- props drilling 문제를 어떻게 해결할 수 있나요?
 - state를 변경했는데 화면이 바로 안 바뀌는 경우가 있는 이유는 무엇인가요?
 
 </blockquote>
+
+</details>
+
+<details>
+<summary>React Hooks에서 클로저가 하는 역할</summary>
+
+### 답변
+- 리렌더링될 때마다 그 시점의 state와 props 값을 함수 내부에 고정해서 기억하게 해주는 역할
+- 매 렌더링마다 함수 컴포넌트가 통째로 다시 실행되면서 그 안의 이벤트 핸들러나 useEffect 콜백이 그 시점의 값을 캡처하는 것
+- 그래서 useEffect에서 deps 배열을 빠뜨리면, 콜백 내부의 state가 처음 렌더링 시점 값으로 고정돼버리는 stale closure 문제가 발생할 수 있음
 
 </details>
 
@@ -1386,149 +1662,11 @@ Context의 값이 바뀌면 해당 Context를 구독하는 **모든 컴포넌트
 </details>
 
 <details>
-<summary>useEffect의 의존성 배열은 어떤 역할을 하나요?</summary>
-
-### 답변
-
-이펙트가 **언제 다시 실행될지**를 결정하는 값들의 목록입니다.
-
-- **의존성 없음**: 매 렌더링마다 실행됩니다.
-- **빈 배열 `[]`**: 마운트 시 한 번만 실행됩니다.
-- **값 있음 `[a, b]`**: `a`나 `b`가 바뀔 때마다 실행됩니다.
-- **cleanup**: 반환한 함수는 다음 실행 전 또는 언마운트 시 정리 작업을 수행합니다.
-
-```javascript
-useEffect(() => {
-  const id = setInterval(tick, 1000);
-  return () => clearInterval(id); // cleanup
-}, []);
-```
-
-
-<blockquote>
-
-**꼬리질문**
-
-<details>
-<summary>의존성 배열에 넣어야 할 값을 빠뜨리면 어떤 문제가 생기나요?</summary>
-
-### 답변
-이펙트 내부에서 참조하는 값이 바뀌어도 이펙트가 재실행되지 않아, **오래된 값(stale closure)**을 사용하게 됩니다.
-
-- **증상**: 상태가 업데이트됐는데 이펙트는 이전 값을 보고 동작합니다.
-- **예시**: 타이머에서 `count`를 의존성에 넣지 않으면 항상 초기값만 참조합니다.
-- **해결**: ESLint의 `exhaustive-deps` 규칙을 활성화해 빠뜨린 의존성을 자동 감지합니다.
-
-</details>
-
-<details>
-<summary>`useEffect`와 `useLayoutEffect`의 실행 시점 차이는?</summary>
-
-### 답변
-둘 다 사이드 이펙트를 처리하지만, **브라우저 페인트 전후** 실행 시점이 다릅니다.
-
-- **useEffect**: 렌더링 결과가 **화면에 그려진 후(paint 이후)** 비동기로 실행됩니다.
-- **useLayoutEffect**: DOM 변경 후 **화면에 그려지기 전(paint 이전)** 동기로 실행됩니다.
-- **사용 구분**: DOM 측정(크기·위치)이나 시각적 깜빡임을 방지해야 할 때만 `useLayoutEffect`를 쓰고, 나머지는 `useEffect`를 사용합니다.
-
-</details>
-
-</blockquote>
-
-</details>
-
-<details>
-<summary>Virtual DOM이란 무엇인가요?</summary>
-
-### 답변
-
-Virtual DOM은 실제 DOM의 가벼운 복사본을 메모리에 유지하는 개념입니다. </br>
-상태가 변경되면 새로운 Virtual DOM 트리를 생성하고, 이전 트리와 비교(diffing)하여 변경된 부분만 실제 DOM에 반영(reconciliation)합니다. </br>
-이를 통해 불필요한 DOM 조작을 줄여 성능을 최적화합니다.
-
-
-<blockquote>
-
-**꼬리질문**
-
-- React Fiber는 무엇인가요?
-
-<details>
-<summary>key prop이 reconciliation에서 왜 중요한가요?</summary>
+<summary>React에서 key prop이 reconciliation과정에서 왜 중요한가</summary>
 
 ### 답변
 - key를 고유 값으로 주면 어떤 요소가 추가/삭제/이동됐는지 정확히 식별 가능하기 때문에 효율적으로 이전 트리와 비교 가능
 - key가 없으면 react는 배열 순서로 엘리먼트를 비교해 불필요한 리렌더링이나 잘못된 DOM 재사용 발생 가능
-
-</details>
-
-</blockquote>
-
-</details>
-
-#### ⭐⭐ 중요
-
-> 자주 출제되며, 알고 있으면 플러스가 되는 질문입니다.
-
-<details>
-<summary>가상 DOM은 실제로 성능상 항상 빠르다고 생각하나요?</summary>
-
-### 답변
-- 가상 DOM이 항상 빠른 건 아니고, 단순 페이지인 경우엔 오히려 오버헤드
-- 상태 변경이 잦고 DOM 업데이트가 많은 복잡한 UI인 경우에만 효과적
-
-</details>
-
-<details>
-<summary>리렌더링이 발생하는 조건은 무엇인가요?</summary>
-
-### 답변
-
-리액트 컴포넌트는 state 변경, props 변경, 부모 컴포넌트 리렌더링, Context 값 변경 시 리렌더링이 발생합니다.
-
-
-<blockquote>
-
-**꼬리질문**
-
-<details>
-<summary>불필요한 리렌더링을 방지하는 방법은 무엇인가요?</summary>
-
-### 답변
-- React.memo, useMemo, useCallback을 사용하여 메모이제이션이나 컴포넌트 쪼개기, key 최적화, state를 필요한 범위로 최소화 및 끌어내리기
-
-</details>
-- React.memo와 useMemo, useCallback의 차이는 무엇인가요?
-
-</blockquote>
-
-</details>
-
-<details>
-<summary>리액트에서 이벤트 핸들러 함수를 화살표 함수로 사용하는 이유는 무엇인가요?</summary>
-
-### 답변
-- 클래스 컴포넌트에서 일반 함수는 호출 시 this가 undefined가 되기 때문에 화살표 함수로 선언하거나 bind로 묶어야 함
-- 함수형 컴포넌트에서는 this 문제 없지만, 클로저로 특정 값을 캡처해 전달하기 편해서 자주 사용
-
-</details>
-
-<details>
-<summary>컴포넌트 단위로 개발 시에 장점은 무엇인가요?</summary>
-
-### 답변
-- UI를 독립적인 단위로 분리하여 재사용성 향상
-- 공통 컴포넌트로 구현 시 여러 곳에서 사용 가능하며 수정 시 한 곳에서만 수정하면 됨
-- 각 컴포넌트가 자체 상태와 로직을 가져 독립적으로 테스트 및 유지보수 가능
-
-</details>
-
-<details>
-<summary>e.preventDefault()와 e.stopPropagation()의 차이는 무엇인가요?</summary>
-
-### 답변
-- e.preventDefault()는 폼 제출, 링크 이동과 같은 브라우저 기본 동작 막음
-- e.stopPropagation()은 이벤트가 부모 요소로 버블링되는 것을 막음
 
 </details>
 
@@ -1621,6 +1759,55 @@ cleanup을 하지않으면 내부에서 타이머, 이벤트 리스너, webSocke
 </details>
 
 <details>
+<summary>TanStack Query(React Query)의 retry 옵션은 어떤 기준으로 설정하시나요?</summary>
+
+### 답변
+
+재시도는 공짜가 아닙니다. **재시도 횟수 × (응답 시간 + 백오프 대기)가 곧 사용자 체감 지연**이라는 것이 기준의 출발점입니다.
+
+- **전역 기본값은 보수적으로**: 일시적 네트워크 흔들림은 한 번의 재시도로 대개 회복되므로 `retry: 1` 정도로 두고, 그래도 실패하면 빠르게 ErrorBoundary로 떨어뜨려 "다시 시도" 버튼을 노출하는 명시적 UX가 균형점입니다. 기본 3회는 지수 백오프가 누적되며 수 초간 빈 화면이 생길 수 있습니다.
+- **에러 종류로 가르기**: 4xx는 클라이언트 잘못이라 재시도해도 같은 결과이므로 0회, 재시도가 의미 있는 5xx·네트워크 에러만 `retry: (count, error) => ...` 함수로 재시도합니다.
+- **응답 시간에 반비례**: 무겁고 핵심인 API는 재시도가 길어질수록 사용자가 빈 화면에 갇히므로 0~1회로 줄이고 사용자에게 통제권(명시적 재시도 버튼)을 줍니다. 반대로 응답이 수십 ms로 빠른 API는 재시도 비용이 작으니 2~3회로 늘려 안정성을 높입니다.
+
+정리하면 "전역 기본은 보수적으로, 개별 쿼리는 특성에 맞게 오버라이드"입니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- retryDelay의 기본 동작(지수 백오프)은 왜 필요한가요?
+- `retry: 0`이 항상 더 빠른데, 왜 1회를 두나요?
+- 응답이 유난히 오래 걸리는 요청에는 재시도 외에 어떤 장치가 필요한가요? (AbortController 타임아웃)
+
+</blockquote>
+
+</details>
+
+<details>
+<summary>TanStack Query에서 prefetchQuery와 HydrationBoundary를 사용하는 이유는 무엇인가요?</summary>
+
+### 답변
+
+Next.js App Router 환경에서 서버 컴포넌트 단계에서 데이터를 미리 가져와 클라이언트에 전달하기 위해 사용합니다.
+
+서버 컴포넌트에서 `queryClient.prefetchQuery()`로 데이터를 미리 조회하면, 해당 결과가 QueryClient의 캐시에 저장됩니다. 이 캐시를 `dehydrate()`로 직렬화한 뒤 `HydrationBoundary`의 `state` prop으로 넘기면, 클라이언트 컴포넌트가 마운트될 때 별도의 API 호출 없이 캐시된 데이터를 즉시 사용할 수 있습니다.
+
+이를 통해 초기 데이터 로드 시점이 서버 단계로 앞당겨져 클라이언트 측 워터폴(컴포넌트 마운트 → API 호출 → 렌더링)이 제거되고, 첫 화면 인지 속도가 개선됩니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- prefetchQuery와 fetchQuery의 차이는 무엇인가요?
+- SSR 환경에서 QueryClient를 요청마다 새로 생성해야 하는 이유는?
+
+</blockquote>
+
+</details>
+
+<details>
 <summary>uncontrolled pattern에 대해 알고 있나요?</summary>
 
 ### 답변
@@ -1643,6 +1830,58 @@ Uncontrolled 패턴은 폼 요소의 값을 DOM 자체가 관리하게 두는 �
 - 의존성 배열이 빈 경우 > 최초 한 번만 실행
 - 의존성 배열에 값이 있는 경우 > 지정한 변수 값이 변경될 때만 실행
 - 클린업 > 언마운트되기 직전 실행되며 메모리 누수나 불필요한 동작 방지 가능
+
+</details>
+
+<details>
+<summary>useEffect의 의존성 배열은 어떤 역할을 하나요?</summary>
+
+### 답변
+
+이펙트가 **언제 다시 실행될지**를 결정하는 값들의 목록입니다.
+
+- **의존성 없음**: 매 렌더링마다 실행됩니다.
+- **빈 배열 `[]`**: 마운트 시 한 번만 실행됩니다.
+- **값 있음 `[a, b]`**: `a`나 `b`가 바뀔 때마다 실행됩니다.
+- **cleanup**: 반환한 함수는 다음 실행 전 또는 언마운트 시 정리 작업을 수행합니다.
+
+```javascript
+useEffect(() => {
+  const id = setInterval(tick, 1000);
+  return () => clearInterval(id); // cleanup
+}, []);
+```
+
+
+<blockquote>
+
+**꼬리질문**
+
+<details>
+<summary>의존성 배열에 넣어야 할 값을 빠뜨리면 어떤 문제가 생기나요?</summary>
+
+### 답변
+이펙트 내부에서 참조하는 값이 바뀌어도 이펙트가 재실행되지 않아, **오래된 값(stale closure)**을 사용하게 됩니다.
+
+- **증상**: 상태가 업데이트됐는데 이펙트는 이전 값을 보고 동작합니다.
+- **예시**: 타이머에서 `count`를 의존성에 넣지 않으면 항상 초기값만 참조합니다.
+- **해결**: ESLint의 `exhaustive-deps` 규칙을 활성화해 빠뜨린 의존성을 자동 감지합니다.
+
+</details>
+
+<details>
+<summary>`useEffect`와 `useLayoutEffect`의 실행 시점 차이는?</summary>
+
+### 답변
+둘 다 사이드 이펙트를 처리하지만, **브라우저 페인트 전후** 실행 시점이 다릅니다.
+
+- **useEffect**: 렌더링 결과가 **화면에 그려진 후(paint 이후)** 비동기로 실행됩니다.
+- **useLayoutEffect**: DOM 변경 후 **화면에 그려지기 전(paint 이전)** 동기로 실행됩니다.
+- **사용 구분**: DOM 측정(크기·위치)이나 시각적 깜빡임을 방지해야 할 때만 `useLayoutEffect`를 쓰고, 나머지는 `useEffect`를 사용합니다.
+
+</details>
+
+</blockquote>
 
 </details>
 
@@ -1694,213 +1933,6 @@ const memoFn = useCallback(() => doSomething(a), [a]);
 
 </details>
 
-#### ⭐ 심화
-
-> 심화 질문이거나 특정 회사에서 깊게 물어보는 질문입니다. 알면 차별화 포인트가 됩니다.
-
-<details>
-<summary>거대 폼을 확장가능하게 구현하셨다고 하셨는데 일반 폼 설계/구현과 다른 점이 있었던건가요?</summary>
-
-### 답변
-
-</details>
-
-<details>
-<summary>레이아웃과 레이아웃을 사용하는 여러 개의 애플리케이션을 각각 별도로 개발한다고 했을 때 어떻게 해야 유저에게 하나의 애플리케이션으로 서빙할 수 있을까요?</summary>
-
-### 답변
-
-</details>
-
-<details>
-<summary>상태 변화에 따라 렌더링을 제어할 수 있는데 렌더 할 배열 상태를 굳이 렌더큐와 백그라운드큐로 분리한 이유가 뭔가요?</summary>
-
-### 답변
-
-</details>
-
-<details>
-<summary>쿼리 키 팩토리 패턴은 무엇이고 왜 사용하나요?</summary>
-
-### 답변
-
-쿼리 키 팩토리는 TanStack Query의 쿼리 키를 중앙에서 계층적으로 관리하는 패턴입니다.
-
-```typescript
-const tripsQueries = {
-  all: () => ['trips'] as const,
-  lists: () => [...tripsQueries.all(), 'list'] as const,
-  infinite: (filters: Filters) => [...tripsQueries.lists(), 'infinite', filters] as const,
-  detail: (id: number) => [...tripsQueries.all(), 'detail', id] as const,
-};
-```
-
-이 구조에서 `queryClient.invalidateQueries({ queryKey: tripsQueries.all() })`을 호출하면 trips 관련 모든 쿼리가 한 번에 무효화됩니다. 쿼리 키가 문자열로 흩어져 있으면 키 불일치로 캐시가 제대로 무효화되지 않는 버그가 발생하기 쉬운데, 팩토리 패턴이 이를 방지합니다.
-
-또한 TypeScript의 `as const`와 결합하면 쿼리 키의 타입 추론이 가능해져, 잘못된 키 사용을 컴파일 타임에 잡을 수 있습니다.
-
-
-<blockquote>
-
-**꼬리질문**
-
-- invalidateQueries의 키 매칭 규칙은 어떻게 동작하나요?
-
-<details>
-<summary>staleTime과 gcTime(cacheTime)의 차이는?</summary>
-
-### 답변
-
-사용자가 리액트 쿼리를 통해 요청을 보냈을 때
-staleTime이 fresh하면 gcTime안에 데이터가 있는지 확인 후 데이터가 있다면 그 값을 캐싱하고 없다면 api요청을 합니다.
-
-그리고 staleTime이 stale 상태면 바로 api 요청을 보냅니다.
-
-</details>
-
-</blockquote>
-
-</details>
-
-<details>
-<summary>DevTools Profiler로 렌더링 병목을 진단하는 방법은?</summary>
-
-### 답변
-
-React DevTools의 Profiler 탭에서 컴포넌트별 렌더링 횟수와 소요 시간을 기록하고 분석합니다.
-
-Profiler에서 녹화를 시작한 뒤 특정 인터랙션을 수행하면, 각 커밋(commit)에서 어떤 컴포넌트가 렌더링됐고 얼마나 걸렸는지 플레임 차트로 확인할 수 있습니다. "Why did this render?" 옵션을 활성화하면 리렌더링 원인(props 변경, state 변경, 부모 리렌더)도 함께 표시됩니다.
-
-모달의 콜백 함수가 매 렌더마다 새로 생성되어 하위 컴포넌트가 불필요하게 리렌더되는 경우, 콜백을 `useCallback`으로 감싸고 리스트 컴포넌트에 `React.memo`를 적용하면 리렌더를 최소화할 수 있습니다. 단, 무분별한 memo 적용은 오히려 메모리 비용만 늘리므로 Profiler로 실제 병목이 확인된 지점에만 적용하는 것이 좋습니다.
-
-
-<blockquote>
-
-**꼬리질문**
-
-- React.memo와 useMemo의 차이는?
-- useCallback은 언제 사용하는 것이 적절한가요?
-
-</blockquote>
-
-</details>
-
-<details>
-<summary>FSD(Feature-Sliced Design) 아키텍처에서 웹과 모바일 공통 로직 중복을 어떻게 해소하나요?</summary>
-
-### 답변
-
-FSD 아키텍처의 계층 구조를 활용해 공통 도메인 로직을 상위 레이어에 응집시키고, 플랫폼별 UI는 하위 레이어에서 분기합니다.
-
-`entities` 레이어에 도메인 모델과 타입을, `features` 레이어에 공통 API 호출과 비즈니스 로직을 정의합니다. 웹과 모바일은 각자의 `pages`와 `widgets` 레이어에서 상위 레이어의 로직을 주입받아 화면만 다르게 구성합니다.
-
-이렇게 하면 API 호출이나 도메인 로직 수정이 한 지점에서 끝나고, 신규 기능 추가 시 양쪽에 중복 작업을 하지 않아도 됩니다. 핵심은 FSD의 단방향 의존성 규칙(상위 레이어는 하위 레이어만 참조)을 지켜 계층 간 결합도를 낮추는 것입니다.
-
-
-<blockquote>
-
-**꼬리질문**
-
-- FSD에서 feature와 entity의 차이는 무엇인가요?
-- 단방향 의존성 규칙을 위반하면 어떤 문제가 발생하나요?
-
-</blockquote>
-
-</details>
-
-<details>
-<summary>hydration이란 무엇인가요?</summary>
-
-### 답변
-
-Hydration은 서버에서 미리 생성한 HTML에 React가 이벤트와 상태를 연결하여 상호작용이 가능하도록 만드는 과정입니다.
-SSR에서는 서버가 먼저 HTML을 생성하여 브라우저에 전달하고, 이후 브라우저에서 React가 해당 HTML을 이어받아 이벤트를 연결합니다.
-
-덕분에 초기 화면은 빠르게 표시하면서도 이후에는 일반적인 React 애플리케이션처럼 동작할 수 있습니다.
-
-
-<blockquote>
-
-**꼬리질문**
-
-<details>
-<summary>SSR과 CSR의 차이점은 무엇인가요?</summary>
-
-### 답변
-
-SSR은 서버에서 html을 렌더링하는 것이고 CSR는 클라이언트에서
-렌더링하는 것입니다.
-
-SSR는 서버에서 html을 렌더링하기때문에 seo에 좋지만
-요청마다 새로 화면을 그려야한다는 단점이 있습니다.
-CSR는 seo가 안좋지만 한번 그려두면 그 이후는 부분적으로 바뀌는 부분만 렌더링되기때문에 화면 깜빡임이 없습니다.
-
-</details>
-
-<details>
-<summary>Hydration Mismatch는 왜 발생하나요?</summary>
-
-### 답변
-
-SSR 결과 HTML ≠ Client React 렌더링 결과 → Hydration 불일치
-
-서버와 클라이언트의 결과가 다르기 때문에 발생합니다.
-
-</details>
-
-</blockquote>
-
-</details>
-
-<details>
-<summary>TanStack Query(React Query)의 retry 옵션은 어떤 기준으로 설정하시나요?</summary>
-
-### 답변
-
-재시도는 공짜가 아닙니다. **재시도 횟수 × (응답 시간 + 백오프 대기)가 곧 사용자 체감 지연**이라는 것이 기준의 출발점입니다.
-
-- **전역 기본값은 보수적으로**: 일시적 네트워크 흔들림은 한 번의 재시도로 대개 회복되므로 `retry: 1` 정도로 두고, 그래도 실패하면 빠르게 ErrorBoundary로 떨어뜨려 "다시 시도" 버튼을 노출하는 명시적 UX가 균형점입니다. 기본 3회는 지수 백오프가 누적되며 수 초간 빈 화면이 생길 수 있습니다.
-- **에러 종류로 가르기**: 4xx는 클라이언트 잘못이라 재시도해도 같은 결과이므로 0회, 재시도가 의미 있는 5xx·네트워크 에러만 `retry: (count, error) => ...` 함수로 재시도합니다.
-- **응답 시간에 반비례**: 무겁고 핵심인 API는 재시도가 길어질수록 사용자가 빈 화면에 갇히므로 0~1회로 줄이고 사용자에게 통제권(명시적 재시도 버튼)을 줍니다. 반대로 응답이 수십 ms로 빠른 API는 재시도 비용이 작으니 2~3회로 늘려 안정성을 높입니다.
-
-정리하면 "전역 기본은 보수적으로, 개별 쿼리는 특성에 맞게 오버라이드"입니다.
-
-
-<blockquote>
-
-**꼬리질문**
-
-- retryDelay의 기본 동작(지수 백오프)은 왜 필요한가요?
-- `retry: 0`이 항상 더 빠른데, 왜 1회를 두나요?
-- 응답이 유난히 오래 걸리는 요청에는 재시도 외에 어떤 장치가 필요한가요? (AbortController 타임아웃)
-
-</blockquote>
-
-</details>
-
-<details>
-<summary>TanStack Query에서 prefetchQuery와 HydrationBoundary를 사용하는 이유는 무엇인가요?</summary>
-
-### 답변
-
-Next.js App Router 환경에서 서버 컴포넌트 단계에서 데이터를 미리 가져와 클라이언트에 전달하기 위해 사용합니다.
-
-서버 컴포넌트에서 `queryClient.prefetchQuery()`로 데이터를 미리 조회하면, 해당 결과가 QueryClient의 캐시에 저장됩니다. 이 캐시를 `dehydrate()`로 직렬화한 뒤 `HydrationBoundary`의 `state` prop으로 넘기면, 클라이언트 컴포넌트가 마운트될 때 별도의 API 호출 없이 캐시된 데이터를 즉시 사용할 수 있습니다.
-
-이를 통해 초기 데이터 로드 시점이 서버 단계로 앞당겨져 클라이언트 측 워터폴(컴포넌트 마운트 → API 호출 → 렌더링)이 제거되고, 첫 화면 인지 속도가 개선됩니다.
-
-
-<blockquote>
-
-**꼬리질문**
-
-- prefetchQuery와 fetchQuery의 차이는 무엇인가요?
-- SSR 환경에서 QueryClient를 요청마다 새로 생성해야 하는 이유는?
-
-</blockquote>
-
-</details>
-
 <details>
 <summary>useMutation과 조건부 refetch를 활용한 데이터 갱신 전략은?</summary>
 
@@ -1924,13 +1956,112 @@ TanStack Query에서 `useMutation`의 `onSuccess` 콜백에서 `queryClient.inva
 
 </details>
 
+<details>
+<summary>useSuspenseInfiniteQuery와 cursor 기반 페이지네이션은 어떻게 구현하나요?</summary>
+
+### 답변
+
+`useSuspenseInfiniteQuery`는 TanStack Query의 무한 스크롤 훅에 Suspense를 결합한 것으로, 로딩 상태를 컴포넌트 외부의 `<Suspense>` 바운더리에서 선언적으로 처리할 수 있습니다.
+
+cursor 기반 페이지네이션은 `getNextPageParam`에서 서버 응답의 마지막 항목 ID나 cursor 값을 반환하고, `fetchNextPage`가 호출되면 해당 cursor 이후의 데이터를 추가로 가져옵니다. offset 방식과 달리 중간에 데이터가 추가/삭제되어도 항목이 중복되거나 빠지지 않습니다.
+
+```typescript
+useSuspenseInfiniteQuery({
+  queryKey: ['trips', 'list'],
+  queryFn: ({ pageParam }) => fetchTrips({ cursor: pageParam }),
+  getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+  initialPageParam: null,
+});
+```
+
+Intersection Observer로 리스트 하단 감지 시 `fetchNextPage()`를 호출하면 자연스러운 무한 스크롤이 구현됩니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- offset 기반과 cursor 기반 페이지네이션의 장단점은?
+- Suspense와 ErrorBoundary를 함께 사용하는 이유는?
+
+</blockquote>
+
+</details>
+
+<details>
+<summary>Virtual DOM이란 무엇인가요?</summary>
+
+### 답변
+
+Virtual DOM은 실제 DOM의 가벼운 복사본을 메모리에 유지하는 개념입니다. </br>
+상태가 변경되면 새로운 Virtual DOM 트리를 생성하고, 이전 트리와 비교(diffing)하여 변경된 부분만 실제 DOM에 반영(reconciliation)합니다. </br>
+이를 통해 불필요한 DOM 조작을 줄여 성능을 최적화합니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- React Fiber는 무엇인가요?
+- key prop이 reconciliation에서 왜 중요한가요?
+
+</blockquote>
+
+</details>
+
+<details>
+<summary>Zustand와 Jotai의 차이는 무엇인가요?</summary>
+
+### 답변
+
+둘 다 가벼운 상태 관리 라이브러리이지만 설계 철학이 다릅니다.
+
+Zustand는 **스토어 기반**입니다. `create`로 스토어를 정의하고, 스토어 안에 상태와 액션을 함께 둡니다. 컴포넌트 외부에서도 `getState()`로 상태에 접근할 수 있어 비동기 로직이나 미들웨어 연동에 유리합니다. 하나의 스토어가 관련 상태를 모아 관리하는 구조입니다.
+
+Jotai는 **아톰 기반**입니다. `atom()`으로 최소 단위 상태를 정의하고, 아톰 간 의존성으로 파생 상태를 만듭니다. `useState`와 비슷한 `useAtom` API라 진입 장벽이 낮고, 아톰 단위로 구독하므로 불필요한 리렌더가 적습니다. 다만 상태가 여러 아톰에 흩어지면 전체 흐름을 파악하기 어려울 수 있습니다.
+
+전역적으로 모아서 관리할 상태가 많으면 Zustand, 독립적인 상태 조각이 많으면 Jotai가 적합합니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- Zustand에서 selector를 사용하는 이유는?
+- Jotai의 derived atom은 어떻게 동작하나요?
+
+</blockquote>
+
+</details>
+
 ---
 
 ## CSS
 
-#### ⭐⭐⭐ 필수
+<details>
+<summary>CSS 쌓임 맥락(Stacking Context)에 대해 설명해 주세요.</summary>
 
-> 신입 면접에서 거의 반드시 나오는 단골 질문입니다. 정확하게 답변할 수 있어야 합니다.
+### 답변
+
+쌓임 맥락은 요소들이 z축(화면 앞뒤)에서 쌓이는 순서를 결정하는 **독립된 레이어 그룹**입니다.
+
+- **생성 조건**: `position` + `z-index`, `opacity < 1`, `transform`, `filter`, `will-change`, `isolation: isolate` 등이 새 쌓임 맥락을 만듭니다.
+- **핵심 함정**: 자식의 `z-index`는 **자기 부모 쌓임 맥락 안에서만** 의미가 있습니다. 부모 맥락의 z-index가 1이면, 그 안의 자식이 z-index 9999여도 바깥의 z-index 2짜리 요소를 이길 수 없습니다. (1층 건물 옥상에 사다리를 아무리 높이 놓아도 2층 건물보다 낮은 것과 같습니다.)
+
+실무에서 가장 흔한 버그는 "모달이 다른 요소 뒤로 깔리는" 현상인데, 보통 부모에 `transform`이나 `opacity`가 걸려 의도치 않게 새 쌓임 맥락이 생긴 탓입니다. 해결은 모달을 Portal로 `body` 직속에 렌더링하거나, 부모의 쌓임 맥락 유발 속성을 제거하는 것입니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- `z-index`를 지정하지 않았을 때 요소가 쌓이는 기본 순서는 어떻게 결정되나요?
+- `transform`은 왜 새로운 쌓임 맥락을 만드나요?
+- React Portal이 쌓임 맥락 문제를 어떻게 우회하나요?
+
+</blockquote>
+
+</details>
 
 <details>
 <summary>CSS position 속성의 값들은 어떤 차이가 있나요?</summary>
@@ -1979,80 +2110,35 @@ DOM 트리를 올라가며 `position`이 `static`이 **아닌** 가장 가까운
 </details>
 
 <details>
-<summary>Flexbox와 Grid는 언제 무엇을 쓰나요?</summary>
+<summary>CSS Variable 기반 테마 시스템은 어떻게 설계하나요?</summary>
 
 ### 답변
 
-둘 다 레이아웃 도구지만 다루는 축과 용도가 다릅니다.
-
-- **Flexbox**: **1차원**(행 또는 열) 레이아웃에 적합합니다. (네비게이션 바, 버튼 정렬 등)
-- **Grid**: **2차원**(행과 열 동시) 레이아웃에 적합합니다. (전체 페이지 레이아웃, 카드 그리드 등)
-- **혼용**: Grid로 큰 구조를 잡고, 각 셀 내부 정렬은 Flexbox로 처리하는 방식이 흔합니다.
-
-
-<blockquote>
-
-**꼬리질문**
-
-<details>
-<summary>`justify-content`와 `align-items`의 차이는?</summary>
-
-### 답변
-Flexbox에서 **주축(main axis)**과 **교차축(cross axis)** 중 어느 방향으로 정렬하는지가 다릅니다.
-
-- **justify-content**: **주축** 방향 정렬. `flex-direction: row`면 가로, `column`이면 세로.
-- **align-items**: **교차축** 방향 정렬. `flex-direction: row`면 세로, `column`이면 가로.
-- **핵심**: `flex-direction`에 따라 축이 바뀌므로, "가로/세로"가 아니라 "주축/교차축"으로 이해해야 합니다.
-
-</details>
-
-<details>
-<summary>Grid의 `fr` 단위는 무엇인가요?</summary>
-
-### 답변
-`fr`(fraction)은 Grid 컨테이너의 **남은 공간을 비율로 나누는** 단위입니다.
-
-- **동작**: 고정 크기(`px`, `rem`)나 콘텐츠 크기를 먼저 할당한 뒤, 남은 공간을 `fr` 비율로 분배합니다.
-- **예시**: `grid-template-columns: 200px 1fr 2fr`이면 첫 열은 200px 고정, 나머지 공간을 1:2로 나눕니다.
-- **장점**: 반응형 레이아웃을 `%` 계산 없이 직관적으로 만들 수 있습니다.
+`:root`에 의미 기반(semantic) CSS 변수를 정의하고, 다크/라이트 모드에 따라 변수 값만 교체하는 구조입니다.
 
 ```css
-.grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr; /* 3등분 */
+:root {
+  --color-bg-primary: #ffffff;
+  --color-text-primary: #1a1a1a;
+}
+
+[data-theme="dark"] {
+  --color-bg-primary: #1a1a1a;
+  --color-text-primary: #ffffff;
 }
 ```
 
-</details>
+컴포넌트에서는 `var(--color-bg-primary)`로 참조하므로, 테마 전환 시 변수 값만 바뀌고 컴포넌트 코드는 수정할 필요가 없습니다. Mantine과 Tailwind를 혼용하는 환경에서도 CSS 변수를 단일 진실 원천(Single Source of Truth)으로 삼으면 디자인 토큰 불일치를 방지할 수 있습니다.
 
-</blockquote>
-
-</details>
-
-#### ⭐⭐ 중요
-
-> 자주 출제되며, 알고 있으면 플러스가 되는 질문입니다.
-
-<details>
-<summary>CSS 쌓임 맥락(Stacking Context)에 대해 설명해 주세요.</summary>
-
-### 답변
-
-쌓임 맥락은 요소들이 z축(화면 앞뒤)에서 쌓이는 순서를 결정하는 **독립된 레이어 그룹**입니다.
-
-- **생성 조건**: `position` + `z-index`, `opacity < 1`, `transform`, `filter`, `will-change`, `isolation: isolate` 등이 새 쌓임 맥락을 만듭니다.
-- **핵심 함정**: 자식의 `z-index`는 **자기 부모 쌓임 맥락 안에서만** 의미가 있습니다. 부모 맥락의 z-index가 1이면, 그 안의 자식이 z-index 9999여도 바깥의 z-index 2짜리 요소를 이길 수 없습니다. (1층 건물 옥상에 사다리를 아무리 높이 놓아도 2층 건물보다 낮은 것과 같습니다.)
-
-실무에서 가장 흔한 버그는 "모달이 다른 요소 뒤로 깔리는" 현상인데, 보통 부모에 `transform`이나 `opacity`가 걸려 의도치 않게 새 쌓임 맥락이 생긴 탓입니다. 해결은 모달을 Portal로 `body` 직속에 렌더링하거나, 부모의 쌓임 맥락 유발 속성을 제거하는 것입니다.
+`color-primary` 같은 시각적 이름 대신 `color-bg-primary`처럼 의미 기반 이름을 쓰면, 디자인과 개발 간 컬러 불일치를 줄이고 신규 컴포넌트 확장 비용을 최소화할 수 있습니다.
 
 
 <blockquote>
 
 **꼬리질문**
 
-- `z-index`를 지정하지 않았을 때 요소가 쌓이는 기본 순서는 어떻게 결정되나요?
-- `transform`은 왜 새로운 쌓임 맥락을 만드나요?
-- React Portal이 쌓임 맥락 문제를 어떻게 우회하나요?
+- CSS 변수와 SCSS 변수의 차이는?
+- prefers-color-scheme 미디어 쿼리와 data-theme 속성 방식의 차이는?
 
 </blockquote>
 
@@ -2133,63 +2219,75 @@ grid는 2차원 레이아웃에 최적화된 속성으로 간격과 비율만 �
 
 </details>
 
-#### ⭐ 심화
-
-> 심화 질문이거나 특정 회사에서 깊게 물어보는 질문입니다. 알면 차별화 포인트가 됩니다.
-
 <details>
-<summary>CSS Variable 기반 테마 시스템은 어떻게 설계하나요?</summary>
+<summary>Flexbox와 Grid는 언제 무엇을 쓰나요?</summary>
 
 ### 답변
 
-`:root`에 의미 기반(semantic) CSS 변수를 정의하고, 다크/라이트 모드에 따라 변수 값만 교체하는 구조입니다.
+둘 다 레이아웃 도구지만 다루는 축과 용도가 다릅니다.
 
-```css
-:root {
-  --color-bg-primary: #ffffff;
-  --color-text-primary: #1a1a1a;
-}
-
-[data-theme="dark"] {
-  --color-bg-primary: #1a1a1a;
-  --color-text-primary: #ffffff;
-}
-```
-
-컴포넌트에서는 `var(--color-bg-primary)`로 참조하므로, 테마 전환 시 변수 값만 바뀌고 컴포넌트 코드는 수정할 필요가 없습니다. Mantine과 Tailwind를 혼용하는 환경에서도 CSS 변수를 단일 진실 원천(Single Source of Truth)으로 삼으면 디자인 토큰 불일치를 방지할 수 있습니다.
-
-`color-primary` 같은 시각적 이름 대신 `color-bg-primary`처럼 의미 기반 이름을 쓰면, 디자인과 개발 간 컬러 불일치를 줄이고 신규 컴포넌트 확장 비용을 최소화할 수 있습니다.
+- **Flexbox**: **1차원**(행 또는 열) 레이아웃에 적합합니다. (네비게이션 바, 버튼 정렬 등)
+- **Grid**: **2차원**(행과 열 동시) 레이아웃에 적합합니다. (전체 페이지 레이아웃, 카드 그리드 등)
+- **혼용**: Grid로 큰 구조를 잡고, 각 셀 내부 정렬은 Flexbox로 처리하는 방식이 흔합니다.
 
 
 <blockquote>
 
 **꼬리질문**
 
-- CSS 변수와 SCSS 변수의 차이는?
-- prefers-color-scheme 미디어 쿼리와 data-theme 속성 방식의 차이는?
+<details>
+<summary>`justify-content`와 `align-items`의 차이는?</summary>
+
+### 답변
+Flexbox에서 **주축(main axis)**과 **교차축(cross axis)** 중 어느 방향으로 정렬하는지가 다릅니다.
+
+- **justify-content**: **주축** 방향 정렬. `flex-direction: row`면 가로, `column`이면 세로.
+- **align-items**: **교차축** 방향 정렬. `flex-direction: row`면 세로, `column`이면 가로.
+- **핵심**: `flex-direction`에 따라 축이 바뀌므로, "가로/세로"가 아니라 "주축/교차축"으로 이해해야 합니다.
+
+</details>
+
+<details>
+<summary>Grid의 `fr` 단위는 무엇인가요?</summary>
+
+### 답변
+`fr`(fraction)은 Grid 컨테이너의 **남은 공간을 비율로 나누는** 단위입니다.
+
+- **동작**: 고정 크기(`px`, `rem`)나 콘텐츠 크기를 먼저 할당한 뒤, 남은 공간을 `fr` 비율로 분배합니다.
+- **예시**: `grid-template-columns: 200px 1fr 2fr`이면 첫 열은 200px 고정, 나머지 공간을 1:2로 나눕니다.
+- **장점**: 반응형 레이아웃을 `%` 계산 없이 직관적으로 만들 수 있습니다.
+
+```css
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr; /* 3등분 */
+}
+```
+
+</details>
 
 </blockquote>
 
 </details>
 
 <details>
-<summary>Vanilla Extract와 styled-components의 차이는 무엇인가요?</summary>
+<summary>postcss-pxtorem을 도입하는 이유는 무엇인가요?</summary>
 
 ### 답변
 
-핵심 차이는 스타일이 생성되는 시점입니다. Vanilla Extract는 빌드 타임에, styled-components는 런타임에 CSS를 생성합니다.
+디자인 시안의 px 값을 그대로 코드에 사용하면서도 접근성과 반응성을 위해 rem으로 자동 변환하기 위해 사용합니다.
 
-Vanilla Extract는 `.css.ts` 파일에서 TypeScript로 스타일을 작성하면 빌드 시 정적 CSS 파일로 추출됩니다. 런타임 오버헤드가 없고 타입 안전한 스타일 작성이 가능합니다. 하지만 props에 따른 동적 스타일링은 CSS 변수나 레시피(recipe) 패턴으로 우회해야 합니다.
+`rem`은 루트 요소의 `font-size`를 기준으로 계산되므로, 사용자가 브라우저 기본 글꼴 크기를 변경하면 UI가 비례적으로 확대됩니다. 이는 시각 접근성 측면에서 중요합니다. 하지만 디자이너는 px 단위로 시안을 제공하기 때문에, 개발자가 매번 px을 rem으로 변환하는 건 비효율적입니다.
 
-styled-components는 런타임에 JavaScript로 CSS를 생성해 `<style>` 태그에 주입합니다. props 기반 동적 스타일링이 자유롭지만, SSR 시 스타일 하이드레이션 처리가 필요하고 번들 크기와 런타임 비용이 추가됩니다.
+postcss-pxtorem은 빌드 단계에서 CSS의 px 값을 자동으로 rem으로 변환합니다. `rootValue`로 기준 px을 설정하고(보통 16), `propList`로 변환할 속성을 지정할 수 있습니다. `border`나 `box-shadow`처럼 px이 적절한 속성은 제외하는 것이 일반적입니다.
 
 
 <blockquote>
 
 **꼬리질문**
 
-- zero-runtime CSS-in-JS의 장점은?
-- Tailwind CSS와 CSS-in-JS의 트레이드오프는?
+- rem과 em의 차이는 무엇인가요?
+- 브라우저 기본 font-size를 변경하면 px 단위 요소는 어떻게 되나요?
 
 </blockquote>
 
@@ -2218,13 +2316,32 @@ SVG는 `viewBox` 속성으로 논리 좌표 공간을 정의하고, 실제 렌�
 
 </details>
 
+<details>
+<summary>Vanilla Extract와 styled-components의 차이는 무엇인가요?</summary>
+
+### 답변
+
+핵심 차이는 스타일이 생성되는 시점입니다. Vanilla Extract는 빌드 타임에, styled-components는 런타임에 CSS를 생성합니다.
+
+Vanilla Extract는 `.css.ts` 파일에서 TypeScript로 스타일을 작성하면 빌드 시 정적 CSS 파일로 추출됩니다. 런타임 오버헤드가 없고 타입 안전한 스타일 작성이 가능합니다. 하지만 props에 따른 동적 스타일링은 CSS 변수나 레시피(recipe) 패턴으로 우회해야 합니다.
+
+styled-components는 런타임에 JavaScript로 CSS를 생성해 `<style>` 태그에 주입합니다. props 기반 동적 스타일링이 자유롭지만, SSR 시 스타일 하이드레이션 처리가 필요하고 번들 크기와 런타임 비용이 추가됩니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- zero-runtime CSS-in-JS의 장점은?
+- Tailwind CSS와 CSS-in-JS의 트레이드오프는?
+
+</blockquote>
+
+</details>
+
 ---
 
 ## HTML
-
-#### ⭐⭐⭐ 필수
-
-> 신입 면접에서 거의 반드시 나오는 단골 질문입니다. 정확하게 답변할 수 있어야 합니다.
 
 <details>
 <summary>시맨틱 마크업(Semantic Markup)이란 무엇이고 왜 중요한가요?</summary>
@@ -2309,10 +2426,6 @@ SVG는 `viewBox` 속성으로 논리 좌표 공간을 정의하고, 실제 렌�
 
 </details>
 
-#### ⭐⭐ 중요
-
-> 자주 출제되며, 알고 있으면 플러스가 되는 질문입니다.
-
 <details>
 <summary>b와 strong, i와 em의 차이는 무엇인가요?</summary>
 
@@ -2341,148 +2454,8 @@ SVG는 `viewBox` 속성으로 논리 좌표 공간을 정의하고, 실제 렌�
 
 ## Network
 
-#### ⭐⭐⭐ 필수
-
-> 신입 면접에서 거의 반드시 나오는 단골 질문입니다. 정확하게 답변할 수 있어야 합니다.
-
 <details>
-<summary>CORS는 무엇이고 왜 발생하나요?</summary>
-
-### 답변
-
-브라우저의 동일 출처 정책(Same-Origin Policy) 때문에, 다른 출처의 리소스 요청을 제어하는 보안 메커니즘입니다.
-
-- **출처(Origin)**: 프로토콜 + 도메인 + 포트의 조합입니다.
-- **동작**: 브라우저가 요청 시 `Origin` 헤더를 보내고, 서버가 `Access-Control-Allow-Origin`으로 허용 여부를 응답합니다.
-- **Preflight**: `PUT`·`DELETE`나 커스텀 헤더 등은 본 요청 전에 `OPTIONS` 예비 요청을 보냅니다.
-
-
-<blockquote>
-
-**꼬리질문**
-
-<details>
-<summary>CORS 에러는 프론트엔드와 백엔드 중 어디서 해결해야 하나요?</summary>
-
-### 답변
-**백엔드(서버)에서 해결**해야 합니다.
-
-- **이유**: CORS는 서버 응답의 `Access-Control-Allow-Origin` 헤더로 허용 여부를 결정합니다. 브라우저는 이 헤더를 확인해 차단할 뿐, 프론트에서 우회할 수 없습니다.
-- **서버 설정**: 허용할 출처, 메서드, 헤더를 명시합니다.
-- **개발 환경**: 프론트 개발 서버의 프록시 설정(`proxy` 또는 `vite.config`의 `server.proxy`)으로 CORS를 우회할 수 있지만, 이는 개발용일 뿐입니다.
-
-</details>
-
-<details>
-<summary>Preflight 요청이 발생하는 조건은?</summary>
-
-### 답변
-**단순 요청(Simple Request)**이 아닌 경우 브라우저가 자동으로 `OPTIONS` 메서드의 Preflight 요청을 보냅니다.
-
-- **단순 요청 조건**: `GET`·`POST`·`HEAD` 메서드이고, `Content-Type`이 `application/x-www-form-urlencoded`, `multipart/form-data`, `text/plain` 중 하나이며, 커스텀 헤더가 없어야 합니다.
-- **Preflight 발생**: `PUT`·`DELETE` 메서드, `Content-Type: application/json`, `Authorization` 등 커스텀 헤더 사용 시.
-- **캐싱**: 서버가 `Access-Control-Max-Age`를 설정하면 Preflight 결과를 캐싱해 반복 요청을 줄입니다.
-
-</details>
-
-</blockquote>
-
-</details>
-
-<details>
-<summary>CORS란 무엇인가요?</summary>
-
-### 답변
-
-CORS란 교차 출처 공유라는 의미로 브라우저가 다른 출처로의 요청을 허용할지 판단하는 보안 메커니즘입니다. </br>
-브라우저는 기본적으로 동일 출처 정책에 따라 다른 출처로의 요청을 차단하는데, 서버가 응답 헤더에 허용 출처를 명시하면 브라우저가 이를 확인하고 응답을 허용합니다.
-
-
-<blockquote>
-
-**꼬리질문**
-
-- CORS 에러가 발생했을 때 프론트엔드에서 해결할 수 있는 방법은?
-
-<details>
-<summary>Preflight 요청이란 무엇인가요?</summary>
-
-### 답변
-- 실제 요청 전에 브라우저가 OPTIONS 메서드로 먼저 보내는 사전 요청
-- 서버가 해당 출처/메서드/헤더를 허용하는지 확인 후, 허용되면 실제 요청 보냄
-- 모든 요청에 발생하는 건 아니고 PUT/DELETE처럼 simple method가 아닌 경우는 무조건 발생하고, GET/POST/HEAD 같은 simple 메서드라도 custom header를 쓰거나 content-type이 application/json처럼 제한된 타입을 벗어나는 경우에 발생
-
-</details>
-
-</blockquote>
-
-</details>
-
-<details>
-<summary>HTTP와 HTTPS의 차이는 무엇인가요?</summary>
-
-### 답변
-
-HTTPS는 HTTP에 TLS/SSL 암호화 계층을 추가한 프로토콜입니다.
-
-| 구분   | HTTP   | HTTPS   |
-| ------ | ------ | ------- |
-| 포트   | 80     | 443     |
-| 암호화 | 없음   | TLS/SSL |
-| 인증서 | 불필요 | 필요    |
-
-HTTPS는 데이터를 암호화하여 중간자 공격을 방지하고, 데이터 무결성을 보장합니다.
-
-
-<blockquote>
-
-**꼬리질문**
-
-- TLS 핸드셰이크 과정을 설명해주세요.
-
-<details>
-<summary>HSTS란 무엇인가요?</summary>
-
-### 답변
-- 서버가 Strict-Transport-Security 응답 헤더로 HTTPS만 접속하라고 브라우저에 강제하는 정책
-- 목적은 SSL 스트리핑(HTTPS > HTTP 다운그레이드) 공격 방지 위함
-
-</details>
-
-</blockquote>
-
-</details>
-
-<details>
-<summary>HTTPS란 무엇이고, HTTP와의 차이는?</summary>
-
-### 답변
-
-HTTPS는 HTTP 메시지를 `TLS`로 보호해서 전송하는 방식입니다. HTTP와 요청/응답 구조, URL, 메서드, 상태 코드 같은 의미는 같지만,
-전송 전에 HTTP 메시지가 TLS로 암호화되어 네트워크에서는 평문이 아니라 암호문으로 흐릅니다.
-
-이 과정에서 TLS는 통신 내용을 숨기는 `기밀성`, 중간 변조를 막는 `무결성`, 인증서를 통해 서버가 진짜인지 확인하는 `서버 인증`을 제공합니다.
-기본 포트도 달라서 HTTP는 80번, HTTPS는 `443번 포트`를 사용합니다.
-
-
-<blockquote>
-
-**꼬리질문**
-
-3
-
-
-<details>
-<summary>HTTPS는 어떻게 동작하나요? TLS Handshake 과정을 설명해주세요.</summary>
-
-### 답변
-
-Hello -> 인증서 -> 인증 -> 세션키 -> 대칭키 통신
-
-</details>
-
-<details>
-<summary>대킹 키와 비대칭 키의 차이가 무엇인가요?</summary>
+<summary>대칭 키와 비대칭 키의 차이는 무엇인가요?</summary>
 
 ### 답변
 
@@ -2492,14 +2465,6 @@ Hello -> 인증서 -> 인증 -> 세션키 -> 대칭키 통신
 공개키로 암호화한 데이터는 개인키로만 복호화할 수 있어 키를 안전하게 공유할 수 있지만, 대칭키보다 속도가 느립니다.
 
 </details>
-
-</blockquote>
-
-</details>
-
-#### ⭐⭐ 중요
-
-> 자주 출제되며, 알고 있으면 플러스가 되는 질문입니다.
 
 <details>
 <summary>브라우저 캐시와 CDN 캐시의 차이점은 무엇인가요?</summary>
@@ -2581,6 +2546,102 @@ DB 보안 및 로드밸런싱, 캐싱
 </details>
 
 <details>
+<summary>Axios 인터셉터를 활용한 토큰 갱신(Refresh Token) 구조는 어떻게 설계하나요?</summary>
+
+### 답변
+
+Axios의 응답 인터셉터에서 401 에러를 감지하면 Refresh Token으로 새 Access Token을 발급받고, 실패했던 요청을 재시도하는 구조입니다.
+
+응답 인터셉터에서 `error.response.status === 401`을 확인하면, Refresh Token API를 호출해 새 Access Token을 저장하고 원래 요청의 헤더를 갱신한 뒤 `axios(originalRequest)`로 재시도합니다. 이때 동시에 여러 요청이 401을 받는 경우를 대비해, 갱신 중임을 나타내는 플래그와 대기 큐를 두어 토큰 갱신은 한 번만 수행하고 나머지 요청은 갱신 완료 후 순차 재시도합니다.
+
+Refresh Token마저 만료된 경우에는 로그아웃 처리하되, 사용자에게 세션 만료 알림을 먼저 보여주는 UX를 함께 설계하는 것이 좋습니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- 동시 요청 시 토큰 갱신이 중복 호출되는 문제를 어떻게 방지하나요?
+- Access Token을 어디에 저장하는 것이 안전한가요?
+
+</blockquote>
+
+</details>
+
+<details>
+<summary>CORS는 무엇이고 왜 발생하나요?</summary>
+
+### 답변
+
+브라우저의 동일 출처 정책(Same-Origin Policy) 때문에, 다른 출처의 리소스 요청을 제어하는 보안 메커니즘입니다.
+
+- **출처(Origin)**: 프로토콜 + 도메인 + 포트의 조합입니다.
+- **동작**: 브라우저가 요청 시 `Origin` 헤더를 보내고, 서버가 `Access-Control-Allow-Origin`으로 허용 여부를 응답합니다.
+- **Preflight**: `PUT`·`DELETE`나 커스텀 헤더 등은 본 요청 전에 `OPTIONS` 예비 요청을 보냅니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+<details>
+<summary>CORS 에러는 프론트엔드와 백엔드 중 어디서 해결해야 하나요?</summary>
+
+### 답변
+**백엔드(서버)에서 해결**해야 합니다.
+
+- **이유**: CORS는 서버 응답의 `Access-Control-Allow-Origin` 헤더로 허용 여부를 결정합니다. 브라우저는 이 헤더를 확인해 차단할 뿐, 프론트에서 우회할 수 없습니다.
+- **서버 설정**: 허용할 출처, 메서드, 헤더를 명시합니다.
+- **개발 환경**: 프론트 개발 서버의 프록시 설정(`proxy` 또는 `vite.config`의 `server.proxy`)으로 CORS를 우회할 수 있지만, 이는 개발용일 뿐입니다.
+
+</details>
+
+<details>
+<summary>Preflight 요청이 발생하는 조건은?</summary>
+
+### 답변
+**단순 요청(Simple Request)**이 아닌 경우 브라우저가 자동으로 `OPTIONS` 메서드의 Preflight 요청을 보냅니다.
+
+- **단순 요청 조건**: `GET`·`POST`·`HEAD` 메서드이고, `Content-Type`이 `application/x-www-form-urlencoded`, `multipart/form-data`, `text/plain` 중 하나이며, 커스텀 헤더가 없어야 합니다.
+- **Preflight 발생**: `PUT`·`DELETE` 메서드, `Content-Type: application/json`, `Authorization` 등 커스텀 헤더 사용 시.
+- **캐싱**: 서버가 `Access-Control-Max-Age`를 설정하면 Preflight 결과를 캐싱해 반복 요청을 줄입니다.
+
+</details>
+
+</blockquote>
+
+</details>
+
+<details>
+<summary>CORS란 무엇인가요?</summary>
+
+### 답변
+
+CORS란 교차 출처 공유라는 의미로 브라우저가 다른 출처로의 요청을 허용할지 판단하는 보안 메커니즘입니다. </br>
+브라우저는 기본적으로 동일 출처 정책에 따라 다른 출처로의 요청을 차단하는데, 서버가 응답 헤더에 허용 출처를 명시하면 브라우저가 이를 확인하고 응답을 허용합니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- CORS 에러가 발생했을 때 프론트엔드에서 해결할 수 있는 방법은?
+
+<details>
+<summary>Preflight 요청이란 무엇인가요?</summary>
+
+### 답변
+- 실제 요청 전에 브라우저가 OPTIONS 메서드로 먼저 보내는 사전 요청
+- 서버가 해당 출처/메서드/헤더를 허용하는지 확인 후, 허용되면 실제 요청 보냄
+- 모든 요청에 발생하는 건 아니고 PUT/DELETE처럼 simple method가 아닌 경우는 무조건 발생하고, GET/POST/HEAD 같은 simple 메서드라도 custom header를 쓰거나 content-type이 application/json처럼 제한된 타입을 벗어나는 경우에 발생
+
+</details>
+
+</blockquote>
+
+</details>
+
+<details>
 <summary>HTTP 캐싱은 어떻게 동작하나요?</summary>
 
 ### 답변
@@ -2624,43 +2685,33 @@ ETag는 서버가 리소스의 **특정 버전을 식별하는 고유 문자열*
 </details>
 
 <details>
-<summary>WebSocket과 HTTP의 차이점은 무엇인가요?</summary>
+<summary>HTTP와 HTTPS의 차이는 무엇인가요?</summary>
 
 ### 답변
 
-HTTP는 요청이 있어야 응답을 받을 수 있는 요청-응답(Request-Response) 기반의 프로토콜입니다.
-반면 WebSocket은 최초 HTTP Handshake 이후 연결을 계속 유지하는 양방향(Full Duplex) 통신 프로토콜입니다.
+HTTPS는 HTTP에 TLS/SSL 암호화 계층을 추가한 프로토콜입니다.
 
-연결이 유지되는 동안 서버와 클라이언트가 서로 자유롭게 데이터를 주고받을 수 있기 때문에 채팅, 실시간 알림, 게임, 주식 시세처럼 실시간성이 중요한 서비스에 적합합니다.
+| 구분   | HTTP   | HTTPS   |
+| ------ | ------ | ------- |
+| 포트   | 80     | 443     |
+| 암호화 | 없음   | TLS/SSL |
+| 인증서 | 불필요 | 필요    |
+
+HTTPS는 데이터를 암호화하여 중간자 공격을 방지하고, 데이터 무결성을 보장합니다.
 
 
 <blockquote>
 
 **꼬리질문**
 
-<details>
-<summary>WebSocket은 어떻게 연결을 수립하나요?</summary>
-
-### 답변
-
-HTTP 기반 Handshake로 연결 수립 후, Upgrade 헤더와 101 응답으로 WebSocket으로 전환하고 TCP 연결을 유지하며 양방향 통신합니다.
-
-</details>
+- TLS 핸드셰이크 과정을 설명해주세요.
 
 <details>
-<summary>WebSocket 대신 SSE(Server-Sent Events)를 사용하는 경우는 언제인가요?</summary>
+<summary>HSTS란 무엇인가요?</summary>
 
 ### 답변
-
-webSocket -> 양방향 실시간 통신
-SSE -> 서버 -> 클라이언트 단방향 실시간 통신
-
-서버와 클라이언트의 통신이 빈번할 때 양방향 통신인 websocket을 사용하고
-서버에서 클라이언트로 통신이 많을때는 단방향 SSE를 고려합니다.
-
-구현 자체의 난이도가 webSocket이 SSE가 더 간단하기때문에
-클라이언트의 요청이 있어도 그 부분은 api요청으로 해결하고 sse를 선택할 수도 있습니다.
-ex ) ai 챗봇 스트리밍, 주문 알림 서비스 등
+- 서버가 Strict-Transport-Security 응답 헤더로 HTTPS만 접속하라고 브라우저에 강제하는 정책
+- 목적은 SSL 스트리핑(HTTPS > HTTP 다운그레이드) 공격 방지 위함
 
 </details>
 
@@ -2668,28 +2719,34 @@ ex ) ai 챗봇 스트리밍, 주문 알림 서비스 등
 
 </details>
 
-#### ⭐ 심화
-
-> 심화 질문이거나 특정 회사에서 깊게 물어보는 질문입니다. 알면 차별화 포인트가 됩니다.
-
 <details>
-<summary>Axios 인터셉터를 활용한 토큰 갱신(Refresh Token) 구조는 어떻게 설계하나요?</summary>
+<summary>HTTPS란 무엇이고, HTTP와의 차이는?</summary>
 
 ### 답변
 
-Axios의 응답 인터셉터에서 401 에러를 감지하면 Refresh Token으로 새 Access Token을 발급받고, 실패했던 요청을 재시도하는 구조입니다.
+HTTPS는 HTTP 메시지를 `TLS`로 보호해서 전송하는 방식입니다. HTTP와 요청/응답 구조, URL, 메서드, 상태 코드 같은 의미는 같지만,
+전송 전에 HTTP 메시지가 TLS로 암호화되어 네트워크에서는 평문이 아니라 암호문으로 흐릅니다.
 
-응답 인터셉터에서 `error.response.status === 401`을 확인하면, Refresh Token API를 호출해 새 Access Token을 저장하고 원래 요청의 헤더를 갱신한 뒤 `axios(originalRequest)`로 재시도합니다. 이때 동시에 여러 요청이 401을 받는 경우를 대비해, 갱신 중임을 나타내는 플래그와 대기 큐를 두어 토큰 갱신은 한 번만 수행하고 나머지 요청은 갱신 완료 후 순차 재시도합니다.
-
-Refresh Token마저 만료된 경우에는 로그아웃 처리하되, 사용자에게 세션 만료 알림을 먼저 보여주는 UX를 함께 설계하는 것이 좋습니다.
+이 과정에서 TLS는 통신 내용을 숨기는 `기밀성`, 중간 변조를 막는 `무결성`, 인증서를 통해 서버가 진짜인지 확인하는 `서버 인증`을 제공합니다.
+기본 포트도 달라서 HTTP는 80번, HTTPS는 `443번 포트`를 사용합니다.
 
 
 <blockquote>
 
 **꼬리질문**
 
-- 동시 요청 시 토큰 갱신이 중복 호출되는 문제를 어떻게 방지하나요?
-- Access Token을 어디에 저장하는 것이 안전한가요?
+3
+
+
+<details>
+<summary>HTTPS는 어떻게 동작하나요? TLS Handshake 과정을 설명해주세요.</summary>
+
+### 답변
+
+Hello -> 인증서 -> 인증 -> 세션키 -> 대칭키 통신
+
+</details>
+- 대킹 키와 비대칭 키의 차이가 무엇인가요?
 
 </blockquote>
 
@@ -2768,13 +2825,79 @@ SSE는 서버에서 클라이언트로 단방향 스트리밍이 가능하며, H
 
 </details>
 
+<details>
+<summary>WebSocket과 HTTP의 차이점은 무엇인가요?</summary>
+
+### 답변
+
+HTTP는 요청이 있어야 응답을 받을 수 있는 요청-응답(Request-Response) 기반의 프로토콜입니다.
+반면 WebSocket은 최초 HTTP Handshake 이후 연결을 계속 유지하는 양방향(Full Duplex) 통신 프로토콜입니다.
+
+연결이 유지되는 동안 서버와 클라이언트가 서로 자유롭게 데이터를 주고받을 수 있기 때문에 채팅, 실시간 알림, 게임, 주식 시세처럼 실시간성이 중요한 서비스에 적합합니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+<details>
+<summary>WebSocket은 어떻게 연결을 수립하나요?</summary>
+
+### 답변
+
+HTTP 기반 Handshake로 연결 수립 후, Upgrade 헤더와 101 응답으로 WebSocket으로 전환하고 TCP 연결을 유지하며 양방향 통신합니다.
+
+</details>
+
+<details>
+<summary>WebSocket 대신 SSE(Server-Sent Events)를 사용하는 경우는 언제인가요?</summary>
+
+### 답변
+
+webSocket -> 양방향 실시간 통신
+SSE -> 서버 -> 클라이언트 단방향 실시간 통신
+
+서버와 클라이언트의 통신이 빈번할 때 양방향 통신인 websocket을 사용하고
+서버에서 클라이언트로 통신이 많을때는 단방향 SSE를 고려합니다.
+
+구현 자체의 난이도가 webSocket이 SSE가 더 간단하기때문에
+클라이언트의 요청이 있어도 그 부분은 api요청으로 해결하고 sse를 선택할 수도 있습니다.
+ex ) ai 챗봇 스트리밍, 주문 알림 서비스 등
+
+</details>
+
+</blockquote>
+
+</details>
+
 ---
 
 ## Browser
 
-#### ⭐⭐⭐ 필수
+<details>
+<summary>멀티스텝 폼의 입력 상태를 새로고침에도 유지하기 위해 웹 스토리지에 저장한다면, 어떤 것들을 고려해야 하나요?</summary>
 
-> 신입 면접에서 거의 반드시 나오는 단골 질문입니다. 정확하게 답변할 수 있어야 합니다.
+### 답변
+
+크게 네 가지를 설계해야 합니다.
+
+- **저장소 선택**: 진행 중인 일회성 상태는 sessionStorage(탭 종료 시 소멸), 재방문 시 prefill 같은 편의 기능은 localStorage, 여러 기기 간 이어쓰기나 강한 일관성이 필요하면 서버 저장. 책임이 다르면 키를 분리합니다.
+- **버저닝·마이그레이션**: 영구 저장 데이터는 시간이 지나며 코드 스키마와 어긋납니다(drift). 저장 시 `version` 필드를 함께 기록하고, 읽을 때 버전이 일치하면 사용, 불일치하지만 변환 가능하면 마이그레이션, 불가하면 폐기 후 초기값으로 시작합니다.
+- **삭제 시점(라이프사이클)**: 저장과 삭제는 한 쌍입니다. 폼 제출이 성공한 시점(확정 mutation 성공 직후)에 정리하지 않으면, 다음 이용 시 과거 입력값이 남아 있게 됩니다. 완료 화면은 스토리지가 아니라 **서버 응답을 진실의 원천**으로 그립니다.
+- **신/구 버전 충돌**: 사용자가 구버전 탭에서 데이터를 채우던 중 새 버전이 배포되고 새로고침하면, 신버전 코드가 구버전 데이터를 주입받아 깨질 수 있습니다. 버전 게이트로 진입 시점에 걸러내고, 서버가 mutation 시점에 payload를 최종 검증하는 두 층 방어가 필요합니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- localStorage에 저장한 값은 언제까지 남아 있나요? 용량 한계를 초과하면 어떻게 되나요?
+- 왜 제출 "성공 직후"가 스토리지를 비우는 기준 시점인가요? 더 이르거나 늦으면 어떤 문제가 있나요?
+- 단순 버전 비교 대신 zod 같은 스키마 검증을 쓰면 어떤 점이 더 안전한가요?
+
+</blockquote>
+
+</details>
 
 <details>
 <summary>브라우저에 URL을 입력하면 화면이 그려지기까지 어떤 과정을 거치나요?</summary>
@@ -2821,10 +2944,6 @@ CSS와 JS는 파싱·렌더링 과정에서 서로 다른 방식으로 렌더링
 
 </details>
 
-#### ⭐⭐ 중요
-
-> 자주 출제되며, 알고 있으면 플러스가 되는 질문입니다.
-
 <details>
 <summary>브라우저의 렌더링 과정에 자바스크립트는 어떻게 동작하나요?</summary>
 
@@ -2838,30 +2957,58 @@ HTML 파싱 중 `script` 태그를 만나면 파싱을 중단하고 자바스크
 
 </details>
 
-#### ⭐ 심화
-
-> 심화 질문이거나 특정 회사에서 깊게 물어보는 질문입니다. 알면 차별화 포인트가 됩니다.
-
 <details>
-<summary>멀티스텝 폼의 입력 상태를 새로고침에도 유지하기 위해 웹 스토리지에 저장한다면, 어떤 것들을 고려해야 하나요?</summary>
+<summary>여러 모니터링 도구 중 Sentry를 선택한 이유는 무엇인가요?</summary>
 
 ### 답변
 
-크게 네 가지를 설계해야 합니다.
+프론트엔드 에러 모니터링 도구로는 Sentry, Firebase Crashlytics, New Relic, Datadog 등이 있는데, 7개 프론트엔드 프로젝트에 Sentry를 도입한 이유는 크게 세 가지입니다.
 
-- **저장소 선택**: 진행 중인 일회성 상태는 sessionStorage(탭 종료 시 소멸), 재방문 시 prefill 같은 편의 기능은 localStorage, 여러 기기 간 이어쓰기나 강한 일관성이 필요하면 서버 저장. 책임이 다르면 키를 분리합니다.
-- **버저닝·마이그레이션**: 영구 저장 데이터는 시간이 지나며 코드 스키마와 어긋납니다(drift). 저장 시 `version` 필드를 함께 기록하고, 읽을 때 버전이 일치하면 사용, 불일치하지만 변환 가능하면 마이그레이션, 불가하면 폐기 후 초기값으로 시작합니다.
-- **삭제 시점(라이프사이클)**: 저장과 삭제는 한 쌍입니다. 폼 제출이 성공한 시점(확정 mutation 성공 직후)에 정리하지 않으면, 다음 이용 시 과거 입력값이 남아 있게 됩니다. 완료 화면은 스토리지가 아니라 **서버 응답을 진실의 원천**으로 그립니다.
-- **신/구 버전 충돌**: 사용자가 구버전 탭에서 데이터를 채우던 중 새 버전이 배포되고 새로고침하면, 신버전 코드가 구버전 데이터를 주입받아 깨질 수 있습니다. 버전 게이트로 진입 시점에 걸러내고, 서버가 mutation 시점에 payload를 최종 검증하는 두 층 방어가 필요합니다.
+첫째, **프론트엔드 에러 추적에 특화**되어 있습니다. Sentry는 JavaScript 런타임 에러를 자동 캡처하고, Source Map을 연동하면 난독화된 프로덕션 코드에서도 원본 파일명과 라인 번호를 정확히 보여줍니다. Firebase Crashlytics는 모바일 네이티브 크래시 중심이고, New Relic이나 Datadog은 백엔드 APM이 주력이라 프론트엔드 에러 컨텍스트(브레드크럼, 사용자 행동 재현)가 상대적으로 약합니다.
+
+둘째, **이슈 그루핑과 알림 커스터마이징**이 강력합니다. 같은 원인의 에러를 자동으로 하나의 이슈로 묶어주고, `tags`와 `extra`로 모듈별·이벤트별 필터링이 가능합니다. Slack 연동 알림도 레벨별로 채널을 분리할 수 있어 7개 프로젝트를 독립적으로 관리하기에 적합했습니다.
+
+셋째, **무료 플랜으로도 소규모 팀 운영이 가능**합니다. Developer 플랜에서 월 5,000건의 에러 이벤트와 성능 모니터링을 제공하므로, `tracesSampleRate`과 `beforeSend`로 수집량을 조절하면 비용 부담 없이 시작할 수 있었습니다.
 
 
 <blockquote>
 
 **꼬리질문**
 
-- localStorage에 저장한 값은 언제까지 남아 있나요? 용량 한계를 초과하면 어떻게 되나요?
-- 왜 제출 "성공 직후"가 스토리지를 비우는 기준 시점인가요? 더 이르거나 늦으면 어떤 문제가 있나요?
-- 단순 버전 비교 대신 zod 같은 스키마 검증을 쓰면 어떤 점이 더 안전한가요?
+- Sentry의 Source Map 연동은 어떻게 동작하나요?
+- Sentry와 Firebase Crashlytics를 함께 사용하는 경우도 있나요?
+
+</blockquote>
+
+</details>
+
+<details>
+<summary>revokeObjectURL은 왜 호출해야 하나요?</summary>
+
+### 답변
+
+`URL.createObjectURL()`은 Blob이나 File 객체에 대한 임시 URL을 생성하는데, 이 URL은 메모리에 참조를 유지하므로 명시적으로 해제하지 않으면 메모리 누수가 발생합니다.
+
+파일 다운로드 구현 시 서버로부터 Blob 응답을 받아 `createObjectURL`로 URL을 만들고, `<a>` 태그의 `href`에 설정한 뒤 프로그래밍 방식으로 클릭해 다운로드를 트리거합니다. 다운로드가 완료된 후에는 `URL.revokeObjectURL(url)`을 호출해 해당 참조를 해제해야 합니다.
+
+```javascript
+const url = URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url;
+a.download = 'filename.xlsx';
+a.click();
+URL.revokeObjectURL(url); // 메모리 해제
+```
+
+특히 대량 파일 다운로드가 반복되는 환경에서는 해제하지 않으면 브라우저 메모리 사용량이 지속적으로 증가합니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- Blob과 ArrayBuffer의 차이는 무엇인가요?
+- 서버에서 파일을 다운로드할 때 Content-Disposition 헤더의 역할은?
 
 </blockquote>
 
@@ -2905,9 +3052,18 @@ Sentry 도입 시 **로그 레벨 설계**, **대시보드 구성**, **알림 �
 
 ## CS
 
-#### ⭐⭐⭐ 필수
+<details>
+<summary>브라우저 성능을 향상시킬 수 있는 방법들에 대해 설명해주세요.</summary>
 
-> 신입 면접에서 거의 반드시 나오는 단골 질문입니다. 정확하게 답변할 수 있어야 합니다.
+### 답변
+- 이미지 크기 최적화 : `<img>` 태그의 srcset 속성이나 WebP 형식 사용
+- HTML, CSS, JS 파일 압축 : 웹 서버(NginX 등) 설정을 통해 파일 전송 전 자동으로 압축하여 전달 
+- 레이지 로딩 : 필요 시점에 필요 데이터 로드, React.lazy()나 `<img loading='lazy'>` 사용하여 구현 가능
+- CDN : JS, CSS와 같은 정적 파일 CDN 통해 제공
+- 불필요한 자바스크립트 최소화 : 불필요한 라이브러리 제거, 코드 스플리팅 적용하여 페이지별로 필요한 코드만 로딩
+- 캐싱 : 방문한 사이트의 특정 파일(CSS, JS, 이미지 등)을 브라우저에 저장해두고 재방문 시 저장된 파일 사용
+
+</details>
 
 <details>
 <summary>브라우저가 HTML을 받아서 화면에 그리기까지의 과정을 설명해주세요.</summary>
@@ -2921,17 +3077,23 @@ HTML 파싱 > DOM 트리 생성 > CSS 파싱 > CSSOM 생성 > Render Tree 결합
 
 **꼬리질문**
 
-<details>
-<summary>reflow와 repaint의 차이와 최소화하는 방법은?</summary>
-
-### 답변
-- reflow는 레이아웃 전체 재계산하는 작업, DOM 구조나 크기/위치 변경 시 발생
-- repaint는 시각적 스타일을 다시 그리는 작업, 색상이나 스타일만 변경되는 경우 발생
-
-</details>
+- reflow와 repaint의 차이와 최소화하는 방법은?
 - &lt;script&gt; 태그 위치가 렌더링에 영향을 주는 이유는?
 
 </blockquote>
+
+</details>
+
+<details>
+<summary>비대칭키(공개키/개인키) 암호화란 뭔가요?</summary>
+
+### 답변
+
+비대칭키 암호화는 공개키와 개인키 한 쌍을 사용하는 암호화 방식입니다.
+
+공개키로 암호화한 데이터는 짝이 되는 개인키로만 복호화할 수 있고, 반대로 개인키로 서명한 데이터는 공개키로 검증할 수 있습니다.
+
+대칭키보다 연산 속도가 느리지만 안전한 키 교환과 디지털 서명이 가능해, TLS 핸드셰이크 같은 초기 통신 설정에 주로 사용됩니다.
 
 </details>
 
@@ -2980,47 +3142,18 @@ HTML 파싱 > DOM 트리 생성 > CSS 파싱 > CSSOM 생성 > Render Tree 결합
 
 </details>
 
-#### ⭐⭐ 중요
-
-> 자주 출제되며, 알고 있으면 플러스가 되는 질문입니다.
-
 <details>
-<summary>브라우저 성능을 향상시킬 수 있는 방법들에 대해 설명해주세요.</summary>
+<summary>reflow와 repaint의 차이에 대해 설명해주세요.</summary>
 
 ### 답변
-- 이미지 크기 최적화 : `<img>` 태그의 srcset 속성이나 WebP 형식 사용
-- HTML, CSS, JS 파일 압축 : 웹 서버(NginX 등) 설정을 통해 파일 전송 전 자동으로 압축하여 전달 
-- 레이지 로딩 : 필요 시점에 필요 데이터 로드, React.lazy()나 `<img loading='lazy'>` 사용하여 구현 가능
-- CDN : JS, CSS와 같은 정적 파일 CDN 통해 제공
-- 불필요한 자바스크립트 최소화 : 불필요한 라이브러리 제거, 코드 스플리팅 적용하여 페이지별로 필요한 코드만 로딩
-- 캐싱 : 방문한 사이트의 특정 파일(CSS, JS, 이미지 등)을 브라우저에 저장해두고 재방문 시 저장된 파일 사용
-
-</details>
-
-#### ⭐ 심화
-
-> 심화 질문이거나 특정 회사에서 깊게 물어보는 질문입니다. 알면 차별화 포인트가 됩니다.
-
-<details>
-<summary>비대칭키(공개키/개인키) 암호화란 뭔가요?</summary>
-
-### 답변
-
-비대칭키 암호화는 공개키와 개인키 한 쌍을 사용하는 암호화 방식입니다.
-
-공개키로 암호화한 데이터는 짝이 되는 개인키로만 복호화할 수 있고, 반대로 개인키로 서명한 데이터는 공개키로 검증할 수 있습니다.
-
-대칭키보다 연산 속도가 느리지만 안전한 키 교환과 디지털 서명이 가능해, TLS 핸드셰이크 같은 초기 통신 설정에 주로 사용됩니다.
+- reflow는 레이아웃 전체 재계산하는 작업, DOM 구조나 크기/위치 변경 시 발생
+- repaint는 시각적 스타일을 다시 그리는 작업, 색상이나 스타일만 변경되는 경우 발생
 
 </details>
 
 ---
 
 ## 자료구조
-
-#### ⭐⭐⭐ 필수
-
-> 신입 면접에서 거의 반드시 나오는 단골 질문입니다. 정확하게 답변할 수 있어야 합니다.
 
 <details>
 <summary>리스트가 뭔가요?</summary>
@@ -3034,10 +3167,6 @@ HTML 파싱 > DOM 트리 생성 > CSS 파싱 > CSSOM 생성 > Render Tree 결합
 데이터의 순서가 중요하고 인덱스를 활용한 접근이 자주 필요한 경우에 널리 사용됩니다.
 
 </details>
-
-#### ⭐⭐ 중요
-
-> 자주 출제되며, 알고 있으면 플러스가 되는 질문입니다.
 
 <details>
 <summary>트리가 뭔가요?</summary>
@@ -3056,10 +3185,6 @@ HTML 파싱 > DOM 트리 생성 > CSS 파싱 > CSSOM 생성 > Render Tree 결합
 
 ## 빌드도구
 
-#### ⭐⭐⭐ 필수
-
-> 신입 면접에서 거의 반드시 나오는 단골 질문입니다. 정확하게 답변할 수 있어야 합니다.
-
 <details>
 <summary>모듈 번들러란 뭔가요? 왜 필요한가요?</summary>
 
@@ -3072,10 +3197,6 @@ HTML 파싱 > DOM 트리 생성 > CSS 파싱 > CSSOM 생성 > Render Tree 결합
 브라우저는 과거에 모듈 시스템을 지원하지 않았고, 수많은 파일을 개별 요청하면 네트워크 비용이 커지기 때문에 번들러가 필수적이었습니다.
 
 </details>
-
-#### ⭐⭐ 중요
-
-> 자주 출제되며, 알고 있으면 플러스가 되는 질문입니다.
 
 <details>
 <summary>CI/CD가 뭔가요?</summary>
@@ -3093,38 +3214,52 @@ GitHub Actions, Jenkins, CircleCI 같은 도구로 파이프라인을 구성하�
 </details>
 
 <details>
-<summary>Webpack과 Vite의 장단점을 비교하면 어떤 차이가 있나요?</summary>
+<summary>Claude Code Skill로 API 자동 생성기를 만든 경험에 대해 설명해주세요.</summary>
 
 ### 답변
 
-Webpack은 성숙도와 유연성이, Vite는 속도와 간결한 설정이 강점입니다.
+Swagger OpenAPI 명세를 기반으로 API 호출 함수와 TanStack Query 훅을 자동 생성하는 Claude Code Skill을 만들어 사내 마켓플레이스에 배포했습니다.
 
-Webpack은 성숙한 생태계, 풍부한 loader/plugin, 세밀한 설정이 가능하다는 장점이 있지만 설정이 복잡하고 프로젝트가 커질수록 빌드와 HMR이 느려집니다.
+기존에는 백엔드에서 API가 업데이트되면 프론트엔드 개발자가 Swagger 문서를 확인하고 수동으로 타입, API 함수, 훅을 수정해야 했습니다. 이 과정에서 타입 불일치나 엔드포인트 누락이 빈번했고, 팀원마다 코드 스타일도 달랐습니다.
 
-Vite는 빠른 개발 서버 시작과 HMR, 간결한 설정, 최신 웹 표준 활용이 장점이지만 Webpack 대비 플러그인 생태계가 작고 레거시 브라우저 지원에 추가 설정이 필요할 수 있습니다.
+Skill은 OpenAPI JSON을 입력받아 엔드포인트별 요청/응답 타입, Axios 기반 API 함수, useQuery/useMutation 훅을 일관된 컨벤션으로 생성합니다. Skill의 frontmatter에 트리거 조건을 설정해 API 관련 작업 시에만 호출되도록 했고, CLAUDE.md에 넣을 때 발생하는 불필요한 컨텍스트 소모를 방지했습니다.
 
-신규 프로젝트에는 Vite, 복잡한 레거시 프로젝트에는 Webpack이 더 적합한 경향이 있습니다.
+결과적으로 API 동기화 작업이 1분 내로 단축되었고, 팀 전체가 동일한 코드 구조를 유지할 수 있게 되었습니다.
+
+
+<blockquote>
+
+**꼬리질문**
+
+- OpenAPI 명세에서 타입을 추출할 때 제네릭 응답 구조는 어떻게 처리하나요?
+- Claude Code Skill과 CLAUDE.md에 직접 프롬프트를 넣는 것의 차이는?
+
+</blockquote>
 
 </details>
 
 <details>
-<summary>Webpack의 번들링 과정은 어떻게 이루어지나요?</summary>
+<summary>Jenkins 기반 CI/CD 파이프라인은 어떻게 구성하나요?</summary>
 
 ### 답변
 
-Webpack은 entry → 의존성 그래프 구축 → loader 변환 → plugin 처리 → output 파일 생성의 단계로 번들링을 수행합니다.
+GitHub Webhook과 Jenkins를 연동해 특정 브랜치에 push가 발생하면 빌드와 배포가 자동으로 수행되는 파이프라인을 구성합니다.
 
-entry 설정에 지정된 파일부터 시작해 import/require 문을 따라가며 의존성 그래프를 구축합니다.
+GitHub에서 Webhook을 설정해 push 이벤트를 Jenkins에 전달하면, Jenkins가 소스를 체크아웃하고 `npm install` → `npm run build` → 배포 스크립트 실행 순서로 파이프라인을 실행합니다. Jenkinsfile에 이 단계를 선언적으로 정의하면 파이프라인 변경 이력도 Git으로 관리됩니다.
 
-각 모듈을 만나면 설정된 loader를 통해 변환(TypeScript에서 JS, SCSS에서 CSS 등)하고, 모든 의존성을 분석한 후 output 설정에 따라 하나 이상의 번들 파일로 합칩니다.
+개발 서버와 운영 서버를 분리할 때는 브랜치별로 다른 파이프라인을 트리거하도록 구성하고, 배포 산출물에 커밋 메시지와 배포일자를 자동 기록해 어느 시점의 어떤 변경이 배포됐는지 추적할 수 있게 합니다.
 
-이 과정에서 plugin이 번들 최적화, 에셋 관리, 환경 변수 주입 등 추가 작업을 수행합니다.
+
+<blockquote>
+
+**꼬리질문**
+
+- Jenkinsfile의 Declarative Pipeline과 Scripted Pipeline의 차이는?
+- GitHub Actions와 Jenkins의 장단점 비교는?
+
+</blockquote>
 
 </details>
-
-#### ⭐ 심화
-
-> 심화 질문이거나 특정 회사에서 깊게 물어보는 질문입니다. 알면 차별화 포인트가 됩니다.
 
 <details>
 <summary>Storybook과 MSW를 조합한 Mock API 환경은 어떻게 구성하나요?</summary>
@@ -3163,25 +3298,32 @@ Pre-bundling은 의존성을 ESM으로 통일하고 모듈 수를 줄여, 브라
 </details>
 
 <details>
-<summary>Jenkins 기반 CI/CD 파이프라인은 어떻게 구성하나요?</summary>
+<summary>Webpack과 Vite의 장단점을 비교하면 어떤 차이가 있나요?</summary>
 
 ### 답변
 
-GitHub Webhook과 Jenkins를 연동해 특정 브랜치에 push가 발생하면 빌드와 배포가 자동으로 수행되는 파이프라인을 구성합니다.
+Webpack은 성숙도와 유연성이, Vite는 속도와 간결한 설정이 강점입니다.
 
-GitHub에서 Webhook을 설정해 push 이벤트를 Jenkins에 전달하면, Jenkins가 소스를 체크아웃하고 `npm install` → `npm run build` → 배포 스크립트 실행 순서로 파이프라인을 실행합니다. Jenkinsfile에 이 단계를 선언적으로 정의하면 파이프라인 변경 이력도 Git으로 관리됩니다.
+Webpack은 성숙한 생태계, 풍부한 loader/plugin, 세밀한 설정이 가능하다는 장점이 있지만 설정이 복잡하고 프로젝트가 커질수록 빌드와 HMR이 느려집니다.
 
-개발 서버와 운영 서버를 분리할 때는 브랜치별로 다른 파이프라인을 트리거하도록 구성하고, 배포 산출물에 커밋 메시지와 배포일자를 자동 기록해 어느 시점의 어떤 변경이 배포됐는지 추적할 수 있게 합니다.
+Vite는 빠른 개발 서버 시작과 HMR, 간결한 설정, 최신 웹 표준 활용이 장점이지만 Webpack 대비 플러그인 생태계가 작고 레거시 브라우저 지원에 추가 설정이 필요할 수 있습니다.
 
+신규 프로젝트에는 Vite, 복잡한 레거시 프로젝트에는 Webpack이 더 적합한 경향이 있습니다.
 
-<blockquote>
+</details>
 
-**꼬리질문**
+<details>
+<summary>Webpack의 번들링 과정은 어떻게 이루어지나요?</summary>
 
-- Jenkinsfile의 Declarative Pipeline과 Scripted Pipeline의 차이는?
-- GitHub Actions와 Jenkins의 장단점 비교는?
+### 답변
 
-</blockquote>
+Webpack은 entry → 의존성 그래프 구축 → loader 변환 → plugin 처리 → output 파일 생성의 단계로 번들링을 수행합니다.
+
+entry 설정에 지정된 파일부터 시작해 import/require 문을 따라가며 의존성 그래프를 구축합니다.
+
+각 모듈을 만나면 설정된 loader를 통해 변환(TypeScript에서 JS, SCSS에서 CSS 등)하고, 모든 의존성을 분석한 후 output 설정에 따라 하나 이상의 번들 파일로 합칩니다.
+
+이 과정에서 plugin이 번들 최적화, 에셋 관리, 환경 변수 주입 등 추가 작업을 수행합니다.
 
 </details>
 
